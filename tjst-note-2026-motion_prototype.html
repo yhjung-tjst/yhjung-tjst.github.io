@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>태정에스티 2026 비전 - 모션 프로토타입</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        .motion-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Base Layers */
+        .wall-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0B1120 0%, #020617 100%);
+            animation: wallPulse 8s infinite;
+        }
+        
+        @keyframes wallPulse {
+            0%, 100% { opacity: 1; }
+            60% { opacity: 0.95; }
+            80% { opacity: 0.9; }
+        }
+        
+        /* Door Structure */
+        .door-container {
+            position: relative;
+            width: 300px;
+            height: 600px;
+            transform-style: preserve-3d;
+            animation: doorPerspective 8s infinite;
+        }
+        
+        @keyframes doorPerspective {
+            0%, 25% { transform: perspective(1000px) rotateY(0deg) scale(1); }
+            50% { transform: perspective(1000px) rotateY(0deg) scale(1.02); }
+            75%, 100% { transform: perspective(1000px) rotateY(8deg) scale(1.05); }
+        }
+        
+        .door-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(37, 99, 235, 0);
+            animation: doorFrameReveal 8s infinite;
+        }
+        
+        @keyframes doorFrameReveal {
+            0%, 30% {
+                border-color: rgba(37, 99, 235, 0);
+                border-width: 2px;
+            }
+            50% {
+                border-color: rgba(37, 99, 235, 0.2);
+                border-width: 2px;
+            }
+            75%, 100% {
+                border-color: rgba(37, 99, 235, 0.5);
+                border-width: 3px;
+            }
+        }
+        
+        /* Light Gap Effect */
+        .light-gap {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 0;
+            height: 100%;
+            transform: translateX(-50%);
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                rgba(96, 165, 250, 0.4) 10%,
+                #60A5FA 30%,
+                #FFFFFF 50%,
+                #60A5FA 70%,
+                rgba(96, 165, 250, 0.4) 90%,
+                transparent 100%
+            );
+            box-shadow: 
+                0 0 0 rgba(96, 165, 250, 0),
+                0 0 0 rgba(37, 99, 235, 0),
+                0 0 0 rgba(96, 165, 250, 0);
+            animation: lightGapGrow 8s infinite;
+        }
+        
+        @keyframes lightGapGrow {
+            0%, 20% {
+                width: 0;
+                opacity: 0;
+                box-shadow: 
+                    0 0 0 rgba(96, 165, 250, 0),
+                    0 0 0 rgba(37, 99, 235, 0),
+                    0 0 0 rgba(96, 165, 250, 0);
+            }
+            30% {
+                width: 2px;
+                opacity: 0.8;
+                box-shadow: 
+                    0 0 40px rgba(96, 165, 250, 0.8),
+                    0 0 80px rgba(37, 99, 235, 0.5),
+                    0 0 120px rgba(96, 165, 250, 0.3);
+            }
+            50% {
+                width: 4px;
+                opacity: 1;
+                box-shadow: 
+                    0 0 60px rgba(96, 165, 250, 1),
+                    0 0 120px rgba(37, 99, 235, 0.8),
+                    0 0 200px rgba(96, 165, 250, 0.5);
+            }
+            75% {
+                width: 100%;
+                opacity: 1;
+                box-shadow: 
+                    0 0 100px rgba(96, 165, 250, 1),
+                    0 0 200px rgba(37, 99, 235, 0.8),
+                    0 0 400px rgba(96, 165, 250, 0.5);
+            }
+            100% {
+                width: 100%;
+                opacity: 0.95;
+            }
+        }
+        
+        /* Interior Space Beyond Door */
+        .door-interior {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            animation: interiorReveal 8s infinite;
+            overflow: hidden;
+        }
+        
+        @keyframes interiorReveal {
+            0%, 50% { opacity: 0; }
+            75% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .interior-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(96, 165, 250, 0.1) 50%,
+                rgba(6, 182, 212, 0.05) 100%
+            );
+        }
+        
+        /* Data Grid Animation */
+        .data-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(37, 99, 235, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: gridFlow 20s linear infinite;
+        }
+        
+        @keyframes gridFlow {
+            from { transform: translate(0, 0); }
+            to { transform: translate(30px, 30px); }
+        }
+        
+        /* Flowing Data Streams */
+        .data-stream {
+            position: absolute;
+            width: 2px;
+            height: 200%;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                transparent 40%,
+                #06B6D4 50%,
+                transparent 60%,
+                transparent 100%
+            );
+            animation: streamFlow 3s linear infinite;
+        }
+        
+        @keyframes streamFlow {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100%); }
+        }
+        
+        .data-stream:nth-child(2) { left: 25%; animation-delay: 0s; }
+        .data-stream:nth-child(3) { left: 50%; animation-delay: 1s; }
+        .data-stream:nth-child(4) { left: 75%; animation-delay: 2s; }
+        
+        /* Light Burst Effect */
+        .light-burst {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.8) 0%,
+                rgba(96, 165, 250, 0.4) 30%,
+                rgba(37, 99, 235, 0.2) 60%,
+                transparent 100%
+            );
+            border-radius: 50%;
+            animation: burstExpand 8s infinite;
+        }
+        
+        @keyframes burstExpand {
+            0%, 60% {
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+            70% {
+                width: 400px;
+                height: 400px;
+                opacity: 0.6;
+            }
+            100% {
+                width: 800px;
+                height: 800px;
+                opacity: 0;
+            }
+        }
+        
+        /* Floating Particles */
+        .particles-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(96, 165, 250, 0);
+            border-radius: 50%;
+            animation: particleFloat 8s infinite;
+        }
+        
+        @keyframes particleFloat {
+            0%, 30% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            40% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) translateX(50px);
+                opacity: 0;
+            }
+        }
+        
+        .particle:nth-child(1) { left: 45%; animation-delay: 0.5s; }
+        .particle:nth-child(2) { left: 48%; animation-delay: 1s; }
+        .particle:nth-child(3) { left: 50%; animation-delay: 1.5s; }
+        .particle:nth-child(4) { left: 52%; animation-delay: 2s; }
+        .particle:nth-child(5) { left: 55%; animation-delay: 2.5s; }
+        .particle:nth-child(6) { left: 46%; bottom: 20%; animation-delay: 3s; }
+        .particle:nth-child(7) { left: 54%; bottom: 30%; animation-delay: 3.5s; }
+        .particle:nth-child(8) { left: 50%; bottom: 25%; animation-delay: 4s; }
+        
+        /* Text Overlays */
+        .text-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .phase-text {
+            position: absolute;
+            color: rgba(255, 255, 255, 0);
+            font-size: 14px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 300;
+            animation: textPhase 8s infinite;
+        }
+        
+        @keyframes textPhase {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+        
+        .phase-1 {
+            animation: phase1Text 8s infinite;
+        }
+        
+        @keyframes phase1Text {
+            0%, 15% {
+                opacity: 1;
+                color: rgba(255, 255, 255, 0.3);
+            }
+            25%, 100% {
+                opacity: 0;
+            }
+        }
+        
+        .phase-2 {
+            animation: phase2Text 8s infinite;
+        }
+        
+        @keyframes phase2Text {
+            0%, 25% { opacity: 0; }
+            30%, 45% {
+                opacity: 1;
+                color: rgba(96, 165, 250, 0.8);
+            }
+            50%, 100% { opacity: 0; }
+        }
+        
+        .phase-3 {
+            animation: phase3Text 8s infinite;
+        }
+        
+        @keyframes phase3Text {
+            0%, 55% { opacity: 0; }
+            65%, 85% {
+                opacity: 1;
+                color: rgba(255, 255, 255, 0.9);
+            }
+            95%, 100% { opacity: 0; }
+        }
+        
+        /* Main Message */
+        .main-message {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0;
+            animation: messageReveal 8s infinite;
+        }
+        
+        @keyframes messageReveal {
+            0%, 65% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            75%, 95% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(0); }
+        }
+        
+        .main-title {
+            font-size: 48px;
+            font-weight: 200;
+            color: white;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        
+        .main-title strong {
+            font-weight: 600;
+            color: #60A5FA;
+        }
+        
+        .sub-title {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+        }
+        
+        /* Company Logo */
+        .logo-container {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            animation: logoFade 8s infinite;
+        }
+        
+        @keyframes logoFade {
+            0%, 70% { opacity: 0; }
+            80%, 95% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 500;
+            color: white;
+            letter-spacing: 3px;
+        }
+        
+        /* Control Hints */
+        .control-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+            animation: hintPulse 2s infinite;
+        }
+        
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Progress Indicator */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #2563EB 0%, #60A5FA 100%);
+            animation: progressFill 8s infinite linear;
+        }
+        
+        @keyframes progressFill {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        /* Stage Indicators */
+        .stage-indicators {
+            position: absolute;
+            top: 60px;
+            right: 60px;
+            display: flex;
+            gap: 8px;
+            animation: indicatorsFade 8s infinite;
+        }
+        
+        @keyframes indicatorsFade {
+            0%, 10% { opacity: 1; }
+            85%, 100% { opacity: 0; }
+        }
+        
+        .stage-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+        }
+        
+        .stage-dot.active {
+            width: 32px;
+            border-radius: 4px;
+            background: #60A5FA;
+        }
+    </style>
+</head>
+<body>
+    <div class="motion-container">
+        <!-- Background Layer -->
+        <div class="wall-layer"></div>
+        
+        <!-- Door Container -->
+        <div class="door-container">
+            <div class="door-frame"></div>
+            <div class="light-gap"></div>
+            
+            <!-- Interior Space -->
+            <div class="door-interior">
+                <div class="interior-content">
+                    <div class="data-grid"></div>
+                    <div class="data-stream"></div>
+                    <div class="data-stream"></div>
+                    <div class="data-stream"></div>
+                </div>
+            </div>
+            
+            <!-- Light Burst -->
+            <div class="light-burst"></div>
+        </div>
+        
+        <!-- Particles -->
+        <div class="particles-container">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
+        <!-- Text Overlays -->
+        <div class="text-overlay">
+            <div class="phase-text phase-1">WALL</div>
+            <div class="phase-text phase-2">LIGHT</div>
+            <div class="phase-text phase-3">DOOR</div>
+        </div>
+        
+        <!-- Main Message -->
+        <div class="main-message">
+            <h1 class="main-title">가능성의 문을 열어,<br>새로운 성장의 길을<br>여는 한 해.</h1>
+            <p class="sub-title">2026 VISION</p>
+        </div>
+        
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo-text">TAE JUNG ST</div>
+        </div>
+        
+        <!-- Control Hint -->
+        <!-- <div class="control-hint">PRESS SPACE TO REPLAY</div> -->
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <!-- Stage Indicators -->
+        <div class="stage-indicators">
+            <div class="stage-dot" id="stage1"></div>
+            <div class="stage-dot" id="stage2"></div>
+            <div class="stage-dot" id="stage3"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Stage indicator management
+        const updateStageIndicators = () => {
+            const time = (Date.now() / 1000) % 8;
+            const stage1 = document.getElementById('stage1');
+            const stage2 = document.getElementById('stage2');
+            const stage3 = document.getElementById('stage3');
+            
+            // Reset all
+            stage1.classList.remove('active');
+            stage2.classList.remove('active');
+            stage3.classList.remove('active');
+            
+            // Activate based on time
+            if (time < 2.5) {
+                stage1.classList.add('active');
+            } else if (time < 5) {
+                stage2.classList.add('active');
+            } else {
+                stage3.classList.add('active');
+            }
+        };
+        
+        setInterval(updateStageIndicators, 100);
+        
+        // Space key to restart animation
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                const container = document.querySelector('.motion-container');
+                const clone = container.cloneNode(true);
+                container.parentNode.replaceChild(clone, container);
+            }
+        });
+        
+        // Click to restart animation
+        document.addEventListener('click', () => {
+            const container = document.querySelector('.motion-container');
+            const clone = container.cloneNode(true);
+            container.parentNode.replaceChild(clone, container);
+        });
+    </script>
+</body>
+</html>
