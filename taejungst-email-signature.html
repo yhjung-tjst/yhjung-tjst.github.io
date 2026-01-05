@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAE JUNG ST - 메일 서명 템플릿 가이드</title>
+    
+    <!-- ============================================================
+         TAE JUNG ST EMAIL SIGNATURE TEMPLATES
+         Version: 1.2.0
+         Direction: Aurora Circuit (Light Mode)
+         Created: 2026-01-05
+         Updated: 2026-01-05
+         Maintainer: DX 플랫폼 본부
+         
+         변경 이력:
+         - v1.2.0: TAE JUNG ST 브랜드명에 코어 컬러 적용 (Circuit Plum + Aurora Cyan)
+         - v1.1.0: 우측 회사 정보 영역 색상 통일 (본부별 구분 제거)
+         - v1.0.0: 최초 작성
+         
+         본부별 컬러 (좌측 세로 라인에만 적용):
+         - SD 플랫폼 본부: #38BDF8 (Pulse Blue)
+         - DX 플랫폼 본부: #22D3EE (Aurora Cyan)
+         - CX 이노베이션 본부: #F472B6 (Neon Magenta)
+         - 경영지원 본부: #4B5563 (Mid Steel)
+         - 기업부설연구소: #8B5CF6 (Signal Violet)
+         
+         브랜드 코어 컬러:
+         - TAE JUNG: #020617 (Circuit Plum - Secondary)
+         - ST: #22D3EE (Aurora Cyan - Primary)
+         
+         사용법:
+         1. 본인 소속에 맞는 템플릿 선택
+         2. '서명 코드 복사' 버튼 클릭
+         3. 이메일 클라이언트 설정에서 HTML 서명으로 붙여넣기
+         4. 개인 정보(이름, 직급, 연락처 등) 수정
+    ============================================================ -->
+    
+    <style>
+        /* ============================================================
+           [SECTION: Design Tokens]
+           Aurora Circuit Design System 기반
+           ============================================================ */
+        :root {
+            /* Foundation Colors */
+            --tj-cyan-500: #22D3EE;
+            --tj-cyan-400: #38BDF8;
+            --tj-cyan-600: #06B6D4;
+            --tj-violet-500: #8B5CF6;
+            --tj-magenta-400: #F472B6;
+            --tj-gray-600: #4B5563;
+            --tj-gray-700: #374151;
+            --tj-gray-500: #6B7280;
+            --tj-gray-400: #9CA3AF;
+            --tj-gray-300: #D1D5DB;
+            --tj-gray-200: #E5E7EB;
+            --tj-gray-100: #F3F4F6;
+            --tj-gray-050: #F9FAFB;
+            --tj-gray-000: #FFFFFF;
+            --tj-gray-950: #020617;
+            --tj-plum-900: #020617;
+            
+            /* Division Colors */
+            --tj-division-sd: #38BDF8;
+            --tj-division-dx: #22D3EE;
+            --tj-division-cx: #F472B6;
+            --tj-division-ms: #4B5563;
+            --tj-division-ri: #8B5CF6;
+            
+            /* Semantic */
+            --tj-bg-canvas: var(--tj-gray-050);
+            --tj-bg-surface: var(--tj-gray-000);
+            --tj-text-default: var(--tj-gray-950);
+            --tj-text-secondary: var(--tj-gray-600);
+            --tj-text-muted: var(--tj-gray-500);
+            --tj-border-subtle: var(--tj-gray-200);
+            
+            /* Typography */
+            --tj-font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* ============================================================
+           [SECTION: Base Styles]
+           ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: var(--tj-font-family);
+            background: var(--tj-bg-canvas);
+            color: var(--tj-text-default);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        
+        /* ============================================================
+           [SECTION: Layout]
+           ============================================================ */
+        .guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+        
+        /* ============================================================
+           [SECTION: Header]
+           ============================================================ */
+        .guide-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding: 40px 32px;
+            background: var(--tj-plum-900);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .guide-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                var(--tj-division-sd) 0%, 
+                var(--tj-division-dx) 25%, 
+                var(--tj-division-cx) 50%,
+                var(--tj-division-ri) 75%,
+                var(--tj-division-sd) 100%
+            );
+        }
+        
+        .guide-header__brand {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--tj-cyan-500);
+            margin-bottom: 12px;
+        }
+        
+        .guide-header__title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+        
+        .guide-header__subtitle {
+            font-size: 16px;
+            color: var(--tj-gray-400);
+        }
+        
+        /* ============================================================
+           [SECTION: Instructions]
+           ============================================================ */
+        .instructions {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: 12px;
+            padding: 24px 32px;
+            margin-bottom: 40px;
+        }
+        
+        .instructions__title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--tj-text-default);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .instructions__title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--tj-cyan-500);
+            border-radius: 2px;
+        }
+        
+        .instructions__steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .step__number {
+            width: 28px;
+            height: 28px;
+            background: var(--tj-gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--tj-text-secondary);
+            flex-shrink: 0;
+        }
+        
+        .step__text {
+            font-size: 14px;
+            color: var(--tj-text-secondary);
+            line-height: 1.6;
+            padding-top: 4px;
+        }
+        
+        /* ============================================================
+           [SECTION: Signature Grid]
+           ============================================================ */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 32px;
+        }
+        
+        /* ============================================================
+           [SECTION: Signature Card]
+           ============================================================ */
+        .signature-card {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .signature-card__header {
+            padding: 16px 24px;
+            background: var(--tj-gray-050);
+            border-bottom: 1px solid var(--tj-border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .signature-card__division {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .signature-card__indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .signature-card__indicator--sd { background: var(--tj-division-sd); }
+        .signature-card__indicator--dx { background: var(--tj-division-dx); }
+        .signature-card__indicator--cx { background: var(--tj-division-cx); }
+        .signature-card__indicator--ms { background: var(--tj-division-ms); }
+        .signature-card__indicator--ri { background: var(--tj-division-ri); }
+        
+        .signature-card__name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--tj-text-default);
+        }
+        
+        .signature-card__copy-btn {
+            padding: 8px 16px;
+            background: var(--tj-gray-100);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tj-text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        
+        .signature-card__copy-btn:hover {
+            background: var(--tj-gray-200);
+            color: var(--tj-text-default);
+        }
+        
+        .signature-card__copy-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .signature-card__copy-btn--copied {
+            background: #DCFCE7;
+            border-color: #86EFAC;
+            color: #15803D;
+        }
+        
+        .signature-card__preview {
+            padding: 32px 24px;
+            background: var(--tj-bg-surface);
+        }
+        
+        .signature-card__preview-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--tj-text-muted);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        
+        /* ============================================================
+           [SECTION: Footer]
+           ============================================================ */
+        .guide-footer {
+            text-align: center;
+            margin-top: 48px;
+            padding: 24px;
+            color: var(--tj-text-muted);
+            font-size: 13px;
+        }
+        
+        .guide-footer__brand {
+            font-weight: 600;
+            color: var(--tj-text-secondary);
+        }
+        
+        .guide-footer__brand span {
+            color: var(--tj-cyan-600);
+        }
+        
+        /* ============================================================
+           [SECTION: Responsive]
+           ============================================================ */
+        @media (max-width: 768px) {
+            .guide-container {
+                padding: 24px 16px;
+            }
+            
+            .signatures-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .signature-card__preview {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="guide-container">
+        
+        <!-- Header -->
+        <header class="guide-header">
+            <div class="guide-header__brand">TAE JUNG ST</div>
+            <h1 class="guide-header__title">메일 서명 템플릿</h1>
+            <p class="guide-header__subtitle">Email Signature Templates · Aurora Circuit Design System</p>
+        </header>
+        
+        <!-- Instructions -->
+        <section class="instructions">
+            <h2 class="instructions__title">사용 방법</h2>
+            <div class="instructions__steps">
+                <div class="step">
+                    <span class="step__number">1</span>
+                    <p class="step__text">본인 소속 본부에 맞는 템플릿을 선택하세요</p>
+                </div>
+                <div class="step">
+                    <span class="step__number">2</span>
+                    <p class="step__text">'서명 코드 복사' 버튼을 클릭하세요</p>
+                </div>
+                <div class="step">
+                    <span class="step__number">3</span>
+                    <p class="step__text">이메일 설정에서 HTML 서명으로 붙여넣기</p>
+                </div>
+                <div class="step">
+                    <span class="step__number">4</span>
+                    <p class="step__text">이름, 직급, 연락처 등 개인 정보를 수정하세요</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Signature Templates Grid -->
+        <div class="signatures-grid">
+            
+            <!-- SD 플랫폼 본부 -->
+            <article class="signature-card" data-division="sd">
+                <div class="signature-card__header">
+                    <div class="signature-card__division">
+                        <span class="signature-card__indicator signature-card__indicator--sd"></span>
+                        <span class="signature-card__name">SD 플랫폼 본부</span>
+                    </div>
+                    <button class="signature-card__copy-btn" onclick="copySignature('sd')">서명 코드 복사</button>
+                </div>
+                <div class="signature-card__preview">
+                    <div class="signature-card__preview-label">미리보기</div>
+                    <div id="signature-sd">
+                        <!--[SIGNATURE:SD]-->
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.5; color: #374151;">
+                            <tr>
+                                <td style="padding-right: 20px; border-right: 3px solid #38BDF8; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 4px;">
+                                                <span style="font-size: 18px; font-weight: 700; color: #020617;">홍길동</span>
+                                                <span style="font-size: 14px; font-weight: 500; color: #6B7280; margin-left: 8px;">수석</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <span style="font-size: 13px; color: #38BDF8; font-weight: 500;">SD 플랫폼 본부</span>
+                                                <span style="font-size: 13px; color: #9CA3AF; margin: 0 6px;">·</span>
+                                                <span style="font-size: 13px; color: #6B7280;">SD 영업팀</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #6B7280;">
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">M</span>
+                                                            <a href="tel:010-1234-5678" style="color: #374151; text-decoration: none;">010-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">T</span>
+                                                            <a href="tel:02-1234-5678" style="color: #374151; text-decoration: none;">02-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">E</span>
+                                                            <a href="mailto:hong@tjst.co.kr" style="color: #374151; text-decoration: none;">hong@tjst.co.kr</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 20px; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 8px;">
+                                                <span style="font-size: 15px; font-weight: 700; color: #020617;">TAE JUNG</span><span style="font-size: 15px; font-weight: 700; color: #22D3EE;"> ST</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 12px; color: #374151; line-height: 1.6;">
+                                                서울시 금천구 가산디지털1로 16<br>
+                                                SK V1 AP타워 1723-6호
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 6px;">
+                                                <a href="https://www.tjst.co.kr" style="font-size: 12px; color: #020617; font-weight: 600; text-decoration: none;">www.tjst.co.kr</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!--[/SIGNATURE:SD]-->
+                    </div>
+                </div>
+            </article>
+            
+            <!-- DX 플랫폼 본부 -->
+            <article class="signature-card" data-division="dx">
+                <div class="signature-card__header">
+                    <div class="signature-card__division">
+                        <span class="signature-card__indicator signature-card__indicator--dx"></span>
+                        <span class="signature-card__name">DX 플랫폼 본부</span>
+                    </div>
+                    <button class="signature-card__copy-btn" onclick="copySignature('dx')">서명 코드 복사</button>
+                </div>
+                <div class="signature-card__preview">
+                    <div class="signature-card__preview-label">미리보기</div>
+                    <div id="signature-dx">
+                        <!--[SIGNATURE:DX]-->
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.5; color: #374151;">
+                            <tr>
+                                <td style="padding-right: 20px; border-right: 3px solid #22D3EE; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 4px;">
+                                                <span style="font-size: 18px; font-weight: 700; color: #020617;">홍길동</span>
+                                                <span style="font-size: 14px; font-weight: 500; color: #6B7280; margin-left: 8px;">수석</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <span style="font-size: 13px; color: #22D3EE; font-weight: 500;">DX 플랫폼 본부</span>
+                                                <span style="font-size: 13px; color: #9CA3AF; margin: 0 6px;">·</span>
+                                                <span style="font-size: 13px; color: #6B7280;">DX R&D팀</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #6B7280;">
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">M</span>
+                                                            <a href="tel:010-1234-5678" style="color: #374151; text-decoration: none;">010-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">T</span>
+                                                            <a href="tel:02-1234-5678" style="color: #374151; text-decoration: none;">02-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">E</span>
+                                                            <a href="mailto:hong@tjst.co.kr" style="color: #374151; text-decoration: none;">hong@tjst.co.kr</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 20px; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 8px;">
+                                                <span style="font-size: 15px; font-weight: 700; color: #020617;">TAE JUNG</span><span style="font-size: 15px; font-weight: 700; color: #22D3EE;"> ST</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 12px; color: #374151; line-height: 1.6;">
+                                                서울시 금천구 가산디지털1로 16<br>
+                                                SK V1 AP타워 1723-6호
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 6px;">
+                                                <a href="https://www.tjst.co.kr" style="font-size: 12px; color: #020617; font-weight: 600; text-decoration: none;">www.tjst.co.kr</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!--[/SIGNATURE:DX]-->
+                    </div>
+                </div>
+            </article>
+            
+            <!-- CX 이노베이션 본부 -->
+            <article class="signature-card" data-division="cx">
+                <div class="signature-card__header">
+                    <div class="signature-card__division">
+                        <span class="signature-card__indicator signature-card__indicator--cx"></span>
+                        <span class="signature-card__name">CX 이노베이션 본부</span>
+                    </div>
+                    <button class="signature-card__copy-btn" onclick="copySignature('cx')">서명 코드 복사</button>
+                </div>
+                <div class="signature-card__preview">
+                    <div class="signature-card__preview-label">미리보기</div>
+                    <div id="signature-cx">
+                        <!--[SIGNATURE:CX]-->
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.5; color: #374151;">
+                            <tr>
+                                <td style="padding-right: 20px; border-right: 3px solid #F472B6; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 4px;">
+                                                <span style="font-size: 18px; font-weight: 700; color: #020617;">홍길동</span>
+                                                <span style="font-size: 14px; font-weight: 500; color: #6B7280; margin-left: 8px;">이사</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <span style="font-size: 13px; color: #F472B6; font-weight: 500;">CX 이노베이션 본부</span>
+                                                <span style="font-size: 13px; color: #9CA3AF; margin: 0 6px;">·</span>
+                                                <span style="font-size: 13px; color: #6B7280;">CX 영업팀</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #6B7280;">
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">M</span>
+                                                            <a href="tel:010-1234-5678" style="color: #374151; text-decoration: none;">010-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">T</span>
+                                                            <a href="tel:02-1234-5678" style="color: #374151; text-decoration: none;">02-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">E</span>
+                                                            <a href="mailto:hong@tjst.co.kr" style="color: #374151; text-decoration: none;">hong@tjst.co.kr</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 20px; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 8px;">
+                                                <span style="font-size: 15px; font-weight: 700; color: #020617;">TAE JUNG</span><span style="font-size: 15px; font-weight: 700; color: #22D3EE;"> ST</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 12px; color: #374151; line-height: 1.6;">
+                                                서울시 금천구 가산디지털1로 16<br>
+                                                SK V1 AP타워 1723-6호
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 6px;">
+                                                <a href="https://www.tjst.co.kr" style="font-size: 12px; color: #020617; font-weight: 600; text-decoration: none;">www.tjst.co.kr</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!--[/SIGNATURE:CX]-->
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 경영지원 본부 -->
+            <article class="signature-card" data-division="ms">
+                <div class="signature-card__header">
+                    <div class="signature-card__division">
+                        <span class="signature-card__indicator signature-card__indicator--ms"></span>
+                        <span class="signature-card__name">경영지원 본부</span>
+                    </div>
+                    <button class="signature-card__copy-btn" onclick="copySignature('ms')">서명 코드 복사</button>
+                </div>
+                <div class="signature-card__preview">
+                    <div class="signature-card__preview-label">미리보기</div>
+                    <div id="signature-ms">
+                        <!--[SIGNATURE:MS]-->
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.5; color: #374151;">
+                            <tr>
+                                <td style="padding-right: 20px; border-right: 3px solid #4B5563; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 4px;">
+                                                <span style="font-size: 18px; font-weight: 700; color: #020617;">홍길동</span>
+                                                <span style="font-size: 14px; font-weight: 500; color: #6B7280; margin-left: 8px;">이사</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <span style="font-size: 13px; color: #4B5563; font-weight: 500;">경영지원 본부</span>
+                                                <span style="font-size: 13px; color: #9CA3AF; margin: 0 6px;">·</span>
+                                                <span style="font-size: 13px; color: #6B7280;">재무팀</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #6B7280;">
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">M</span>
+                                                            <a href="tel:010-1234-5678" style="color: #374151; text-decoration: none;">010-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">T</span>
+                                                            <a href="tel:02-1234-5678" style="color: #374151; text-decoration: none;">02-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">E</span>
+                                                            <a href="mailto:hong@tjst.co.kr" style="color: #374151; text-decoration: none;">hong@tjst.co.kr</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 20px; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 8px;">
+                                                <span style="font-size: 15px; font-weight: 700; color: #020617;">TAE JUNG</span><span style="font-size: 15px; font-weight: 700; color: #22D3EE;"> ST</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 12px; color: #374151; line-height: 1.6;">
+                                                서울시 금천구 가산디지털1로 16<br>
+                                                SK V1 AP타워 1723-6호
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 6px;">
+                                                <a href="https://www.tjst.co.kr" style="font-size: 12px; color: #020617; font-weight: 600; text-decoration: none;">www.tjst.co.kr</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!--[/SIGNATURE:MS]-->
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 기업 부설 연구소 -->
+            <article class="signature-card" data-division="ri">
+                <div class="signature-card__header">
+                    <div class="signature-card__division">
+                        <span class="signature-card__indicator signature-card__indicator--ri"></span>
+                        <span class="signature-card__name">기업 부설 연구소</span>
+                    </div>
+                    <button class="signature-card__copy-btn" onclick="copySignature('ri')">서명 코드 복사</button>
+                </div>
+                <div class="signature-card__preview">
+                    <div class="signature-card__preview-label">미리보기</div>
+                    <div id="signature-ri">
+                        <!--[SIGNATURE:RI]-->
+                        <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.5; color: #374151;">
+                            <tr>
+                                <td style="padding-right: 20px; border-right: 3px solid #8B5CF6; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 4px;">
+                                                <span style="font-size: 18px; font-weight: 700; color: #020617;">홍길동</span>
+                                                <span style="font-size: 14px; font-weight: 500; color: #6B7280; margin-left: 8px;">이사</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <span style="font-size: 13px; color: #8B5CF6; font-weight: 500;">기업 부설 연구소</span>
+                                                <span style="font-size: 13px; color: #9CA3AF; margin: 0 6px;">·</span>
+                                                <span style="font-size: 13px; color: #6B7280;">연구소장</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #6B7280;">
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">M</span>
+                                                            <a href="tel:010-1234-5678" style="color: #374151; text-decoration: none;">010-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-bottom: 3px;">
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">T</span>
+                                                            <a href="tel:02-1234-5678" style="color: #374151; text-decoration: none;">02-1234-5678</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span style="color: #9CA3AF; margin-right: 8px;">E</span>
+                                                            <a href="mailto:hong@tjst.co.kr" style="color: #374151; text-decoration: none;">hong@tjst.co.kr</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 20px; vertical-align: top;">
+                                    <table cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td style="padding-bottom: 8px;">
+                                                <span style="font-size: 15px; font-weight: 700; color: #020617;">TAE JUNG</span><span style="font-size: 15px; font-weight: 700; color: #22D3EE;"> ST</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 12px; color: #374151; line-height: 1.6;">
+                                                서울시 금천구 가산디지털1로 16<br>
+                                                SK V1 AP타워 1723-6호
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 6px;">
+                                                <a href="https://www.tjst.co.kr" style="font-size: 12px; color: #020617; font-weight: 600; text-decoration: none;">www.tjst.co.kr</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!--[/SIGNATURE:RI]-->
+                    </div>
+                </div>
+            </article>
+            
+        </div>
+        
+        <!-- Footer -->
+        <footer class="guide-footer">
+            <p class="guide-footer__brand"><span>TAE JUNG</span> ST</p>
+            <p>Aurora Circuit Design System · Email Signature Templates v1.2.0</p>
+        </footer>
+        
+    </main>
+    
+    <!-- JavaScript for Copy Functionality -->
+    <script>
+        function copySignature(division) {
+            const signatureElement = document.getElementById(`signature-${division}`);
+            const btn = document.querySelector(`[data-division="${division}"] .signature-card__copy-btn`);
+            
+            // HTML 코드 복사
+            const signatureHTML = signatureElement.innerHTML
+                .replace(/<!--\[SIGNATURE:.*?\]-->/g, '')
+                .replace(/<!--\[\/SIGNATURE:.*?\]-->/g, '')
+                .trim();
+            
+            // 클립보드에 복사
+            navigator.clipboard.writeText(signatureHTML).then(() => {
+                // 버튼 상태 변경
+                const originalText = btn.textContent;
+                btn.textContent = '복사 완료!';
+                btn.classList.add('signature-card__copy-btn--copied');
+                
+                // 2초 후 원래 상태로 복귀
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('signature-card__copy-btn--copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                alert('복사에 실패했습니다. 서명 영역을 직접 선택하여 복사해 주세요.');
+            });
+        }
+    </script>
+    
+    <!-- Embedded Design Tokens JSON -->
+    <script type="application/json" id="email-signature-tokens">
+    {
+        "meta": {
+            "name": "TAE JUNG ST Email Signature Design Tokens",
+            "version": "1.2.0",
+            "basedOn": "Aurora Circuit Design System v2.1.0",
+            "createdAt": "2026-01-05",
+            "updatedAt": "2026-01-05",
+            "maintainer": "DX 플랫폼 본부",
+            "changelog": {
+                "1.2.0": "TAE JUNG ST 브랜드명에 코어 컬러 적용 (Circuit Plum + Aurora Cyan)",
+                "1.1.0": "우측 회사 정보 영역 색상 통일 (본부별 구분 제거)",
+                "1.0.0": "최초 작성"
+            }
+        },
+        "colors": {
+            "brand": {
+                "primary": {
+                    "value": "#22D3EE",
+                    "name": "Aurora Cyan",
+                    "description": "브랜드 Primary - ST 텍스트에 적용"
+                },
+                "secondary": {
+                    "value": "#020617",
+                    "name": "Circuit Plum",
+                    "description": "브랜드 Secondary - TAE JUNG 텍스트에 적용"
+                }
+            },
+            "division": {
+                "sd": { 
+                    "value": "#38BDF8", 
+                    "name": "Pulse Blue", 
+                    "description": "SD 플랫폼 본부",
+                    "usage": "좌측 세로 라인, 본부명 텍스트"
+                },
+                "dx": { 
+                    "value": "#22D3EE", 
+                    "name": "Aurora Cyan", 
+                    "description": "DX 플랫폼 본부",
+                    "usage": "좌측 세로 라인, 본부명 텍스트"
+                },
+                "cx": { 
+                    "value": "#F472B6", 
+                    "name": "Neon Magenta", 
+                    "description": "CX 이노베이션 본부",
+                    "usage": "좌측 세로 라인, 본부명 텍스트"
+                },
+                "ms": { 
+                    "value": "#4B5563", 
+                    "name": "Mid Steel", 
+                    "description": "경영지원 본부",
+                    "usage": "좌측 세로 라인, 본부명 텍스트"
+                },
+                "ri": { 
+                    "value": "#8B5CF6", 
+                    "name": "Signal Violet", 
+                    "description": "기업 부설 연구소",
+                    "usage": "좌측 세로 라인, 본부명 텍스트"
+                }
+            },
+            "common": {
+                "brandName": {
+                    "taeJung": { 
+                        "value": "#020617", 
+                        "name": "Circuit Plum",
+                        "description": "TAE JUNG 텍스트" 
+                    },
+                    "st": { 
+                        "value": "#22D3EE", 
+                        "name": "Aurora Cyan",
+                        "description": "ST 텍스트 (포인트 컬러)" 
+                    }
+                },
+                "url": { 
+                    "value": "#020617", 
+                    "name": "Circuit Plum",
+                    "description": "웹사이트 URL" 
+                },
+                "address": { 
+                    "value": "#374151", 
+                    "name": "Steel Gray",
+                    "description": "사무실 주소" 
+                }
+            },
+            "text": {
+                "name": { "value": "#020617", "description": "이름 텍스트" },
+                "position": { "value": "#6B7280", "description": "직급 텍스트" },
+                "team": { "value": "#6B7280", "description": "팀명 텍스트" },
+                "contact": { "value": "#374151", "description": "연락처 텍스트" },
+                "label": { "value": "#9CA3AF", "description": "레이블 텍스트 (M, T, E)" }
+            }
+        },
+        "typography": {
+            "fontFamily": "'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif",
+            "fontSize": {
+                "name": "18px",
+                "position": "14px",
+                "division": "13px",
+                "contact": "13px",
+                "brand": "15px",
+                "address": "12px",
+                "url": "12px"
+            },
+            "fontWeight": {
+                "bold": "700",
+                "semibold": "600",
+                "medium": "500",
+                "regular": "400"
+            }
+        },
+        "spacing": {
+            "borderWidth": "3px",
+            "sectionGap": "20px",
+            "lineGap": "3px"
+        },
+        "usage": {
+            "note": "이메일 클라이언트 호환성을 위해 테이블 기반 레이아웃과 인라인 스타일 사용",
+            "supportedClients": [
+                "Gmail",
+                "Outlook",
+                "Apple Mail",
+                "Naver Mail",
+                "Daum Mail"
+            ]
+        }
+    }
+    </script>
+</body>
+</html>
