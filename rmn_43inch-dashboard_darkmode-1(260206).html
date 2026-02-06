@@ -1,0 +1,2900 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>K7 RMN 점포 DID 대시보드 - 43" Display (260206-R3)</title>
+    
+    <!-- ============================================================
+         K7 RMN 43인치 전용 점포 DID 대시보드
+         Version: 4.3.0
+         Display: 43" Digital Signage (1920x1080)
+         Theme: Dark Mode
+         Last Updated: 2026-02-06
+         Maintainer: 태정에스티 DX R&D팀
+         
+         개선 사항 (v4.3.0):
+         - [CHANGE] "광고 ZONE 실시간 현황" Zone D(계산대) 카드 제거
+           5개 → 4개 Zone으로 축소, 2×2 그리드 레이아웃 적용
+         - [IMPROVE] Zone Card 크기 확대 및 시인성 개선
+           카드 내 헤더, 배지, 통계 영역 폰트 확대
+         - [IMPROVE] 광고 미디어 영역 UI 개선
+           썸네일/미리보기 영상 UI 적용 (Play 버튼 오버레이,
+           재생시간 표시, 광고 타입 라벨, 브랜드 그라데이션 배경)
+         
+         이전 버전:
+         - v4.2.0: Zone Card 높이 고정, Footer 레이아웃 이슈 수정
+         - v4.1.0: AI Ticker 제거, Summary Bar 확장, 지표 컴포넌트 확대
+         - v4.0.0: Zone Grid 카드 컴포넌트 전면 교체, AI Ticker 통합
+         - v3.2.0: Partnership CI Compact (Header Inline) 적용
+         - v3.1.0: 시스템 상태/수신 상태/광고 Play 횟수 개선
+         - v3.0.0: KPI 카드 재구성, U-Shape Zone 도입
+    ============================================================ -->
+    
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    
+    <style>
+        /* ============================================================
+           [SECTION: Foundation Tokens - Dark]
+           ============================================================ */
+        :root {
+            /* Cyan (Aurora) - Primary Brand */
+            --tj-cyan-050: #ECFEFF;
+            --tj-cyan-100: #CFFAFE;
+            --tj-cyan-200: #A5F3FC;
+            --tj-cyan-300: #67E8F9;
+            --tj-cyan-400: #38BDF8;
+            --tj-cyan-500: #22D3EE;
+            --tj-cyan-600: #06B6D4;
+            --tj-cyan-700: #0891B2;
+            
+            /* Plum (Circuit) - Dark Background */
+            --tj-plum-500: #475569;
+            --tj-plum-600: #334155;
+            --tj-plum-700: #1E293B;
+            --tj-plum-800: #0F172A;
+            --tj-plum-900: #020617;
+            --tj-plum-950: #010312;
+            
+            /* Violet (Signal) */
+            --tj-violet-300: #C4B5FD;
+            --tj-violet-400: #A78BFA;
+            --tj-violet-500: #8B5CF6;
+            --tj-violet-600: #7C3AED;
+            
+            /* Magenta (Neon) */
+            --tj-magenta-300: #F9A8D4;
+            --tj-magenta-400: #F472B6;
+            --tj-magenta-500: #EC4899;
+            
+            /* Gray (Neutral) */
+            --tj-gray-000: #FFFFFF;
+            --tj-gray-050: #F9FAFB;
+            --tj-gray-100: #F3F4F6;
+            --tj-gray-200: #E5E7EB;
+            --tj-gray-300: #D1D5DB;
+            --tj-gray-400: #9CA3AF;
+            --tj-gray-500: #6B7280;
+            --tj-gray-600: #4B5563;
+            --tj-gray-700: #374151;
+            
+            /* Status Colors */
+            --tj-green-300: #86EFAC;
+            --tj-green-500: #22C55E;
+            --tj-green-bg: rgba(34, 197, 94, 0.15);
+            
+            --tj-red-100: rgba(239, 68, 68, 0.15);
+            --tj-red-300: #FCA5A5;
+            --tj-red-500: #EF4444;
+            --tj-red-bg: rgba(239, 68, 68, 0.15);
+            
+            --tj-amber-300: #FCD34D;
+            --tj-amber-500: #F59E0B;
+            --tj-amber-bg: rgba(245, 158, 11, 0.15);
+            
+            --tj-blue-500: #3B82F6;
+            
+            /* Semantic Tokens */
+            --tj-bg-canvas: var(--tj-plum-950);
+            --tj-bg-surface: var(--tj-plum-800);
+            --tj-bg-surface-subtle: var(--tj-plum-700);
+            --tj-bg-surface-elevated: var(--tj-plum-600);
+            --tj-bg-surface-brand: rgba(34, 211, 238, 0.08);
+            --tj-bg-accent-violet: rgba(139, 92, 246, 0.12);
+            --tj-bg-accent-cyan: rgba(34, 211, 238, 0.12);
+            
+            --tj-text-default: var(--tj-gray-050);
+            --tj-text-primary: var(--tj-gray-100);
+            --tj-text-secondary: var(--tj-gray-400);
+            --tj-text-muted: var(--tj-gray-500);
+            --tj-text-accent: var(--tj-cyan-400);
+            --tj-text-lab: var(--tj-violet-400);
+            
+            --tj-border-subtle: rgba(255, 255, 255, 0.06);
+            --tj-border-default: rgba(255, 255, 255, 0.1);
+            --tj-border-strong: rgba(255, 255, 255, 0.15);
+            --tj-border-brand: var(--tj-cyan-500);
+            --tj-border-lab: var(--tj-violet-500);
+            
+            /* Chart Colors */
+            --tj-chart-primary: var(--tj-cyan-500);
+            --tj-chart-secondary: var(--tj-violet-500);
+            --tj-chart-tertiary: var(--tj-magenta-400);
+            --tj-chart-quaternary: var(--tj-amber-500);
+            --tj-chart-grid: rgba(255, 255, 255, 0.08);
+            
+            /* Gradients */
+            --tj-gradient-accent: linear-gradient(135deg, var(--tj-cyan-500), var(--tj-violet-500));
+            --tj-gradient-aurora: linear-gradient(135deg, #22D3EE, #8B5CF6, #F472B6);
+            --tj-ai-analyzing: linear-gradient(135deg, #22D3EE 0%, #8B5CF6 100%);
+            
+            /* Glow Effects */
+            --tj-glow-cyan: 0 0 30px rgba(34, 211, 238, 0.35);
+            --tj-glow-success: 0 0 20px rgba(34, 197, 94, 0.3);
+            --tj-glow-violet: 0 0 30px rgba(139, 92, 246, 0.35);
+            
+            /* Typography - 43" Display Optimized */
+            --tj-font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            --tj-font-mono: 'JetBrains Mono', 'Consolas', monospace;
+            
+            /* 43" KPI Font Sizes */
+            --tj-font-kpi-hero: 72px;
+            --tj-font-kpi-large: 56px;
+            --tj-font-kpi-medium: 42px;
+            --tj-font-kpi-caption: 20px;
+            --tj-font-heading: 28px;
+            --tj-font-body: 18px;
+            --tj-font-caption: 14px;
+            --tj-font-small: 12px;
+            
+            /* Spacing */
+            --tj-spacing-1: 4px;
+            --tj-spacing-2: 8px;
+            --tj-spacing-3: 12px;
+            --tj-spacing-4: 16px;
+            --tj-spacing-5: 20px;
+            --tj-spacing-6: 24px;
+            --tj-spacing-8: 32px;
+            
+            /* Border Radius */
+            --tj-radius-sm: 4px;
+            --tj-radius-default: 8px;
+            --tj-radius-md: 12px;
+            --tj-radius-lg: 16px;
+            --tj-radius-xl: 24px;
+            --tj-radius-full: 9999px;
+            
+            /* Shadows */
+            --tj-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --tj-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --tj-shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+            
+            /* Motion */
+            --tj-duration-fast: 150ms;
+            --tj-duration-default: 300ms;
+            --tj-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+            --tj-easing-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        /* ============================================================
+           [SECTION: Base Styles]
+           ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html, body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: var(--tj-font-family);
+            font-size: var(--tj-font-body);
+            color: var(--tj-text-primary);
+            background: var(--tj-bg-canvas);
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* ============================================================
+           [SECTION: Animations]
+           ============================================================ */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.5); }
+        }
+        
+        @keyframes data-update {
+            0% { opacity: 0.7; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes status-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes live-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(139, 92, 246, 0.2), 0 0 24px rgba(139, 92, 246, 0.08);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(139, 92, 246, 0.3), 0 0 36px rgba(139, 92, 246, 0.15);
+            }
+        }
+
+        @keyframes badge-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slide-in-up {
+            0% { opacity: 0; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ============================================================
+           [SECTION: Layout]
+           ============================================================ */
+        .dashboard-container {
+            width: 1920px;
+            height: 1080px;
+            padding: var(--tj-spacing-5);
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-4);
+            background: var(--tj-bg-canvas);
+        }
+        
+        /* ============================================================
+           [SECTION: Header]
+           ============================================================ */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--tj-spacing-3) var(--tj-spacing-5);
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-lg);
+            height: 72px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-5);
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            letter-spacing: -0.02em;
+        }
+        
+        .header-divider {
+            width: 1px;
+            height: 36px;
+            background: var(--tj-border-default);
+        }
+        
+        .store-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            padding: var(--tj-spacing-2) var(--tj-spacing-4);
+            background: var(--tj-bg-surface-subtle);
+            border: 1px solid var(--tj-border-default);
+            border-radius: var(--tj-radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .store-selector:hover {
+            border-color: var(--tj-cyan-500);
+            background: var(--tj-bg-surface-brand);
+        }
+        
+        .store-selector svg {
+            width: 20px;
+            height: 20px;
+            color: var(--tj-cyan-400);
+        }
+        
+        .store-name-label {
+            font-size: var(--tj-font-body);
+            font-weight: 600;
+            color: var(--tj-text-default);
+        }
+        
+        .store-selector .dropdown-icon {
+            width: 16px;
+            height: 16px;
+            color: var(--tj-text-muted);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-5);
+        }
+        
+        .refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-muted);
+        }
+        
+        .refresh-indicator svg {
+            width: 14px;
+            height: 14px;
+            animation: spin 2s linear infinite;
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            padding: var(--tj-spacing-2) var(--tj-spacing-4);
+            background: var(--tj-green-bg);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 100px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--tj-green-500);
+            border-radius: 50%;
+            animation: status-blink 2s ease-in-out infinite;
+        }
+        
+        .status-text {
+            font-size: var(--tj-font-caption);
+            font-weight: 600;
+            color: var(--tj-green-300);
+        }
+        
+        .datetime-display {
+            text-align: right;
+        }
+        
+        .current-date {
+            font-size: var(--tj-font-caption);
+            color: var(--tj-text-secondary);
+            font-weight: 500;
+        }
+        
+        .current-time {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-mono);
+        }
+        
+        /* ============================================================
+           [SECTION: Main Content Area]
+           ============================================================ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-4);
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        /* ============================================================
+           [SECTION: KPI Cards]
+           ============================================================ */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--tj-spacing-4);
+        }
+        
+        .kpi-card {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-xl);
+            padding: var(--tj-spacing-5);
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* System Status Card */
+        .system-status-card .status-level-area {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        
+        .system-status-card .status-level {
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        
+        .system-status-card .status-level.level-perfect { color: var(--tj-cyan-400); }
+        .system-status-card .status-level.level-good { color: var(--tj-green-300); }
+        .system-status-card .status-level.level-caution { color: var(--tj-amber-300); }
+        .system-status-card .status-level.level-bad { color: var(--tj-red-300); }
+        
+        .system-status-card .status-rate-badge {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tj-text-secondary);
+            padding: 3px 10px;
+            background: var(--tj-bg-surface-subtle);
+            border-radius: 6px;
+            border: 1px solid var(--tj-border-subtle);
+            white-space: nowrap;
+        }
+        
+        .system-status-card .ad-play-count {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        
+        .system-status-card .ad-play-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-mono);
+            letter-spacing: -0.02em;
+        }
+        
+        .system-status-card .ad-play-label {
+            font-size: 13px;
+            color: var(--tj-text-muted);
+            font-weight: 500;
+        }
+        
+        /* Visitor Card - Dual Column */
+        .visitor-card .kpi-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .visitor-card .visitor-dual {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+            flex: 1;
+        }
+        
+        .visitor-card .visitor-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .visitor-card .visitor-col + .visitor-col {
+            border-left: 1px solid var(--tj-border-subtle);
+            padding-left: 16px;
+            margin-left: 16px;
+        }
+        
+        .visitor-card .visitor-col-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--tj-text-muted);
+            letter-spacing: 0.02em;
+        }
+        
+        .visitor-card .visitor-col-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+        
+        .visitor-card .kpi-change {
+            margin-top: auto;
+        }
+        
+        .kpi-card.highlight {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, var(--tj-bg-surface) 0%, rgba(139, 92, 246, 0.08) 100%);
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--tj-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .kpi-icon.cyan { background: rgba(34, 211, 238, 0.15); }
+        .kpi-icon.violet { background: rgba(139, 92, 246, 0.15); }
+        .kpi-icon.green { background: var(--tj-green-bg); }
+        .kpi-icon.blue { background: rgba(59, 130, 246, 0.15); }
+        
+        .kpi-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .kpi-title {
+            font-size: var(--tj-font-kpi-caption);
+            font-weight: 600;
+            color: var(--tj-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        
+        .kpi-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .kpi-main-value {
+            font-size: var(--tj-font-kpi-medium);
+            font-weight: 700;
+            color: var(--tj-text-default);
+            line-height: 1.1;
+        }
+        
+        .kpi-sub-values {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--tj-spacing-3);
+        }
+        
+        .kpi-sub-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-muted);
+        }
+        
+        .kpi-sub-item strong {
+            color: var(--tj-text-secondary);
+            font-weight: 600;
+        }
+        
+        .kpi-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: var(--tj-font-caption);
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .kpi-change.positive {
+            color: var(--tj-green-300);
+            background: var(--tj-green-bg);
+        }
+        
+        .kpi-change.negative {
+            color: var(--tj-red-300);
+            background: var(--tj-red-bg);
+        }
+        
+        .kpi-change svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .kpi-progress {
+            margin-top: var(--tj-spacing-2);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--tj-plum-700);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--tj-violet-500), var(--tj-cyan-500));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-muted);
+        }
+        
+        /* ============================================================
+           [SECTION: Content Grid - ADJUSTED FOR ZONE GRID COMPONENT]
+           Zone Grid 컴포넌트 수용을 위한 레이아웃 (좌: 560px)
+           ============================================================ */
+        .content-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 560px 1fr;
+            gap: var(--tj-spacing-4);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+           [SECTION: Zone Status Panel - NEW Zone Grid Card Layout]
+           광고 ZONE 실시간 현황 (Zone Grid Dashboard v2.0 통합)
+           ============================================================ */
+        .zone-status-panel {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-xl);
+            padding: var(--tj-spacing-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-3);
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Panel Header */
+        .zone-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .zone-panel-title {
+            font-size: var(--tj-font-body);
+            font-weight: 600;
+            color: var(--tj-text-default);
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+
+        .zone-panel-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--tj-cyan-400);
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 100px;
+            font-size: var(--tj-font-small);
+            font-weight: 600;
+            color: var(--tj-red-300);
+        }
+
+        .live-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--tj-red-500);
+            border-radius: 50%;
+            animation: live-pulse 1.2s ease-in-out infinite;
+        }
+
+        /* Compact Info Bar - Expanded (AI Ticker 제거 후 확장) */
+        .zone-info-bar {
+            display: flex;
+            gap: var(--tj-spacing-3);
+        }
+
+        .zone-total-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            gap: var(--tj-spacing-5);
+            padding: var(--tj-spacing-3) var(--tj-spacing-5);
+            background: var(--tj-bg-surface-brand);
+            border: 1px solid rgba(34, 211, 238, 0.12);
+            border-radius: var(--tj-radius-md);
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .zone-summary-stat {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .zone-summary-stat-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .zone-summary-stat-icon.visitors {
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--tj-cyan-400);
+        }
+
+        .zone-summary-stat-icon.dwell {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--tj-violet-400);
+        }
+
+        .zone-summary-stat-icon.attention {
+            background: rgba(244, 114, 182, 0.2);
+            color: var(--tj-magenta-400);
+        }
+
+        .zone-summary-stat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .zone-summary-stat-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .zone-summary-stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--tj-text-secondary);
+            letter-spacing: 0.04em;
+        }
+
+        .zone-summary-stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-mono);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .zone-summary-stat-value .unit {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--tj-text-secondary);
+            margin-left: 2px;
+        }
+
+        .zone-summary-divider {
+            width: 1px;
+            height: 36px;
+            background: rgba(34, 211, 238, 0.2);
+            flex-shrink: 0;
+        }
+
+        /* Zone Legend */
+        .zone-grid-legend {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zone-legend-left {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+        }
+
+        .zone-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: var(--tj-text-secondary);
+        }
+
+        .zone-legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 3px;
+        }
+
+        .zone-legend-dot.general {
+            background: var(--tj-cyan-600);
+            opacity: 0.6;
+        }
+
+        .zone-legend-dot.targeted {
+            background: var(--tj-gradient-accent);
+        }
+
+        .zone-legend-dot.offline {
+            background: var(--tj-red-500);
+            opacity: 0.5;
+        }
+
+        .zone-legend-right {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+            font-family: var(--tj-font-mono);
+        }
+
+        /* Zone Card Grid - Expanded (2 columns × 2 rows for 4 zones) */
+        .zone-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: var(--tj-spacing-3);
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* Zone Card - Expanded Version (More spacious for 4-card layout) */
+        .zone-card {
+            background: var(--tj-bg-surface-subtle);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all var(--tj-duration-default) var(--tj-easing-default);
+            position: relative;
+            min-height: 0;
+        }
+
+        .zone-card:hover {
+            border-color: var(--tj-border-default);
+        }
+
+        /* Card Top Accent Line */
+        .zone-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--tj-border-subtle);
+            transition: all var(--tj-duration-default) var(--tj-easing-default);
+        }
+
+        .zone-card[data-status="general"]::before {
+            background: rgba(34, 211, 238, 0.3);
+        }
+
+        .zone-card[data-status="targeted"] {
+            background: var(--tj-bg-accent-violet);
+            border-color: var(--tj-border-lab);
+            animation: glow-pulse 2.5s ease-in-out infinite;
+        }
+
+        .zone-card[data-status="targeted"]::before {
+            height: 3px;
+            background: var(--tj-gradient-accent);
+            background-size: 200% 100%;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        .zone-card[data-status="offline"] {
+            opacity: 0.55;
+        }
+
+        .zone-card[data-status="offline"]::before {
+            background: var(--tj-red-500);
+            opacity: 0.5;
+        }
+
+        /* Card Header - Expanded */
+        .zc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--tj-spacing-3) var(--tj-spacing-3) 0;
+        }
+
+        .zc-name-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zc-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+        }
+
+        .zc-location {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--tj-text-muted);
+        }
+
+        /* Status Badge - Expanded */
+        .zc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: var(--tj-radius-full);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            transition: all var(--tj-duration-default) var(--tj-easing-default);
+        }
+
+        .zc-badge.badge-general {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--tj-cyan-400);
+            border: 1px solid rgba(34, 211, 238, 0.15);
+        }
+
+        .zc-badge.badge-ai {
+            background: var(--tj-gradient-accent);
+            background-size: 200% 100%;
+            color: var(--tj-gray-000);
+            border: none;
+            animation: gradient-shift 3s ease infinite, badge-pulse 2s ease-in-out infinite;
+        }
+
+        .zc-badge.badge-ai svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .zc-badge.badge-offline {
+            background: var(--tj-red-100);
+            color: var(--tj-red-300);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Card Media - Enhanced Thumbnail/Preview Area */
+        .zc-media {
+            margin: var(--tj-spacing-2) var(--tj-spacing-3);
+            flex: 1;
+            min-height: 0;
+            border-radius: var(--tj-radius-default);
+            overflow: hidden;
+            position: relative;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--tj-border-subtle);
+        }
+
+        .zc-media-thumb {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--tj-spacing-2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ad Preview Image Placeholder */
+        .zc-media-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+
+        .zc-media-preview-visual {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Simulated Ad Thumbnail with gradient branding */
+        .zc-ad-thumbnail {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zc-ad-thumbnail::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+        }
+
+        .zc-ad-thumbnail.brand-membership::before {
+            background: linear-gradient(135deg, #1B6B3A 0%, #2E9E5E 50%, #22D3EE 100%);
+        }
+
+        .zc-ad-thumbnail.brand-beverage::before {
+            background: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #F472B6 100%);
+        }
+
+        .zc-ad-thumbnail.brand-snack::before {
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #EC4899 100%);
+        }
+
+        .zc-ad-thumbnail.brand-tasting::before {
+            background: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
+        }
+
+        .zc-ad-thumb-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .zc-ad-thumb-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .zc-ad-thumb-icon.general {
+            background: rgba(34, 211, 238, 0.2);
+            border: 1px solid rgba(34, 211, 238, 0.15);
+            color: var(--tj-cyan-400);
+        }
+
+        .zc-ad-thumb-icon.targeted {
+            background: var(--tj-gradient-accent);
+            border: none;
+            color: var(--tj-gray-000);
+        }
+
+        .zc-ad-thumb-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 0 8px;
+        }
+
+        /* Video Preview Play Button Overlay */
+        .zc-media-play-overlay {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+
+        .zc-media-play-overlay svg {
+            width: 10px;
+            height: 10px;
+            color: var(--tj-gray-000);
+            margin-left: 1px;
+        }
+
+        /* Duration badge */
+        .zc-media-duration {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            padding: 2px 6px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--tj-gray-200);
+            font-family: var(--tj-font-mono);
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Ad type label at bottom-left */
+        .zc-media-type-label {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+
+        .zc-media-type-label.general-label {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--tj-cyan-400);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        .zc-media-type-label.targeted-label {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--tj-violet-300);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+        }
+
+        .zc-ad-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .zc-ad-icon.general {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--tj-cyan-400);
+        }
+
+        .zc-ad-icon.targeted {
+            background: var(--tj-gradient-accent);
+            color: var(--tj-gray-000);
+        }
+
+        .zc-ad-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .zc-ad-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .zc-ad-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--tj-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .zc-ad-type {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--tj-text-muted);
+        }
+
+        /* Targeted media overlay */
+        .zone-card[data-status="targeted"] .zc-media {
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+
+        .zone-card[data-status="targeted"] .zc-media::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.08), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Offline media */
+        .zone-card[data-status="offline"] .zc-media {
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--tj-bg-surface-subtle),
+                var(--tj-bg-surface-subtle) 6px,
+                rgba(255,255,255,0.02) 6px,
+                rgba(255,255,255,0.02) 12px
+            );
+        }
+
+        /* Trigger Info - Expanded (Taller container for larger cards) */
+        .zc-trigger-info {
+            display: none;
+            padding: 0 var(--tj-spacing-3);
+            margin-bottom: var(--tj-spacing-2);
+            animation: slide-in-up 0.35s var(--tj-easing-spring);
+            height: 44px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .zone-card[data-status="targeted"] .zc-trigger-info {
+            display: block;
+        }
+
+        .zc-trigger-header {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .zc-trigger-header svg {
+            width: 11px;
+            height: 11px;
+            color: var(--tj-violet-400);
+        }
+
+        .zc-trigger-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--tj-violet-300);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .zc-trigger-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .zc-trigger-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            background: rgba(139, 92, 246, 0.18);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: var(--tj-radius-full);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--tj-violet-300);
+        }
+
+        /* General Status Label - Expanded (Fixed height matching trigger info) */
+        .zc-general-label {
+            padding: 0 var(--tj-spacing-3) var(--tj-spacing-2);
+            display: none;
+            height: 44px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .zone-card[data-status="general"] .zc-general-label {
+            display: flex;
+            align-items: center;
+        }
+
+        .zc-general-text {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--tj-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .zc-general-text .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--tj-cyan-600);
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        /* Offline Content - Compact */
+        .zc-offline-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--tj-spacing-1);
+            padding: var(--tj-spacing-2);
+            text-align: center;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .zone-card[data-status="offline"] .zc-offline-content {
+            display: flex;
+        }
+
+        .zone-card[data-status="offline"] .zc-media,
+        .zone-card[data-status="offline"] .zc-trigger-info,
+        .zone-card[data-status="offline"] .zc-general-label {
+            display: none !important;
+        }
+
+        .zc-offline-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--tj-red-100);
+            border-radius: 6px;
+            color: var(--tj-red-300);
+        }
+
+        .zc-offline-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .zc-offline-text {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--tj-red-300);
+        }
+
+        .zc-offline-sub {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+        }
+
+        /* Card Stats Footer - Expanded */
+        .zc-stats {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: var(--tj-spacing-2) var(--tj-spacing-3);
+            margin-top: auto;
+            border-top: 1px solid var(--tj-border-subtle);
+        }
+
+        .zc-stat-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 var(--tj-spacing-2);
+        }
+
+        .zc-stat-item + .zc-stat-item {
+            border-left: 1px solid var(--tj-border-subtle);
+            padding-left: var(--tj-spacing-3);
+        }
+
+        .zc-stat-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .zc-stat-icon.impressions {
+            color: var(--tj-text-secondary);
+        }
+
+        .zc-stat-icon.viewers {
+            color: var(--tj-cyan-400);
+        }
+
+        .zc-stat-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .zc-stat-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--tj-text-muted);
+            letter-spacing: 0.03em;
+        }
+
+        .zc-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-mono);
+            line-height: 1.2;
+        }
+
+        .zc-stat-value.highlight {
+            color: var(--tj-cyan-400);
+        }
+        
+        /* ============================================================
+           [SECTION: Charts Area]
+           ============================================================ */
+        .charts-area {
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-3);
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--tj-spacing-3);
+        }
+        
+        .chart-card {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-xl);
+            padding: var(--tj-spacing-4);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+            flex: 1;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--tj-spacing-3);
+        }
+        
+        .chart-title {
+            font-size: var(--tj-font-caption);
+            font-weight: 600;
+            color: var(--tj-text-default);
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .chart-title svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: var(--tj-spacing-3);
+        }
+        
+        .chart-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-secondary);
+        }
+        
+        .chart-legend .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .chart-legend .legend-dot.cyan { background: var(--tj-cyan-500); }
+        .chart-legend .legend-dot.violet { background: var(--tj-violet-500); }
+        
+        .chart-body {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Donut Chart - Compact */
+        .donut-chart-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: var(--tj-spacing-4);
+        }
+        
+        .donut-chart {
+            width: 130px;
+            height: 130px;
+            position: relative;
+        }
+        
+        .donut-chart svg {
+            transform: rotate(-90deg);
+        }
+        
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .donut-center-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+        }
+        
+        .donut-center-label {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+        }
+        
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+        
+        .donut-legend-item:hover {
+            background: var(--tj-bg-surface-subtle);
+        }
+        
+        .donut-legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+        
+        .donut-legend-text {
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-secondary);
+            min-width: 60px;
+        }
+        
+        .donut-legend-value {
+            font-size: var(--tj-font-small);
+            font-weight: 600;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-mono);
+        }
+        
+        /* Campaign List - Compact */
+        .campaign-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-2);
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .campaign-item {
+            display: grid;
+            grid-template-columns: 28px 1fr 70px 60px 50px;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            padding: var(--tj-spacing-2);
+            background: var(--tj-bg-surface-subtle);
+            border-radius: var(--tj-radius-md);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .campaign-item:hover {
+            border-color: var(--tj-border-default);
+        }
+        
+        .campaign-item.top {
+            background: var(--tj-bg-surface-brand);
+            border-color: rgba(34, 211, 238, 0.2);
+        }
+        
+        .campaign-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--tj-plum-600);
+            color: var(--tj-text-secondary);
+        }
+        
+        .campaign-item.top .campaign-rank {
+            background: var(--tj-gradient-aurora);
+            color: white;
+        }
+        
+        .campaign-info {
+            min-width: 0;
+        }
+        
+        .campaign-name {
+            font-size: var(--tj-font-small);
+            font-weight: 600;
+            color: var(--tj-text-default);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .campaign-stats {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+        }
+        
+        .campaign-exposure {
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-secondary);
+            text-align: right;
+        }
+        
+        .campaign-attention {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+            text-align: right;
+        }
+        
+        .campaign-rate {
+            font-size: var(--tj-font-small);
+            font-weight: 700;
+            color: var(--tj-cyan-400);
+            text-align: right;
+        }
+        
+        .campaign-header-row {
+            display: grid;
+            grid-template-columns: 28px 1fr 70px 60px 50px;
+            gap: var(--tj-spacing-2);
+            padding: 0 var(--tj-spacing-2);
+            margin-bottom: var(--tj-spacing-2);
+        }
+        
+        .campaign-header-row span {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+            font-weight: 500;
+        }
+        
+        .campaign-header-row span:nth-child(3),
+        .campaign-header-row span:nth-child(4),
+        .campaign-header-row span:nth-child(5) {
+            text-align: right;
+        }
+        
+        /* Time Trend Chart */
+        .trend-chart {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            flex: 1;
+            gap: var(--tj-spacing-3);
+        }
+        
+        .y-axis-legend {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-top: 40px;
+            padding-bottom: 20px;
+            width: 40px;
+            flex-shrink: 0;
+        }
+        
+        .y-axis-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            align-items: flex-end;
+            padding-right: 8px;
+        }
+        
+        .y-axis-label {
+            font-size: 9px;
+            font-family: var(--tj-font-mono);
+            color: var(--tj-text-muted);
+            line-height: 1;
+        }
+        
+        .trend-chart-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .trend-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex: 1;
+            padding: var(--tj-spacing-2) 0;
+            padding-top: 40px;
+            gap: 3px;
+            min-height: 140px;
+            border-left: 1px solid var(--tj-border-default);
+            padding-left: var(--tj-spacing-2);
+        }
+        
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+            position: relative;
+            height: 100%;
+        }
+        
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            flex: 1;
+            min-height: 80px;
+        }
+        
+        .bar {
+            width: 14px;
+            border-radius: 2px 2px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .bar.impressions {
+            background: linear-gradient(to top, var(--tj-cyan-600), var(--tj-cyan-400));
+        }
+        
+        .bar.viewers {
+            background: linear-gradient(to top, var(--tj-violet-600), var(--tj-violet-400));
+        }
+        
+        .bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.02);
+        }
+        
+        .bar-label {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+            font-family: var(--tj-font-mono);
+        }
+        
+        .bar-values {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 2px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+        
+        .bar-value {
+            font-size: 8px;
+            font-weight: 600;
+            font-family: var(--tj-font-mono);
+            padding: 1px 2px;
+            border-radius: 2px;
+            line-height: 1.2;
+        }
+        
+        .bar-value.impressions-value {
+            color: var(--tj-cyan-400);
+            background: rgba(34, 211, 238, 0.1);
+        }
+        
+        .bar-value.viewers-value {
+            color: var(--tj-violet-400);
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .bar-group:hover .bar-values {
+            transform: translateX(-50%) scale(1.05);
+        }
+        
+        .bar-group:hover .bar-value {
+            font-weight: 700;
+        }
+        
+        /* ============================================================
+           [SECTION: Footer]
+           ============================================================ */
+        .dashboard-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--tj-spacing-3) var(--tj-spacing-5);
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-lg);
+            height: 48px;
+        }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-6);
+        }
+        
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            font-size: var(--tj-font-small);
+            color: var(--tj-text-secondary);
+        }
+        
+        .footer-item svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0.7;
+        }
+        
+        .footer-item strong {
+            color: var(--tj-text-default);
+            font-weight: 600;
+        }
+        
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-4);
+        }
+        
+        .auto-refresh {
+            font-size: 11px;
+            color: var(--tj-text-muted);
+        }
+        
+        /* ============================================================
+           [SECTION: Partnership CI Component]
+           ============================================================ */
+        .partnership-ci {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(34,211,238,0.04) 100%);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: 9999px;
+            font-family: var(--tj-font-family);
+            transition: all 0.2s ease;
+            user-select: none;
+            line-height: 1;
+        }
+
+        .partnership-ci:hover {
+            border-color: var(--tj-border-default);
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(34,211,238,0.06) 100%);
+        }
+
+        .partnership-ci__entity {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tj-text-primary);
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .partnership-ci__logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .partnership-ci__logo--lit {
+            background: linear-gradient(135deg, #FF2D55 0%, #FF6B81 100%);
+            color: #fff;
+        }
+
+        .partnership-ci__logo--k7 {
+            background: linear-gradient(135deg, #1B6B3A 0%, #2E9E5E 100%);
+            color: #fff;
+        }
+
+        .partnership-ci__divider {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--tj-text-muted);
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+
+        .partnership-ci__divider svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .partnership-ci--compact {
+            padding: 4px 12px;
+            gap: 8px;
+        }
+
+        .partnership-ci--compact .partnership-ci__entity {
+            font-size: 12px;
+        }
+
+        .partnership-ci--compact .partnership-ci__logo {
+            width: 18px;
+            height: 18px;
+            font-size: 8px;
+        }
+
+        .partnership-ci--compact .partnership-ci__divider svg {
+            width: 12px;
+            height: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo-area">
+                    <div class="logo-text">
+                        <span class="logo-title">T-CMS RMN Edition</span>
+                    </div>
+                </div>
+                
+                <div class="header-divider"></div>
+                
+                <!-- Partnership CI - Compact (Header Inline) -->
+                <div class="partnership-ci partnership-ci--compact">
+                    <span class="partnership-ci__entity">
+                        <span class="partnership-ci__logo partnership-ci__logo--lit">LIT</span>
+                        롯데이노베이트
+                    </span>
+                    <span class="partnership-ci__divider">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <line x1="7" y1="7" x2="17" y2="17"/>
+                            <line x1="17" y1="7" x2="7" y2="17"/>
+                        </svg>
+                    </span>
+                    <span class="partnership-ci__entity">
+                        <span class="partnership-ci__logo partnership-ci__logo--k7">K7</span>
+                        Korea7
+                    </span>
+                </div>
+                
+                <div class="header-divider"></div>
+                
+                <!-- Store Selector -->
+                <div class="store-selector">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span class="store-name-label">AX LAB (시범매장)</span>
+                    <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="refresh-indicator">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                    </svg>
+                    <span id="refreshTime">5초 전 갱신</span>
+                </div>
+                
+                <div class="system-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">시스템 정상</span>
+                </div>
+                
+                <div class="datetime-display">
+                    <div class="current-date" id="currentDate">2026년 1월 27일 (화)</div>
+                    <div class="current-time" id="currentTime">14:32:15</div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- KPI Section -->
+            <section class="kpi-section">
+                <!-- KPI Card 1: 시스템 상태 -->
+                <div class="kpi-card system-status-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon cyan">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2">
+                                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                                <circle cx="12" cy="20" r="1"/>
+                            </svg>
+                        </div>
+                        <span class="kpi-title">시스템 상태</span>
+                    </div>
+                    <div class="kpi-body">
+                        <div class="status-level-area">
+                            <span class="status-level level-good">좋음</span>
+                            <span class="status-rate-badge">수신률 : 99.8%</span>
+                        </div>
+                        <div class="ad-play-count">
+                            <span class="ad-play-number">1,234,567</span>
+                            <span class="ad-play-label">회 광고를 Play 했어요</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- KPI Card 2: 매장 방문 고객 -->
+                <div class="kpi-card visitor-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <span class="kpi-title">매장 방문 고객</span>
+                    </div>
+                    <div class="kpi-body">
+                        <div class="visitor-dual">
+                            <div class="visitor-col">
+                                <span class="visitor-col-label">전체방문</span>
+                                <span class="visitor-col-value">10,000명</span>
+                            </div>
+                            <div class="visitor-col">
+                                <span class="visitor-col-label">광고 존 체류</span>
+                                <span class="visitor-col-value">1,000명</span>
+                            </div>
+                        </div>
+                        <div class="kpi-change positive">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M18 15l-6-6-6 6"/>
+                            </svg>
+                            전일대비 증감률 (매장 방문: +12.5% / 광고존 체류: +5.5%)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- KPI Card 3: 광고 주목률 (Highlight) -->
+                <div class="kpi-card highlight">
+                    <div class="kpi-header">
+                        <div class="kpi-icon violet">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <span class="kpi-title">광고 주목률</span>
+                    </div>
+                    <div class="kpi-body">
+                        <div class="kpi-main-value">37%</div>
+                        <div class="kpi-sub-values">
+                            <div class="kpi-sub-item">
+                                재생 <strong>1,234,567</strong>
+                            </div>
+                            <div class="kpi-sub-item">
+                                주목 <strong>456,789</strong>
+                            </div>
+                        </div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 74%;"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>목표 주목률 50%</span>
+                                <span>현재까지 달성된 주목률 74%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- KPI Card 4: 평균 주목시간 -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon blue">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <span class="kpi-title">평균 주목시간</span>
+                    </div>
+                    <div class="kpi-body">
+                        <div class="kpi-main-value">4.2초</div>
+                        <div class="kpi-sub-values">
+                            <div class="kpi-sub-item">
+                                광고 길이 대비 <strong>70%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Content Grid -->
+            <div class="content-grid">
+                
+                <!-- ============================================================
+                     NEW: 광고 ZONE 실시간 현황 (Zone Grid Dashboard v2.0)
+                     기존 "현재 상태" 패널 전면 교체
+                     ============================================================ -->
+                <aside class="zone-status-panel">
+                    <!-- Panel Header -->
+                    <div class="zone-panel-header">
+                        <span class="zone-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                            </svg>
+                            광고 ZONE 실시간 현황
+                        </span>
+                        <span class="live-badge">LIVE</span>
+                    </div>
+
+                    <!-- Compact Info Bar: Summary + AI Ticker -->
+                    <div class="zone-info-bar">
+                        <div class="zone-total-summary">
+                            <div class="zone-summary-stat">
+                                <div class="zone-summary-stat-icon visitors">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                </div>
+                                <div class="zone-summary-stat-content">
+                                    <span class="zone-summary-stat-label">총 방문</span>
+                                    <span class="zone-summary-stat-value" id="zoneTotalVisitors">142<span class="unit">명</span></span>
+                                </div>
+                            </div>
+                            <div class="zone-summary-divider"></div>
+                            <div class="zone-summary-stat">
+                                <div class="zone-summary-stat-icon dwell">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                                <div class="zone-summary-stat-content">
+                                    <span class="zone-summary-stat-label">현재 체류</span>
+                                    <span class="zone-summary-stat-value" id="zoneTotalDwell">8<span class="unit">명</span></span>
+                                </div>
+                            </div>
+                            <div class="zone-summary-divider"></div>
+                            <div class="zone-summary-stat">
+                                <div class="zone-summary-stat-icon attention">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </div>
+                                <div class="zone-summary-stat-content">
+                                    <span class="zone-summary-stat-label">주목 중</span>
+                                    <span class="zone-summary-stat-value" id="zoneTotalViewers">3<span class="unit">명</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="zone-grid-legend">
+                        <div class="zone-legend-left">
+                            <div class="zone-legend-item"><div class="zone-legend-dot general"></div><span>일반 광고</span></div>
+                            <div class="zone-legend-item"><div class="zone-legend-dot targeted"></div><span>AI 타겟 광고</span></div>
+                            <div class="zone-legend-item"><div class="zone-legend-dot offline"></div><span>오프라인</span></div>
+                        </div>
+                        <div class="zone-legend-right" id="zoneLastUpdate">최종 갱신: --:--:--</div>
+                    </div>
+
+                    <!-- Zone Card Grid (2 columns, compact) -->
+                    <div class="zone-card-grid" id="zoneCardGrid">
+
+                        <!-- Zone A — 일반(General) -->
+                        <div class="zone-card" data-zone-id="zone-a" data-status="general">
+                            <div class="zc-header">
+                                <div class="zc-name-group"><span class="zc-name">Zone A</span><span class="zc-location">입구</span></div>
+                                <span class="zc-badge badge-general">일반 송출</span>
+                            </div>
+                            <div class="zc-media">
+                                <div class="zc-media-thumb">
+                                    <div class="zc-ad-thumbnail brand-membership">
+                                        <div class="zc-ad-thumb-icon general">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                        </div>
+                                        <div class="zc-ad-thumb-info">
+                                            <span class="zc-ad-title">K7 멤버십 프로모션</span>
+                                            <span class="zc-ad-type">디폴트 루핑 광고</span>
+                                        </div>
+                                    </div>
+                                    <span class="zc-media-play-overlay"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+                                    <span class="zc-media-duration">0:15</span>
+                                    <span class="zc-media-type-label general-label">루핑</span>
+                                </div>
+                            </div>
+                            <div class="zc-general-label"><div class="zc-general-text"><span class="dot"></span>일반 광고 재생 중</div></div>
+                            <div class="zc-trigger-info"><div class="zc-trigger-header"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/></svg><span class="zc-trigger-label">Trigger</span></div><div class="zc-trigger-tags"></div></div>
+                            <div class="zc-offline-content"><div class="zc-offline-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div><span class="zc-offline-text">연결 끊김</span><span class="zc-offline-sub">마지막: --:--</span></div>
+                            <div class="zc-stats">
+                                <div class="zc-stat-item"><svg class="zc-stat-icon impressions" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="zc-stat-content"><span class="zc-stat-label">체류</span><span class="zc-stat-value" data-stat="impressions">2</span></div></div>
+                                <div class="zc-stat-item"><svg class="zc-stat-icon viewers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><div class="zc-stat-content"><span class="zc-stat-label">주목</span><span class="zc-stat-value highlight" data-stat="viewers">0</span></div></div>
+                            </div>
+                        </div>
+
+                        <!-- Zone B — 타겟(Targeted) -->
+                        <div class="zone-card" data-zone-id="zone-b" data-status="targeted">
+                            <div class="zc-header">
+                                <div class="zc-name-group"><span class="zc-name">Zone B</span><span class="zc-location">음료 매대</span></div>
+                                <span class="zc-badge badge-ai"><svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/></svg> AI Targeting</span>
+                            </div>
+                            <div class="zc-media">
+                                <div class="zc-media-thumb">
+                                    <div class="zc-ad-thumbnail brand-beverage">
+                                        <div class="zc-ad-thumb-icon targeted">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                        </div>
+                                        <div class="zc-ad-thumb-info">
+                                            <span class="zc-ad-title">신상 제로 음료 출시 기념</span>
+                                            <span class="zc-ad-type">타겟 맞춤 광고</span>
+                                        </div>
+                                    </div>
+                                    <span class="zc-media-play-overlay"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+                                    <span class="zc-media-duration">0:30</span>
+                                    <span class="zc-media-type-label targeted-label">AI 타겟</span>
+                                </div>
+                            </div>
+                            <div class="zc-general-label"><div class="zc-general-text"><span class="dot"></span>일반 광고 재생 중</div></div>
+                            <div class="zc-trigger-info"><div class="zc-trigger-header"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/></svg><span class="zc-trigger-label">Trigger</span></div><div class="zc-trigger-tags"><span class="zc-trigger-tag">여성</span><span class="zc-trigger-tag">20대</span><span class="zc-trigger-tag">주목 중</span></div></div>
+                            <div class="zc-offline-content"><div class="zc-offline-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div><span class="zc-offline-text">연결 끊김</span><span class="zc-offline-sub">마지막: --:--</span></div>
+                            <div class="zc-stats">
+                                <div class="zc-stat-item"><svg class="zc-stat-icon impressions" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="zc-stat-content"><span class="zc-stat-label">체류</span><span class="zc-stat-value" data-stat="impressions">3</span></div></div>
+                                <div class="zc-stat-item"><svg class="zc-stat-icon viewers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><div class="zc-stat-content"><span class="zc-stat-label">주목</span><span class="zc-stat-value highlight" data-stat="viewers">2</span></div></div>
+                            </div>
+                        </div>
+
+                        <!-- Zone C — 일반(General) -->
+                        <div class="zone-card" data-zone-id="zone-c" data-status="general">
+                            <div class="zc-header">
+                                <div class="zc-name-group"><span class="zc-name">Zone C</span><span class="zc-location">스낵 매대</span></div>
+                                <span class="zc-badge badge-general">일반 송출</span>
+                            </div>
+                            <div class="zc-media">
+                                <div class="zc-media-thumb">
+                                    <div class="zc-ad-thumbnail brand-snack">
+                                        <div class="zc-ad-thumb-icon general">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                        </div>
+                                        <div class="zc-ad-thumb-info">
+                                            <span class="zc-ad-title">주간 스낵 할인 이벤트</span>
+                                            <span class="zc-ad-type">디폴트 루핑 광고</span>
+                                        </div>
+                                    </div>
+                                    <span class="zc-media-play-overlay"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+                                    <span class="zc-media-duration">0:20</span>
+                                    <span class="zc-media-type-label general-label">루핑</span>
+                                </div>
+                            </div>
+                            <div class="zc-general-label"><div class="zc-general-text"><span class="dot"></span>일반 광고 재생 중</div></div>
+                            <div class="zc-trigger-info"><div class="zc-trigger-header"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/></svg><span class="zc-trigger-label">Trigger</span></div><div class="zc-trigger-tags"></div></div>
+                            <div class="zc-offline-content"><div class="zc-offline-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div><span class="zc-offline-text">연결 끊김</span><span class="zc-offline-sub">마지막: --:--</span></div>
+                            <div class="zc-stats">
+                                <div class="zc-stat-item"><svg class="zc-stat-icon impressions" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="zc-stat-content"><span class="zc-stat-label">체류</span><span class="zc-stat-value" data-stat="impressions">0</span></div></div>
+                                <div class="zc-stat-item"><svg class="zc-stat-icon viewers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><div class="zc-stat-content"><span class="zc-stat-label">주목</span><span class="zc-stat-value highlight" data-stat="viewers">0</span></div></div>
+                            </div>
+                        </div>
+
+
+                        <!-- Zone E — 오프라인(Offline) -->
+                        <div class="zone-card" data-zone-id="zone-e" data-status="offline">
+                            <div class="zc-header">
+                                <div class="zc-name-group"><span class="zc-name">Zone E</span><span class="zc-location">시식대</span></div>
+                                <span class="zc-badge badge-offline">⚠ 오프라인</span>
+                            </div>
+                            <div class="zc-media"><div class="zc-media-thumb"></div></div>
+                            <div class="zc-general-label"><div class="zc-general-text"><span class="dot"></span>일반 광고 재생 중</div></div>
+                            <div class="zc-trigger-info"><div class="zc-trigger-header"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/></svg><span class="zc-trigger-label">Trigger</span></div><div class="zc-trigger-tags"></div></div>
+                            <div class="zc-offline-content"><div class="zc-offline-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div><span class="zc-offline-text">디바이스 연결 끊김</span><span class="zc-offline-sub">마지막: 14:23:08</span></div>
+                            <div class="zc-stats">
+                                <div class="zc-stat-item"><svg class="zc-stat-icon impressions" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="zc-stat-content"><span class="zc-stat-label">체류</span><span class="zc-stat-value" data-stat="impressions">-</span></div></div>
+                                <div class="zc-stat-item"><svg class="zc-stat-icon viewers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><div class="zc-stat-content"><span class="zc-stat-label">주목</span><span class="zc-stat-value highlight" data-stat="viewers">-</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- Charts Area (Right Column) -->
+                <div class="charts-area">
+                    <!-- Charts Row 1: Donut + Campaign -->
+                    <div class="charts-row">
+                        <!-- Target Group Distribution -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <span class="chart-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    타겟 그룹별 분포
+                                </span>
+                            </div>
+                            <div class="chart-body">
+                                <div class="donut-chart-container">
+                                    <div class="donut-chart">
+                                        <svg width="130" height="130" viewBox="0 0 130 130">
+                                            <circle cx="65" cy="65" r="50" fill="none" stroke="var(--tj-plum-700)" stroke-width="16"/>
+                                            <circle cx="65" cy="65" r="50" fill="none" stroke="#F472B6" stroke-width="16" stroke-dasharray="77 314" stroke-dashoffset="0"/>
+                                            <circle cx="65" cy="65" r="50" fill="none" stroke="#22D3EE" stroke-width="16" stroke-dasharray="67 314" stroke-dashoffset="-77"/>
+                                            <circle cx="65" cy="65" r="50" fill="none" stroke="#8B5CF6" stroke-width="16" stroke-dasharray="59 314" stroke-dashoffset="-144"/>
+                                            <circle cx="65" cy="65" r="50" fill="none" stroke="#3B82F6" stroke-width="16" stroke-dasharray="48 314" stroke-dashoffset="-203"/>
+                                            <circle cx="65" cy="65" r="50" fill="none" stroke="var(--tj-gray-500)" stroke-width="16" stroke-dasharray="64 314" stroke-dashoffset="-251"/>
+                                        </svg>
+                                        <div class="donut-center">
+                                            <div class="donut-center-value">456K</div>
+                                            <div class="donut-center-label">총 주목수</div>
+                                        </div>
+                                    </div>
+                                    <div class="donut-legend">
+                                        <div class="donut-legend-item" title="20대 여성 세그먼트 상세 보기">
+                                            <div class="donut-legend-color" style="background: #F472B6;"></div>
+                                            <span class="donut-legend-text">20대 여성</span>
+                                            <span class="donut-legend-value">24.5%</span>
+                                        </div>
+                                        <div class="donut-legend-item" title="30대 남성 세그먼트 상세 보기">
+                                            <div class="donut-legend-color" style="background: #22D3EE;"></div>
+                                            <span class="donut-legend-text">30대 남성</span>
+                                            <span class="donut-legend-value">21.3%</span>
+                                        </div>
+                                        <div class="donut-legend-item" title="20대 남성 세그먼트 상세 보기">
+                                            <div class="donut-legend-color" style="background: #8B5CF6;"></div>
+                                            <span class="donut-legend-text">20대 남성</span>
+                                            <span class="donut-legend-value">18.7%</span>
+                                        </div>
+                                        <div class="donut-legend-item" title="30대 여성 세그먼트 상세 보기">
+                                            <div class="donut-legend-color" style="background: #3B82F6;"></div>
+                                            <span class="donut-legend-text">30대 여성</span>
+                                            <span class="donut-legend-value">15.2%</span>
+                                        </div>
+                                        <div class="donut-legend-item" title="성별 미식별 + 50대 이상 포함">
+                                            <div class="donut-legend-color" style="background: var(--tj-gray-500);"></div>
+                                            <span class="donut-legend-text">기타</span>
+                                            <span class="donut-legend-value">20.3%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Top 5 Campaign Ranking -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <span class="chart-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                                        <path d="M4 22h16"/>
+                                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                                    </svg>
+                                    Top 5 캠페인 성과
+                                </span>
+                            </div>
+                            <div class="chart-body">
+                                <div class="campaign-header-row">
+                                    <span>순위</span>
+                                    <span>캠페인</span>
+                                    <span>노출수</span>
+                                    <span>주목시간</span>
+                                    <span>주목률</span>
+                                </div>
+                                <div class="campaign-list">
+                                    <div class="campaign-item top">
+                                        <div class="campaign-rank">1</div>
+                                        <div class="campaign-info">
+                                            <div class="campaign-name">신상 음료 A 캠페인</div>
+                                            <div class="campaign-stats">음료 | 20~30대</div>
+                                        </div>
+                                        <div class="campaign-exposure">12,345</div>
+                                        <div class="campaign-attention">4.5초</div>
+                                        <div class="campaign-rate">43.2%</div>
+                                    </div>
+                                    <div class="campaign-item">
+                                        <div class="campaign-rank">2</div>
+                                        <div class="campaign-info">
+                                            <div class="campaign-name">간식 프로모션</div>
+                                            <div class="campaign-stats">식품 | 전체</div>
+                                        </div>
+                                        <div class="campaign-exposure">19,234</div>
+                                        <div class="campaign-attention">3.8초</div>
+                                        <div class="campaign-rate">38.7%</div>
+                                    </div>
+                                    <div class="campaign-item">
+                                        <div class="campaign-rank">3</div>
+                                        <div class="campaign-info">
+                                            <div class="campaign-name">계절 한정 B 캠페인</div>
+                                            <div class="campaign-stats">음료 | 30~40대</div>
+                                        </div>
+                                        <div class="campaign-exposure">9,876</div>
+                                        <div class="campaign-attention">4.1초</div>
+                                        <div class="campaign-rate">39.2%</div>
+                                    </div>
+                                    <div class="campaign-item">
+                                        <div class="campaign-rank">4</div>
+                                        <div class="campaign-info">
+                                            <div class="campaign-name">도시락 특가 캠페인</div>
+                                            <div class="campaign-stats">식품 | 30대</div>
+                                        </div>
+                                        <div class="campaign-exposure">8,543</div>
+                                        <div class="campaign-attention">3.2초</div>
+                                        <div class="campaign-rate">33.1%</div>
+                                    </div>
+                                    <div class="campaign-item">
+                                        <div class="campaign-rank">5</div>
+                                        <div class="campaign-info">
+                                            <div class="campaign-name">커피 1+1 이벤트</div>
+                                            <div class="campaign-stats">음료 | 20대</div>
+                                        </div>
+                                        <div class="campaign-exposure">7,234</div>
+                                        <div class="campaign-attention">3.5초</div>
+                                        <div class="campaign-rate">31.5%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Time Trend Chart (Full Width) -->
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <span class="chart-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                </svg>
+                                시간대별 노출/주목 트렌드 (24시간)
+                            </span>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot cyan"></span>
+                                    <span>노출수</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot violet"></span>
+                                    <span>주목수</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <div class="trend-chart">
+                                <div class="y-axis-legend">
+                                    <div class="y-axis-labels">
+                                        <span class="y-axis-label">50K</span>
+                                        <span class="y-axis-label">40K</span>
+                                        <span class="y-axis-label">30K</span>
+                                        <span class="y-axis-label">20K</span>
+                                        <span class="y-axis-label">10K</span>
+                                        <span class="y-axis-label">0</span>
+                                    </div>
+                                </div>
+                                <div class="trend-chart-content">
+                                <div class="trend-bars">
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">2.5K</span><span class="bar-value viewers-value">0.8K</span></div><div class="bar-container"><div class="bar impressions" style="height: 25%;"></div><div class="bar viewers" style="height: 10%;"></div></div><span class="bar-label">00</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">1.8K</span><span class="bar-value viewers-value">0.5K</span></div><div class="bar-container"><div class="bar impressions" style="height: 18%;"></div><div class="bar viewers" style="height: 6%;"></div></div><span class="bar-label">02</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">1.2K</span><span class="bar-value viewers-value">0.4K</span></div><div class="bar-container"><div class="bar impressions" style="height: 12%;"></div><div class="bar viewers" style="height: 5%;"></div></div><span class="bar-label">04</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">4.5K</span><span class="bar-value viewers-value">1.8K</span></div><div class="bar-container"><div class="bar impressions" style="height: 45%;"></div><div class="bar viewers" style="height: 18%;"></div></div><span class="bar-label">06</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">6.5K</span><span class="bar-value viewers-value">2.8K</span></div><div class="bar-container"><div class="bar impressions" style="height: 65%;"></div><div class="bar viewers" style="height: 28%;"></div></div><span class="bar-label">08</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">8.5K</span><span class="bar-value viewers-value">3.5K</span></div><div class="bar-container"><div class="bar impressions" style="height: 85%;"></div><div class="bar viewers" style="height: 35%;"></div></div><span class="bar-label">10</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">10K</span><span class="bar-value viewers-value">4.2K</span></div><div class="bar-container"><div class="bar impressions" style="height: 100%;"></div><div class="bar viewers" style="height: 42%;"></div></div><span class="bar-label">12</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">8.8K</span><span class="bar-value viewers-value">3.8K</span></div><div class="bar-container"><div class="bar impressions" style="height: 88%;"></div><div class="bar viewers" style="height: 38%;"></div></div><span class="bar-label">14</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">7.5K</span><span class="bar-value viewers-value">3.2K</span></div><div class="bar-container"><div class="bar impressions" style="height: 75%;"></div><div class="bar viewers" style="height: 32%;"></div></div><span class="bar-label">16</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">9.2K</span><span class="bar-value viewers-value">4.0K</span></div><div class="bar-container"><div class="bar impressions" style="height: 92%;"></div><div class="bar viewers" style="height: 40%;"></div></div><span class="bar-label">18</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">7.8K</span><span class="bar-value viewers-value">3.0K</span></div><div class="bar-container"><div class="bar impressions" style="height: 78%;"></div><div class="bar viewers" style="height: 30%;"></div></div><span class="bar-label">20</span></div>
+                                    <div class="bar-group"><div class="bar-values"><span class="bar-value impressions-value">5.5K</span><span class="bar-value viewers-value">2.2K</span></div><div class="bar-container"><div class="bar impressions" style="height: 55%;"></div><div class="bar viewers" style="height: 22%;"></div></div><span class="bar-label">22</span></div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+        
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <div class="footer-left">
+                <div class="footer-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="9" y1="21" x2="9" y2="9"/>
+                    </svg>
+                    조회 기간: <strong>2026-02-06 (오늘)</strong>
+                </div>
+                <div class="footer-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    </svg>
+                    대상 매장: <strong>AX LAB (시범매장)</strong>
+                </div>
+                <div class="footer-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    마지막 업데이트: <strong id="lastUpdate">14:32:15</strong>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="auto-refresh">자동 갱신: 5초 주기</span>
+            </div>
+        </footer>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        // ============================================================
+        // [SECTION: Dashboard Core - Time & Refresh]
+        // ============================================================
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            document.getElementById('currentTime').textContent = timeString;
+            document.getElementById('lastUpdate').textContent = timeString;
+            
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const day = days[now.getDay()];
+            document.getElementById('currentDate').textContent = `${year}년 ${month}월 ${date}일 (${day})`;
+        }
+        
+        let refreshCounter = 5;
+        function updateRefreshTimer() {
+            refreshCounter--;
+            if (refreshCounter <= 0) {
+                refreshCounter = 5;
+                document.getElementById('refreshTime').textContent = '방금 갱신됨';
+                document.querySelectorAll('.kpi-main-value').forEach(el => {
+                    el.style.animation = 'data-update 0.3s ease';
+                    setTimeout(() => el.style.animation = '', 300);
+                });
+            } else {
+                document.getElementById('refreshTime').textContent = refreshCounter + '초 전 갱신';
+            }
+        }
+
+        // ============================================================
+        // [SECTION: Zone Grid - Configuration & Data]
+        // ============================================================
+        const ZONE_CONFIG = {
+            SIMULATION_INTERVAL: 5000,
+            TICKER_INTERVAL: 6000
+        };
+
+        const ZONE_DEFINITIONS = [
+            { id: 'zone-a', name: 'Zone A', location: '입구',     defaultAd: 'K7 멤버십 프로모션' },
+            { id: 'zone-b', name: 'Zone B', location: '음료 매대', defaultAd: 'K7 음료 할인전' },
+            { id: 'zone-c', name: 'Zone C', location: '스낵 매대', defaultAd: '주간 스낵 할인 이벤트' },
+            { id: 'zone-e', name: 'Zone E', location: '시식대',   defaultAd: '신제품 시식 안내' }
+        ];
+
+        const TARGET_AD_SCENARIOS = {
+            '여성_20대': { title: '신상 제로 음료 출시 기념' },
+            '여성_30대': { title: '프리미엄 디저트 컬렉션' },
+            '남성_20대': { title: '에너지 드링크 1+1 이벤트' },
+            '남성_30대': { title: '수제맥주 신상품 출시' },
+            'default':   { title: '시즌 프로모션 진행 중' }
+        };
+
+        const AGES_RAW = [18, 22, 25, 28, 31, 35, 38, 42, 47, 52];
+
+        let zoneTickerMessages = [];
+        let zoneTickerIndex = 0;
+        let zoneTotalVisitorsAccum = 142;
+
+        // ============================================================
+        // [SECTION: Zone Grid - Utility Functions]
+        // ============================================================
+        function getTimeString() {
+            return new Date().toLocaleTimeString('ko-KR', { hour12: false });
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function randomChoice(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getAgeGroup(age) {
+            if (age < 20) return '10대';
+            if (age < 30) return '20대';
+            if (age < 40) return '30대';
+            if (age < 50) return '40대';
+            return '50대';
+        }
+
+        // ============================================================
+        // [SECTION: Zone Card Update API]
+        // ============================================================
+        function updateZoneCard(zoneId, data) {
+            const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
+            if (!card) return;
+
+            const newStatus = data.status || 'general';
+            card.dataset.status = newStatus;
+
+            // Update badge
+            const badge = card.querySelector('.zc-badge');
+            if (badge) {
+                badge.className = 'zc-badge';
+                if (newStatus === 'targeted') {
+                    badge.className += ' badge-ai';
+                    badge.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/></svg> AI Targeting';
+                } else if (newStatus === 'offline') {
+                    badge.className += ' badge-offline';
+                    badge.textContent = '⚠ 오프라인';
+                } else {
+                    badge.className += ' badge-general';
+                    badge.textContent = '일반 송출';
+                }
+            }
+
+            // Update stats
+            const impEl = card.querySelector('[data-stat="impressions"]');
+            const viewEl = card.querySelector('[data-stat="viewers"]');
+            if (impEl) impEl.textContent = newStatus === 'offline' ? '-' : data.impressions;
+            if (viewEl) viewEl.textContent = newStatus === 'offline' ? '-' : data.viewers;
+
+            // Update trigger tags
+            const triggerTags = card.querySelector('.zc-trigger-tags');
+            if (triggerTags && data.trigger) {
+                triggerTags.innerHTML = '';
+                const tags = data.trigger.tags || [];
+                if (data.trigger.gender) tags.unshift(data.trigger.gender);
+                if (data.trigger.ageGroup) tags.splice(1, 0, data.trigger.ageGroup);
+                tags.forEach(t => {
+                    const span = document.createElement('span');
+                    span.className = 'zc-trigger-tag';
+                    span.textContent = t;
+                    triggerTags.appendChild(span);
+                });
+            }
+
+            // Update ad title
+            if (data.adTitle) {
+                const titleEl = card.querySelector('.zc-ad-title');
+                if (titleEl) titleEl.textContent = data.adTitle;
+                const typeLabel = card.querySelector('.zc-ad-type');
+                if (typeLabel) typeLabel.textContent = newStatus === 'targeted' ? '타겟 맞춤 광고' : '디폴트 루핑 광고';
+                const adIcon = card.querySelector('.zc-ad-thumb-icon');
+                if (adIcon) adIcon.className = 'zc-ad-thumb-icon ' + (newStatus === 'targeted' ? 'targeted' : 'general');
+                // Update media type label
+                const mediaTypeLabel = card.querySelector('.zc-media-type-label');
+                if (mediaTypeLabel) {
+                    if (newStatus === 'targeted') {
+                        mediaTypeLabel.className = 'zc-media-type-label targeted-label';
+                        mediaTypeLabel.textContent = 'AI 타겟';
+                    } else {
+                        mediaTypeLabel.className = 'zc-media-type-label general-label';
+                        mediaTypeLabel.textContent = '루핑';
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // [SECTION: Zone Summary & Ticker Update]
+        // ============================================================
+        function updateZoneSummary(totalDwell, totalViewers) {
+            zoneTotalVisitorsAccum += randomInt(0, 3);
+            document.getElementById('zoneTotalVisitors').innerHTML = zoneTotalVisitorsAccum + '<span class="unit">명</span>';
+            document.getElementById('zoneTotalDwell').innerHTML = totalDwell + '<span class="unit">명</span>';
+            document.getElementById('zoneTotalViewers').innerHTML = totalViewers + '<span class="unit">명</span>';
+        }
+
+        function generateZoneInsights(zoneStates) {
+            const messages = [];
+            const allPersons = [];
+
+            Object.values(zoneStates).forEach(z => {
+                if (z.persons) allPersons.push(...z.persons);
+            });
+
+            Object.entries(zoneStates).forEach(([id, z]) => {
+                if (z.status === 'targeted' && z.trigger) {
+                    const def = ZONE_DEFINITIONS.find(d => d.id === id);
+                    const loc = def ? def.location : id;
+                    messages.push(`${def ? def.name : id}(${loc})에 <strong>${z.trigger.ageGroup} ${z.trigger.gender}</strong> 감지 — 타겟 광고 송출 중`);
+                }
+            });
+
+            const femaleCount = allPersons.filter(p => p.gender === 1).length;
+            const maleCount = allPersons.filter(p => p.gender === 0).length;
+            const totalViewers = allPersons.filter(p => p.gaze === 0).length;
+            const totalPersons = allPersons.length;
+            const attentionRate = totalPersons > 0 ? Math.round((totalViewers / totalPersons) * 100) : 0;
+
+            if (femaleCount > maleCount) {
+                messages.push(`현재 <strong>여성 고객</strong> 비중 높음 (${femaleCount}명) → 뷰티/음료 광고 적중률 상승 기대`);
+            } else if (maleCount > femaleCount) {
+                messages.push(`현재 <strong>남성 고객</strong> 비중 높음 (${maleCount}명) → 에너지/주류 광고 효과 기대`);
+            }
+
+            if (attentionRate >= 50) {
+                messages.push(`현재 매장 주목률 <strong>${attentionRate}%</strong> 달성 — 목표 초과 운영 중`);
+            } else if (attentionRate >= 30) {
+                messages.push(`매장 주목률 <strong>${attentionRate}%</strong> — 평균 수준 유지 중`);
+            } else if (totalPersons > 0) {
+                messages.push(`매장 주목률 <strong>${attentionRate}%</strong> 저조 — 콘텐츠 개선 검토 권장`);
+            }
+
+            if (messages.length === 0) {
+                messages.push('AI 분석 대기 중 — 방문 고객 데이터 수집 중입니다');
+            }
+
+            return messages;
+        }
+
+        function rotateZoneTicker() {
+            // AI Ticker 컴포넌트 제거됨 — no-op
+        }
+
+        // ============================================================
+        // [SECTION: Zone Simulation Engine]
+        // ============================================================
+        function simulateZoneUpdate() {
+            const zoneStates = {};
+            let totalDwell = 0;
+            let totalViewers = 0;
+
+            ZONE_DEFINITIONS.forEach(def => {
+                if (def.id === 'zone-e') {
+                    zoneStates[def.id] = { status: 'offline', impressions: 0, viewers: 0 };
+                    updateZoneCard(def.id, zoneStates[def.id]);
+                    return;
+                }
+
+                const personCount = randomInt(0, 5);
+                const persons = [];
+                for (let i = 0; i < personCount; i++) {
+                    persons.push({
+                        gender: randomInt(0, 1),
+                        age: randomChoice(AGES_RAW),
+                        gaze: Math.random() > 0.55 ? 0 : 1
+                    });
+                }
+
+                const viewerCount = persons.filter(p => p.gaze === 0).length;
+                const isTargeted = personCount >= 2 && viewerCount >= 1 && Math.random() > 0.4;
+
+                let triggerInfo = null;
+                let adTitle = def.defaultAd;
+                let status = 'general';
+
+                if (isTargeted) {
+                    status = 'targeted';
+                    const triggerPerson = persons.find(p => p.gaze === 0) || persons[0];
+                    const gender = triggerPerson.gender === 0 ? '남성' : '여성';
+                    const ageGroup = getAgeGroup(triggerPerson.age);
+                    const key = `${gender}_${ageGroup}`;
+                    const scenario = TARGET_AD_SCENARIOS[key] || TARGET_AD_SCENARIOS['default'];
+
+                    adTitle = scenario.title;
+                    triggerInfo = {
+                        gender: gender,
+                        ageGroup: ageGroup,
+                        tags: viewerCount > 1 ? ['주목 중', `${personCount}명 체류`] : ['주목 중']
+                    };
+                }
+
+                totalDwell += personCount;
+                totalViewers += viewerCount;
+
+                const zoneData = {
+                    status: status,
+                    impressions: personCount,
+                    viewers: viewerCount,
+                    trigger: triggerInfo,
+                    adTitle: adTitle,
+                    persons: persons
+                };
+
+                zoneStates[def.id] = zoneData;
+                updateZoneCard(def.id, zoneData);
+            });
+
+            updateZoneSummary(totalDwell, totalViewers);
+
+            zoneTickerMessages = generateZoneInsights(zoneStates);
+            zoneTickerIndex = 0;
+            // AI Ticker 컴포넌트 제거됨 — ticker UI 업데이트 생략
+
+            document.getElementById('zoneLastUpdate').textContent = '최종 갱신: ' + getTimeString();
+        }
+
+        // ============================================================
+        // [SECTION: Initialize]
+        // ============================================================
+        updateTime();
+        setInterval(updateTime, 1000);
+        setInterval(updateRefreshTimer, 1000);
+
+        // Zone Grid updates
+        document.getElementById('zoneLastUpdate').textContent = '최종 갱신: ' + getTimeString();
+        setInterval(simulateZoneUpdate, ZONE_CONFIG.SIMULATION_INTERVAL);
+        setInterval(rotateZoneTicker, ZONE_CONFIG.TICKER_INTERVAL);
+        setTimeout(simulateZoneUpdate, 1500);
+    </script>
+    
+</body>
+</html>

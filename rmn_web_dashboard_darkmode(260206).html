@@ -1,0 +1,3114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>K7 RMN - 전체 현황 대시보드 (260206) - Dark Mode</title>
+    
+    <!-- ============================================================
+         K7 RMN 전체 현황 대시보드 - 개선 버전 (Dark Mode)
+         Screen ID: SCR-001
+         Version: 2.0.0
+         Theme: Dark Mode (Aurora Circuit Design System v3.1)
+         Last Updated: 2026-02-06
+         
+         개선 요구사항 반영:
+         - REQ-DSH-001: 매장 상태 현황 조회 기간 고정 (실시간 배지)
+         - REQ-DSH-002: 매장별 현황 정렬 기준 변경 (상태 나쁨 우선순위)
+         - REQ-DSH-002-EXT: 매장별 상권 유형 메타 태그 추가
+         - REQ-DSH-003: 광고 효과 분석 데이터 연동 (Mock Data)
+         - REQ-DSH-004: 시간대별 캠페인 성과 분석 자료 변경
+         - REQ-DSH-005: KPI 카드 상세 데이터 표시
+         - REQ-DSH-006: 타겟 그룹별 분포 시각화
+         - REQ-DSH-007: Top 5 캠페인 성과 테이블 구성
+         - REQ-DSH-007-ENH: 광고 메타데이터 태그 추가 (v1.3.0)
+         - REQ-DSH-005-ENH: 전체 매장 방문 수 카드 듀얼 표기 변경 (v1.4.0)
+         - REQ-DSH-001-ENH: 날짜 조회 From-To 수동 기간 선택으로 변경 (v1.5.0)
+         - REQ-DSH-008: "롯데이노베이트 X Korea7" CI 컴포넌트 추가 (v1.7.0)
+           → 범용 독립 모듈(.partnership-ci)로 제작, 타 대시보드 이식 가능
+         - REQ-DSH-009: 매장별 현황, Top 5 캠페인 성과, 타겟 그룹별 분포 더보기 버튼 추가 (v1.8.0)
+         
+         v2.0.0 (2026-02-06) UI/UX 개선:
+         - REQ-DSH-008-MOD: CI 컴포넌트를 독립 모듈로 추출 완료
+           → 별도 파일(partnership-ci-component.html) 제공
+           → Standalone Fallback 변수 포함, 디자인 시스템 의존 제거 가능
+           → Variants: default, --compact, --large, --light
+         - UI 일관성 개선: 사이드바 내비게이션 구조 보강
+         - KPI 카드 간격 및 시각적 계층 개선
+         - 차트 영역 AI 인사이트 뱃지 시각적 강조
+         - 접근성(a11y) 개선: aria-label, role 속성 보강
+         - 반응형 개선: 중간 해상도(1400px) 브레이크포인트 추가
+    ============================================================ -->
+    
+    <style>
+        /* ============================================================
+           [SECTION: Foundation Tokens - Light Mode]
+           ============================================================ */
+        :root {
+            /* Cyan (Aurora) - Primary Brand */
+            --tj-cyan-050: #ECFEFF;
+            --tj-cyan-100: #CFFAFE;
+            --tj-cyan-200: #A5F3FC;
+            --tj-cyan-300: #67E8F9;
+            --tj-cyan-400: #38BDF8;
+            --tj-cyan-500: #22D3EE;
+            --tj-cyan-600: #06B6D4;
+            --tj-cyan-700: #0891B2;
+            --tj-cyan-800: #155E75;
+            
+            /* Plum (Circuit) - Dark Accent */
+            --tj-plum-500: #475569;
+            --tj-plum-600: #334155;
+            --tj-plum-700: #1E293B;
+            --tj-plum-800: #0F172A;
+            --tj-plum-900: #020617;
+            --tj-plum-950: #010312;
+            
+            /* Violet (Signal) - Lab/R&D */
+            --tj-violet-050: #F5F3FF;
+            --tj-violet-100: #EDE9FE;
+            --tj-violet-200: #DDD6FE;
+            --tj-violet-300: #C4B5FD;
+            --tj-violet-400: #A78BFA;
+            --tj-violet-500: #8B5CF6;
+            --tj-violet-600: #7C3AED;
+            --tj-violet-700: #6D28D9;
+            
+            /* Magenta (Neon) - Accent */
+            --tj-magenta-050: #FDF2F8;
+            --tj-magenta-100: #FCE7F3;
+            --tj-magenta-300: #F9A8D4;
+            --tj-magenta-400: #F472B6;
+            --tj-magenta-500: #EC4899;
+            --tj-magenta-600: #DB2777;
+            
+            /* Gray (Neutral) */
+            --tj-gray-000: #FFFFFF;
+            --tj-gray-025: #FCFCFD;
+            --tj-gray-050: #F9FAFB;
+            --tj-gray-100: #F3F4F6;
+            --tj-gray-200: #E5E7EB;
+            --tj-gray-300: #D1D5DB;
+            --tj-gray-400: #9CA3AF;
+            --tj-gray-500: #6B7280;
+            --tj-gray-600: #4B5563;
+            --tj-gray-700: #374151;
+            --tj-gray-800: #1F2937;
+            --tj-gray-900: #111827;
+            
+            /* Status Colors */
+            --tj-green-050: rgba(22, 163, 74, 0.08);
+            --tj-green-100: rgba(22, 163, 74, 0.12);
+            --tj-green-500: #22C55E;
+            --tj-green-600: #16A34A;
+            --tj-green-700: #15803D;
+            
+            --tj-amber-050: rgba(217, 119, 6, 0.08);
+            --tj-amber-100: rgba(217, 119, 6, 0.12);
+            --tj-amber-500: #F59E0B;
+            --tj-amber-600: #D97706;
+            --tj-amber-700: #B45309;
+            
+            --tj-red-050: rgba(220, 38, 38, 0.08);
+            --tj-red-100: rgba(220, 38, 38, 0.12);
+            --tj-red-500: #EF4444;
+            --tj-red-600: #DC2626;
+            --tj-red-700: #B91C1C;
+            
+            --tj-blue-050: rgba(37, 99, 235, 0.08);
+            --tj-blue-100: rgba(37, 99, 235, 0.12);
+            --tj-blue-500: #3B82F6;
+            --tj-blue-600: #2563EB;
+            --tj-blue-700: #1D4ED8;
+            
+            /* Orange for 양호 status */
+            --tj-orange-050: rgba(249, 115, 22, 0.08);
+            --tj-orange-100: rgba(249, 115, 22, 0.12);
+            --tj-orange-500: #F97316;
+            --tj-orange-600: #EA580C;
+            
+            /* Plum (Circuit) - Dark Mode Additional */
+            --tj-plum-950: #010312;
+            
+            /* Semantic Tokens - Dark Mode */
+            --tj-brand-primary: var(--tj-cyan-500);
+            --tj-brand-primary-hover: var(--tj-cyan-400);
+            --tj-brand-primary-soft: rgba(34, 211, 238, 0.15);
+            --tj-brand-lab: var(--tj-violet-500);
+            --tj-brand-lab-soft: rgba(139, 92, 246, 0.15);
+            
+            /* Background - Dark Mode */
+            --tj-bg-canvas: var(--tj-plum-950);
+            --tj-bg-canvas-subtle: var(--tj-plum-900);
+            --tj-bg-surface: var(--tj-plum-800);
+            --tj-bg-surface-subtle: var(--tj-plum-700);
+            --tj-bg-surface-elevated: var(--tj-plum-600);
+            --tj-bg-surface-brand: rgba(34, 211, 238, 0.08);
+            --tj-bg-header: rgba(1, 3, 18, 0.85);
+            --tj-bg-sidebar: var(--tj-plum-900);
+            
+            /* Text - Dark Mode */
+            --tj-text-default: var(--tj-gray-050);
+            --tj-text-primary: var(--tj-gray-100);
+            --tj-text-secondary: var(--tj-gray-400);
+            --tj-text-muted: var(--tj-gray-500);
+            --tj-text-subtle: var(--tj-gray-600);
+            --tj-text-on-dark: var(--tj-gray-000);
+            --tj-text-link: var(--tj-cyan-400);
+            --tj-text-accent: var(--tj-cyan-400);
+            
+            /* Border - Dark Mode */
+            --tj-border-subtle: rgba(255, 255, 255, 0.06);
+            --tj-border-default: rgba(255, 255, 255, 0.1);
+            --tj-border-strong: rgba(255, 255, 255, 0.15);
+            --tj-border-brand: var(--tj-cyan-500);
+            --tj-border-focus: var(--tj-cyan-400);
+            
+            /* Status - Dark Mode Optimized */
+            --tj-status-success: var(--tj-green-500);
+            --tj-status-success-bg: rgba(34, 197, 94, 0.15);
+            --tj-status-success-text: #86EFAC;
+            --tj-status-warning: var(--tj-amber-500);
+            --tj-status-warning-bg: rgba(245, 158, 11, 0.15);
+            --tj-status-warning-text: #FCD34D;
+            --tj-status-error: var(--tj-red-500);
+            --tj-status-error-bg: rgba(239, 68, 68, 0.15);
+            --tj-status-error-text: #FCA5A5;
+            --tj-status-info: var(--tj-blue-500);
+            --tj-status-info-bg: rgba(59, 130, 246, 0.15);
+            --tj-status-info-text: #93C5FD;
+            
+            /* KPI - Dark Mode */
+            --tj-kpi-positive: var(--tj-green-500);
+            --tj-kpi-negative: var(--tj-red-500);
+            --tj-kpi-neutral: var(--tj-gray-400);
+            --tj-kpi-highlight: var(--tj-cyan-400);
+            
+            /* Chart Colors - Dark Mode Extended for 5 campaigns */
+            --tj-chart-primary: var(--tj-cyan-500);
+            --tj-chart-secondary: var(--tj-violet-500);
+            --tj-chart-tertiary: var(--tj-magenta-400);
+            --tj-chart-quaternary: var(--tj-amber-500);
+            --tj-chart-quinary: var(--tj-green-500);
+            --tj-chart-grid: rgba(255, 255, 255, 0.08);
+            
+            /* AI Gradients */
+            --tj-ai-thinking: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%);
+            --tj-ai-analyzing: linear-gradient(135deg, #22D3EE 0%, #8B5CF6 100%);
+            --tj-ai-complete: linear-gradient(135deg, #22C55E 0%, #06B6D4 100%);
+            --tj-gradient-primary: linear-gradient(135deg, var(--tj-cyan-500), var(--tj-cyan-600));
+            --tj-gradient-aurora: linear-gradient(135deg, var(--tj-cyan-500), var(--tj-violet-500), var(--tj-magenta-400));
+            
+            /* Typography */
+            --tj-font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --tj-font-display: 'Pretendard', 'Google Sans', sans-serif;
+            --tj-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            
+            --tj-font-size-hero: 72px;
+            --tj-font-size-kpi-lg: 56px;
+            --tj-font-size-kpi-md: 40px;
+            --tj-font-size-kpi-sm: 28px;
+            --tj-font-size-heading: 28px;
+            --tj-font-size-subheading: 24px;
+            --tj-font-size-body: 16px;
+            --tj-font-size-body-sm: 14px;
+            --tj-font-size-caption: 12px;
+            --tj-font-size-overline: 11px;
+            
+            /* Spacing (4px base) */
+            --tj-spacing-1: 4px;
+            --tj-spacing-2: 8px;
+            --tj-spacing-3: 12px;
+            --tj-spacing-4: 16px;
+            --tj-spacing-5: 20px;
+            --tj-spacing-6: 24px;
+            --tj-spacing-8: 32px;
+            --tj-spacing-10: 40px;
+            --tj-spacing-12: 48px;
+            --tj-spacing-16: 64px;
+            
+            /* Border Radius */
+            --tj-radius-sm: 4px;
+            --tj-radius-default: 8px;
+            --tj-radius-lg: 12px;
+            --tj-radius-xl: 16px;
+            --tj-radius-2xl: 24px;
+            --tj-radius-full: 9999px;
+            
+            /* Shadows - Dark Mode */
+            --tj-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --tj-shadow-default: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+            --tj-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+            --tj-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.4);
+            
+            /* Transitions */
+            --tj-transition-fast: all 0.15s ease;
+            --tj-transition-default: all 0.2s ease;
+            
+            /* Layout */
+            --sidebar-width: 240px;
+            --header-height: 64px;
+        }
+        
+        /* ============================================================
+           [SECTION: Reset & Base]
+           ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            font-family: var(--tj-font-family);
+            background: var(--tj-bg-canvas-subtle);
+            color: var(--tj-text-default);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        
+        /* Scrollbar Styling - Dark Mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--tj-bg-surface);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--tj-plum-600);
+            border-radius: 9999px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--tj-plum-500);
+        }
+        
+        /* ============================================================
+           [SECTION: Animations]
+           ============================================================ */
+        @keyframes kpi-countup {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+        
+        @keyframes data-flow {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+        
+        /* ============================================================
+           [SECTION: Layout - App Shell]
+           ============================================================ */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--tj-bg-surface);
+            border-right: 1px solid var(--tj-border-subtle);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: var(--tj-spacing-5) var(--tj-spacing-4);
+            border-bottom: 1px solid var(--tj-border-subtle);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #1B6B3A 0%, #2E9E5E 100%);
+            border-radius: var(--tj-radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-title {
+            font-size: var(--tj-font-size-body);
+            font-weight: 700;
+            color: var(--tj-text-default);
+            line-height: 1.2;
+        }
+        
+        .logo-subtitle {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: var(--tj-spacing-4);
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: var(--tj-spacing-6);
+        }
+        
+        .nav-section-title {
+            font-size: var(--tj-font-size-overline);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--tj-text-muted);
+            padding: var(--tj-spacing-2) var(--tj-spacing-3);
+            margin-bottom: var(--tj-spacing-1);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            padding: var(--tj-spacing-3) var(--tj-spacing-3);
+            border-radius: var(--tj-radius-default);
+            color: var(--tj-text-secondary);
+            text-decoration: none;
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 500;
+            transition: var(--tj-transition-fast);
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: var(--tj-bg-surface-subtle);
+            color: var(--tj-text-default);
+        }
+        
+        .nav-item.active {
+            background: var(--tj-brand-primary-soft);
+            color: var(--tj-brand-primary);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--tj-brand-primary);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            font-size: var(--tj-font-size-caption);
+            padding: 2px 8px;
+            background: var(--tj-status-success-bg);
+            color: var(--tj-status-success-text);
+            border-radius: var(--tj-radius-full);
+            font-weight: 600;
+        }
+        
+        /* Main Content Area */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--tj-bg-header);
+            border-bottom: 1px solid var(--tj-border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--tj-spacing-6);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-4);
+        }
+        
+        .page-title {
+            font-size: var(--tj-font-size-subheading);
+            font-weight: 700;
+            color: var(--tj-text-default);
+        }
+        
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-4);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-4);
+        }
+        
+        /* Period Tabs (REQ-DSH-001) - Legacy kept for reference */
+        .period-tabs {
+            display: flex;
+            background: var(--tj-bg-surface-subtle);
+            border-radius: var(--tj-radius-default);
+            padding: 3px;
+            gap: 2px;
+        }
+        
+        .period-tab {
+            padding: var(--tj-spacing-2) var(--tj-spacing-4);
+            border-radius: var(--tj-radius-sm);
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 500;
+            color: var(--tj-text-muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .period-tab:hover {
+            color: var(--tj-text-primary);
+        }
+        
+        .period-tab.active {
+            background: var(--tj-bg-surface);
+            color: var(--tj-brand-primary);
+            box-shadow: var(--tj-shadow-sm);
+        }
+        
+        .period-tab-default {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+            margin-left: var(--tj-spacing-2);
+        }
+        
+        /* Date Range Picker (REQ-DSH-001-ENH) */
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .date-range-field {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            padding: var(--tj-spacing-2) var(--tj-spacing-3);
+            background: var(--tj-bg-surface-subtle);
+            border: 1px solid var(--tj-border-default);
+            border-radius: var(--tj-radius-default);
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-primary);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+            min-width: 160px;
+            position: relative;
+        }
+        
+        .date-range-field:hover {
+            border-color: var(--tj-border-brand);
+        }
+        
+        .date-range-field:focus-within {
+            border-color: var(--tj-border-brand);
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.15);
+        }
+        
+        .date-range-field svg {
+            width: 15px;
+            height: 15px;
+            color: var(--tj-text-muted);
+            flex-shrink: 0;
+        }
+        
+        .date-range-field input[type="date"] {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--tj-text-primary);
+            font-size: var(--tj-font-size-body-sm);
+            font-family: var(--tj-font-family);
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .date-range-field input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.15s ease;
+        }
+        
+        .date-range-field input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+        
+        .date-range-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--tj-text-muted);
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 500;
+            padding: 0 var(--tj-spacing-1);
+            flex-shrink: 0;
+        }
+        
+        .date-range-separator svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .date-range-label {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .date-range-apply {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--tj-spacing-2) var(--tj-spacing-3);
+            background: var(--tj-gradient-primary);
+            border: none;
+            border-radius: var(--tj-radius-default);
+            color: white;
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 600;
+            font-family: var(--tj-font-family);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+            white-space: nowrap;
+            gap: var(--tj-spacing-1);
+        }
+        
+        .date-range-apply:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: var(--tj-shadow-sm);
+        }
+        
+        .date-range-apply svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        /* Date Picker - Legacy */
+        .date-picker {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            padding: var(--tj-spacing-2) var(--tj-spacing-3);
+            background: var(--tj-bg-surface-subtle);
+            border: 1px solid var(--tj-border-default);
+            border-radius: var(--tj-radius-default);
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-primary);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .date-picker:hover {
+            border-color: var(--tj-border-brand);
+        }
+        
+        .date-picker svg {
+            width: 16px;
+            height: 16px;
+            color: var(--tj-text-muted);
+        }
+        
+        /* Refresh Button */
+        .btn-refresh {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            padding: var(--tj-spacing-2) var(--tj-spacing-4);
+            background: var(--tj-brand-primary);
+            color: white;
+            border: none;
+            border-radius: var(--tj-radius-default);
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .btn-refresh:hover {
+            background: var(--tj-brand-primary-hover);
+        }
+        
+        .btn-refresh svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Notifications */
+        .btn-notification {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: var(--tj-bg-surface-subtle);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .btn-notification:hover {
+            background: var(--tj-bg-surface-elevated);
+        }
+        
+        .btn-notification svg {
+            width: 20px;
+            height: 20px;
+            color: var(--tj-text-secondary);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--tj-status-error);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* User Menu */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            padding: var(--tj-spacing-2) var(--tj-spacing-3);
+            background: var(--tj-bg-surface-subtle);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-default);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .user-menu:hover {
+            background: var(--tj-bg-surface-elevated);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--tj-gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 600;
+            color: var(--tj-text-default);
+            line-height: 1.2;
+        }
+        
+        .user-role {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+        }
+        
+        .user-dropdown {
+            width: 16px;
+            height: 16px;
+            color: var(--tj-text-muted);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: var(--tj-spacing-6);
+        }
+        
+        /* ============================================================
+           [SECTION: KPI Cards - REQ-DSH-005]
+           5개 KPI 카드: 매장 수 현황, 방문 수, 광고 송출 수, 주목률, 평균 주목시간
+           ============================================================ */
+        .kpi-section {
+            margin-bottom: var(--tj-spacing-6);
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--tj-spacing-4);
+        }
+        
+        .kpi-card {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-lg);
+            padding: var(--tj-spacing-5);
+            transition: var(--tj-transition-default);
+            box-shadow: var(--tj-shadow-sm);
+            cursor: pointer;
+        }
+        
+        .kpi-card:hover {
+            border-color: var(--tj-border-default);
+            transform: translateY(-2px);
+            box-shadow: var(--tj-shadow-md);
+        }
+        
+        .kpi-card.highlight {
+            border-color: var(--tj-border-brand);
+            background: var(--tj-bg-surface-brand);
+        }
+        
+        .kpi-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: var(--tj-spacing-3);
+        }
+        
+        .kpi-label {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-muted);
+        }
+        
+        .kpi-label svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Realtime Badge (REQ-DSH-001) */
+        .realtime-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--tj-spacing-1);
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-status-success-text);
+            background: var(--tj-status-success-bg);
+            padding: 2px 8px;
+            border-radius: var(--tj-radius-full);
+            font-weight: 600;
+        }
+        
+        .realtime-badge .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--tj-status-success);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        
+        .kpi-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--tj-radius-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .kpi-icon.cyan {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--tj-cyan-400);
+        }
+        
+        .kpi-icon.violet {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--tj-violet-400);
+        }
+        
+        .kpi-icon.magenta {
+            background: rgba(244, 114, 182, 0.15);
+            color: var(--tj-magenta-400);
+        }
+        
+        .kpi-icon.green {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--tj-green-500);
+        }
+        
+        .kpi-icon.amber {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--tj-amber-500);
+        }
+        
+        .kpi-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .kpi-value {
+            font-size: var(--tj-font-size-kpi-sm);
+            font-weight: 700;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-display);
+            line-height: 1;
+            margin-bottom: var(--tj-spacing-2);
+            animation: kpi-countup 0.5s ease-out;
+        }
+        
+        .kpi-value.highlight {
+            color: var(--tj-kpi-highlight);
+        }
+        
+        .kpi-sub-value {
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-secondary);
+            margin-bottom: var(--tj-spacing-2);
+        }
+        
+        .kpi-sub-value strong {
+            color: var(--tj-text-default);
+        }
+        
+        /* Dual KPI Value Layout (REQ-DSH-005-ENH) */
+        .kpi-dual-value {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin-bottom: var(--tj-spacing-2);
+        }
+        
+        .kpi-dual-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-1);
+        }
+        
+        .kpi-dual-item + .kpi-dual-item {
+            border-left: 1px solid var(--tj-border-subtle);
+            padding-left: var(--tj-spacing-4);
+            margin-left: var(--tj-spacing-4);
+        }
+        
+        .kpi-dual-label {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+        
+        .kpi-dual-number {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-display);
+            line-height: 1;
+            animation: kpi-countup 0.5s ease-out;
+        }
+        
+        .kpi-dual-number .kpi-dual-unit {
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 500;
+            color: var(--tj-text-secondary);
+            margin-left: 2px;
+        }
+        
+        .kpi-footer {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .kpi-change {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--tj-spacing-1);
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 600;
+            padding: 2px var(--tj-spacing-2);
+            border-radius: var(--tj-radius-sm);
+        }
+        
+        .kpi-change.positive {
+            color: var(--tj-status-success-text);
+            background: var(--tj-status-success-bg);
+        }
+        
+        .kpi-change.negative {
+            color: var(--tj-status-error-text);
+            background: var(--tj-status-error-bg);
+        }
+        
+        .kpi-change svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .kpi-compare {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+        }
+        
+        /* Store Status Grid (REQ-DSH-001, REQ-DSH-005) */
+        .store-status-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--tj-spacing-2);
+            margin-top: var(--tj-spacing-3);
+        }
+        
+        .store-status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--tj-spacing-2);
+            border-radius: var(--tj-radius-sm);
+            background: var(--tj-bg-surface-subtle);
+        }
+        
+        .store-status-count {
+            font-size: var(--tj-font-size-body);
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .store-status-label {
+            font-size: 10px;
+            color: var(--tj-text-muted);
+            margin-top: 2px;
+        }
+        
+        .store-status-item.perfect .store-status-count { color: #52C41A; }
+        .store-status-item.good .store-status-count { color: #73D13D; }
+        .store-status-item.normal .store-status-count { color: #1890FF; }
+        .store-status-item.caution .store-status-count { color: #FAAD14; }
+        .store-status-item.bad .store-status-count { color: #FF4D4F; }
+        
+        /* Live indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--tj-spacing-1);
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-status-success-text);
+            font-weight: 600;
+        }
+        
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--tj-status-success);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        
+        /* ============================================================
+           [SECTION: Charts Section - Middle Row]
+           타겟 그룹별 분포 (REQ-DSH-006), Top 5 캠페인 (REQ-DSH-007)
+           ============================================================ */
+        .middle-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: var(--tj-spacing-4);
+            margin-bottom: var(--tj-spacing-6);
+        }
+        
+        .panel {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-lg);
+            box-shadow: var(--tj-shadow-sm);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--tj-spacing-4) var(--tj-spacing-5);
+            border-bottom: 1px solid var(--tj-border-subtle);
+            background: var(--tj-bg-surface-subtle);
+        }
+        
+        .panel-title {
+            font-size: var(--tj-font-size-body);
+            font-weight: 700;
+            color: var(--tj-text-default);
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .panel-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--tj-text-muted);
+        }
+        
+        .panel-subtitle {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+            margin-left: var(--tj-spacing-2);
+        }
+        
+        .btn-more {
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-link);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-1);
+            transition: var(--tj-transition-fast);
+        }
+        
+        .btn-more:hover {
+            color: var(--tj-brand-primary-hover);
+        }
+        
+        .btn-more svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .panel-body {
+            padding: var(--tj-spacing-4) var(--tj-spacing-5);
+        }
+        
+        /* Store Status Table (REQ-DSH-002) */
+        .store-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .store-table th {
+            padding: var(--tj-spacing-3) var(--tj-spacing-4);
+            text-align: left;
+            font-size: var(--tj-font-size-caption);
+            font-weight: 600;
+            color: var(--tj-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--tj-border-subtle);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .store-table th:hover {
+            color: var(--tj-text-primary);
+        }
+        
+        .store-table th.sorted {
+            color: var(--tj-brand-primary);
+        }
+        
+        .store-table th .sort-icon {
+            display: inline-flex;
+            margin-left: var(--tj-spacing-1);
+            opacity: 0.5;
+        }
+        
+        .store-table th.sorted .sort-icon {
+            opacity: 1;
+        }
+        
+        .store-table th:last-child,
+        .store-table th:nth-child(3) {
+            text-align: right;
+        }
+        
+        .store-table td {
+            padding: var(--tj-spacing-3) var(--tj-spacing-4);
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-primary);
+            border-bottom: 1px solid var(--tj-border-subtle);
+        }
+        
+        .store-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .store-table tr:hover td {
+            background: var(--tj-bg-surface-subtle);
+        }
+        
+        .store-name {
+            font-weight: 600;
+            color: var(--tj-text-default);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .store-name:hover {
+            color: var(--tj-text-link);
+        }
+        
+        .store-status {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        /* Status Badges - REQ-DSH-002 정렬 가중치 색상 */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--tj-spacing-1);
+            padding: 2px 8px;
+            border-radius: var(--tj-radius-full);
+            font-size: var(--tj-font-size-caption);
+            font-weight: 600;
+        }
+        
+        .status-badge.bad {
+            background: rgba(255, 77, 79, 0.15);
+            color: #FF7875;
+        }
+        
+        .status-badge.caution {
+            background: rgba(250, 173, 20, 0.15);
+            color: #FFC53D;
+        }
+        
+        .status-badge.normal {
+            background: rgba(24, 144, 255, 0.15);
+            color: #69B1FF;
+        }
+        
+        .status-badge.good {
+            background: rgba(115, 209, 61, 0.15);
+            color: #95DE64;
+        }
+        
+        .status-badge.perfect {
+            background: rgba(82, 196, 26, 0.15);
+            color: #73D13D;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.bad { background: #FF4D4F; }
+        .status-dot.caution { background: #FAAD14; }
+        .status-dot.normal { background: #1890FF; }
+        .status-dot.good { background: #73D13D; }
+        .status-dot.perfect { background: #52C41A; box-shadow: 0 0 6px #52C41A; }
+        
+        .data-value {
+            text-align: right;
+            font-family: var(--tj-font-mono);
+        }
+        
+        .data-attention {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .attention-badge {
+            font-size: var(--tj-font-size-caption);
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: var(--tj-radius-sm);
+        }
+        
+        .attention-badge.high {
+            background: var(--tj-status-success-bg);
+            color: var(--tj-status-success-text);
+        }
+        
+        .attention-badge.medium {
+            background: var(--tj-status-info-bg);
+            color: var(--tj-status-info-text);
+        }
+        
+        .attention-badge.low {
+            background: var(--tj-status-warning-bg);
+            color: var(--tj-status-warning-text);
+        }
+        
+        /* ============================================================
+           [SECTION: Store Meta Tag (상권 유형)]
+           ============================================================ */
+        .store-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .store-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--tj-gray-400);
+            background: var(--tj-plum-700);
+            padding: 2px 6px;
+            border-radius: var(--tj-radius-sm);
+            width: fit-content;
+        }
+        
+        .store-meta svg {
+            width: 10px;
+            height: 10px;
+        }
+        
+        /* 상권 유형별 색상 - Dark Mode */
+        .store-meta.family {
+            background: rgba(249, 115, 22, 0.15);
+            color: #FB923C;
+        }
+        
+        .store-meta.single {
+            background: rgba(168, 85, 247, 0.15);
+            color: #C084FC;
+        }
+        
+        .store-meta.office {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60A5FA;
+        }
+        
+        .store-meta.commercial {
+            background: rgba(236, 72, 153, 0.15);
+            color: #F472B6;
+        }
+        
+        .store-meta.university {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ADE80;
+        }
+        
+        .store-meta.tourist {
+            background: rgba(14, 165, 233, 0.15);
+            color: #38BDF8;
+        }
+        
+        .store-meta.transit {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818CF8;
+        }
+        
+        .store-meta.mall {
+            background: rgba(244, 63, 94, 0.15);
+            color: #FB7185;
+        }
+        
+        /* Campaign Table (REQ-DSH-007) */
+        .campaign-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .campaign-table th {
+            padding: var(--tj-spacing-3) var(--tj-spacing-3);
+            text-align: left;
+            font-size: var(--tj-font-size-caption);
+            font-weight: 600;
+            color: var(--tj-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--tj-border-subtle);
+        }
+        
+        .campaign-table th:nth-child(n+4) {
+            text-align: right;
+        }
+        
+        .campaign-table td {
+            padding: var(--tj-spacing-3) var(--tj-spacing-3);
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-primary);
+            border-bottom: 1px solid var(--tj-border-subtle);
+        }
+        
+        .campaign-table td:nth-child(n+4) {
+            text-align: right;
+            font-family: var(--tj-font-mono);
+        }
+        
+        .campaign-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .campaign-table tr:hover td {
+            background: var(--tj-bg-surface-subtle);
+        }
+        
+        .rank-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--tj-radius-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 700;
+        }
+        
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #FCD34D, #F59E0B);
+            color: #78350F;
+        }
+        
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #E5E7EB, #9CA3AF);
+            color: #374151;
+        }
+        
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #FED7AA, #F97316);
+            color: #7C2D12;
+        }
+        
+        .rank-badge.default {
+            background: var(--tj-bg-surface-elevated);
+            color: var(--tj-text-muted);
+        }
+        
+        .campaign-name {
+            font-weight: 600;
+            color: var(--tj-text-default);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .campaign-name:hover {
+            color: var(--tj-text-link);
+        }
+        
+        /* Campaign Status Badges (REQ-DSH-007) */
+        .campaign-status {
+            display: inline-flex;
+            padding: 2px 8px;
+            border-radius: var(--tj-radius-full);
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .campaign-status.active {
+            background: rgba(37, 99, 235, 0.2);
+            color: #60A5FA;
+        }
+        
+        .campaign-status.completed {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--tj-gray-400);
+        }
+        
+        .campaign-status.review {
+            background: rgba(249, 115, 22, 0.2);
+            color: #FB923C;
+        }
+        
+        .campaign-status.pending {
+            background: rgba(250, 173, 20, 0.2);
+            color: #FCD34D;
+        }
+        
+        /* Campaign Info with Meta Tags (REQ-DSH-007 Enhancement) */
+        .campaign-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        
+        .meta-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: var(--tj-radius-sm);
+            font-size: 10px;
+            font-weight: 500;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--tj-violet-300);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+        }
+        
+        .meta-tag svg {
+            width: 10px;
+            height: 10px;
+        }
+        
+        /* Meta Tag Variants by Category - Dark Mode */
+        .meta-tag.celebrity {
+            background: rgba(236, 72, 153, 0.15);
+            color: #F472B6;
+            border-color: rgba(236, 72, 153, 0.25);
+        }
+        
+        .meta-tag.animation {
+            background: rgba(139, 92, 246, 0.15);
+            color: #A78BFA;
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+        
+        .meta-tag.model {
+            background: rgba(20, 184, 166, 0.15);
+            color: #2DD4BF;
+            border-color: rgba(20, 184, 166, 0.25);
+        }
+        
+        .meta-tag.product {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60A5FA;
+            border-color: rgba(37, 99, 235, 0.25);
+        }
+        
+        .meta-tag.message {
+            background: rgba(249, 115, 22, 0.15);
+            color: #FB923C;
+            border-color: rgba(249, 115, 22, 0.25);
+        }
+        
+        .meta-tag.review {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ADE80;
+            border-color: rgba(34, 197, 94, 0.25);
+        }
+        
+        .meta-tag.art {
+            background: rgba(168, 85, 247, 0.15);
+            color: #C084FC;
+            border-color: rgba(168, 85, 247, 0.25);
+        }
+        
+        .meta-tag.event {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+        
+        /* Donut Chart - Target Distribution (REQ-DSH-006) */
+        .donut-chart-area {
+            display: flex;
+            gap: var(--tj-spacing-5);
+            align-items: center;
+        }
+        
+        .donut-svg-container {
+            width: 160px;
+            height: 160px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .donut-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .donut-center-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .donut-center-value {
+            font-size: var(--tj-font-size-subheading);
+            font-weight: 700;
+            color: var(--tj-text-default);
+        }
+        
+        .donut-center-text {
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+        }
+        
+        .donut-legend {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            padding: var(--tj-spacing-2);
+            border-radius: var(--tj-radius-sm);
+            transition: var(--tj-transition-fast);
+            cursor: pointer;
+        }
+        
+        .donut-legend-item:hover {
+            background: var(--tj-bg-surface-subtle);
+        }
+        
+        .donut-legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: var(--tj-radius-sm);
+            flex-shrink: 0;
+        }
+        
+        .donut-legend-label {
+            flex: 1;
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-secondary);
+        }
+        
+        .donut-legend-value {
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 600;
+            color: var(--tj-text-default);
+            font-family: var(--tj-font-mono);
+        }
+        
+        /* ============================================================
+           [SECTION: Bottom Section - Charts]
+           광고 효과 분석 (REQ-DSH-003), 시간대별 캠페인 성과 (REQ-DSH-004)
+           ============================================================ */
+        .bottom-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--tj-spacing-4);
+        }
+        
+        .chart-container {
+            background: var(--tj-bg-surface);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-lg);
+            padding: var(--tj-spacing-5);
+            box-shadow: var(--tj-shadow-sm);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--tj-spacing-5);
+        }
+        
+        .chart-title {
+            font-size: var(--tj-font-size-body);
+            font-weight: 700;
+            color: var(--tj-text-default);
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .chart-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--tj-text-muted);
+        }
+        
+        .chart-badge {
+            font-size: var(--tj-font-size-caption);
+            padding: 2px 8px;
+            border-radius: var(--tj-radius-full);
+            background: rgba(245, 158, 11, 0.2);
+            color: #FCD34D;
+            font-weight: 600;
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: var(--tj-spacing-4);
+            flex-wrap: wrap;
+        }
+        
+        .chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-secondary);
+            cursor: pointer;
+            transition: var(--tj-transition-fast);
+        }
+        
+        .chart-legend-item:hover {
+            color: var(--tj-text-primary);
+        }
+        
+        .chart-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        /* Bar Chart - Ad Effect Analysis (REQ-DSH-003) */
+        .bar-chart-area {
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .bar-chart-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--tj-spacing-4);
+            padding: var(--tj-spacing-3) 0;
+        }
+        
+        .bar-chart-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+        }
+        
+        .bar-label {
+            width: 120px;
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-secondary);
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .bar-container {
+            flex: 1;
+            display: flex;
+            gap: var(--tj-spacing-2);
+            align-items: center;
+        }
+        
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .bar-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .bar {
+            height: 20px;
+            border-radius: var(--tj-radius-sm);
+            transition: width 0.5s ease;
+        }
+        
+        .bar.before {
+            background: var(--tj-plum-600);
+        }
+        
+        .bar.after {
+            background: var(--tj-chart-primary);
+        }
+        
+        .bar-value {
+            font-size: var(--tj-font-size-caption);
+            font-family: var(--tj-font-mono);
+            color: var(--tj-text-muted);
+            min-width: 50px;
+        }
+        
+        .lift-badge {
+            font-size: var(--tj-font-size-caption);
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: var(--tj-radius-sm);
+            background: var(--tj-status-success-bg);
+            color: var(--tj-status-success-text);
+            white-space: nowrap;
+        }
+        
+        /* Multi-Line Chart - Hourly Campaign Performance (REQ-DSH-004) */
+        .line-chart-area {
+            height: 280px;
+            display: flex;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .chart-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: var(--tj-spacing-2) 0;
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+            font-family: var(--tj-font-mono);
+            min-width: 50px;
+            text-align: right;
+        }
+        
+        .chart-main {
+            flex: 1;
+            position: relative;
+        }
+        
+        .chart-grid {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-bottom: 30px;
+        }
+        
+        .chart-grid-line {
+            border-bottom: 1px dashed var(--tj-chart-grid);
+        }
+        
+        .chart-svg {
+            width: 100%;
+            height: calc(100% - 30px);
+        }
+        
+        .chart-line {
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        .chart-line.campaign1 { stroke: var(--tj-chart-primary); }
+        .chart-line.campaign2 { stroke: var(--tj-chart-secondary); }
+        .chart-line.campaign3 { stroke: var(--tj-chart-tertiary); }
+        .chart-line.campaign4 { stroke: var(--tj-chart-quaternary); }
+        .chart-line.campaign5 { stroke: var(--tj-chart-quinary); }
+        
+        .chart-area-fill {
+            opacity: 0.08;
+        }
+        
+        .chart-dot {
+            fill: var(--tj-plum-800);
+            stroke-width: 2.5;
+        }
+        
+        .chart-x-axis {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--tj-spacing-2) 0 0;
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+            font-family: var(--tj-font-mono);
+            border-top: 1px solid var(--tj-border-subtle);
+            margin-top: auto;
+        }
+        
+        /* AI Insight */
+        .chart-insight {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--tj-spacing-3);
+            margin-top: var(--tj-spacing-10);
+            padding: var(--tj-spacing-4);
+            background: rgba(34, 211, 238, 0.08);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: var(--tj-radius-default);
+        }
+        
+        .chart-insight-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--tj-ai-analyzing);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .chart-insight-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        
+        .chart-insight-text {
+            font-size: var(--tj-font-size-body-sm);
+            color: var(--tj-text-primary);
+            line-height: 1.6;
+        }
+        
+        .chart-insight-text strong {
+            color: var(--tj-cyan-400);
+        }
+        
+        /* ============================================================
+           [SECTION: Footer]
+           ============================================================ */
+        .dashboard-footer {
+            margin-top: var(--tj-spacing-6);
+            padding: var(--tj-spacing-4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--tj-font-size-caption);
+            color: var(--tj-text-muted);
+        }
+        
+        .last-update {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+            font-family: var(--tj-font-mono);
+        }
+        
+        .last-update svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-4);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: var(--tj-spacing-2);
+        }
+        
+        .status-item .status-dot {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .status-item .status-dot.active {
+            background: var(--tj-status-success);
+            box-shadow: 0 0 6px var(--tj-status-success);
+        }
+        
+        /* ============================================================
+           [SECTION: Partnership CI Component - Reusable Module]
+           ─────────────────────────────────────────────────────────────
+           독립 모듈: 다른 대시보드에 이식 가능한 파트너십 CI 컴포넌트
+           
+           📦 모듈 추출 완료 → partnership-ci-component.html 참조
+           
+           사용법:
+             <div class="partnership-ci"> ... </div>
+           
+           Variants:
+             .partnership-ci              → 기본 (사이드바, 카드 등)
+             .partnership-ci--compact     → 헤더 인라인용 (축소형)
+             .partnership-ci--large       → 독립 배치용 (확대형)
+             .partnership-ci--light       → 라이트 모드용
+           
+           이식 시 주의:
+             - --tj-* 변수가 없는 환경에서는 partnership-ci-component.html의
+               Standalone Fallback 변수 블록을 함께 포함
+             - 새 파트너 로고 추가: .partnership-ci__logo--[code] 클래스 추가
+           ============================================================ */
+        .partnership-ci {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--tj-spacing-3);
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(34,211,238,0.04) 100%);
+            border: 1px solid var(--tj-border-subtle);
+            border-radius: var(--tj-radius-full);
+            transition: var(--tj-transition-default);
+            user-select: none;
+        }
+
+        .partnership-ci:hover {
+            border-color: var(--tj-border-default);
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(34,211,238,0.06) 100%);
+        }
+
+        .partnership-ci__entity {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: var(--tj-font-size-body-sm);
+            font-weight: 600;
+            color: var(--tj-text-primary);
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .partnership-ci__logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: var(--tj-radius-sm);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .partnership-ci__logo--lit {
+            background: linear-gradient(135deg, #FF2D55 0%, #FF6B81 100%);
+            color: #fff;
+        }
+
+        .partnership-ci__logo--k7 {
+            background: linear-gradient(135deg, #1B6B3A 0%, #2E9E5E 100%);
+            color: #fff;
+        }
+
+        .partnership-ci__divider {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--tj-text-muted);
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+
+        .partnership-ci__divider svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Compact variant: for inline use in headers */
+        .partnership-ci--compact {
+            padding: 4px 12px;
+            gap: var(--tj-spacing-2);
+        }
+
+        .partnership-ci--compact .partnership-ci__entity {
+            font-size: var(--tj-font-size-caption);
+        }
+
+        .partnership-ci--compact .partnership-ci__logo {
+            width: 18px;
+            height: 18px;
+            font-size: 8px;
+        }
+
+        /* Large variant: for standalone/card placement */
+        .partnership-ci--large {
+            padding: 10px 20px;
+            gap: var(--tj-spacing-4);
+            border-radius: var(--tj-radius-lg);
+        }
+
+        .partnership-ci--large .partnership-ci__entity {
+            font-size: var(--tj-font-size-body);
+            gap: var(--tj-spacing-2);
+        }
+
+        .partnership-ci--large .partnership-ci__logo {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+            border-radius: 6px;
+        }
+
+        .partnership-ci--large .partnership-ci__divider svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ============================================================
+           [SECTION: Responsive]
+           ============================================================ */
+        @media (max-width: 1600px) {
+            .kpi-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .kpi-value {
+                font-size: 24px;
+            }
+            
+            .middle-section {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .middle-section .panel:first-child {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 1400px) {
+            .kpi-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .kpi-value {
+                font-size: 22px;
+            }
+            
+            .header-center {
+                gap: var(--tj-spacing-2);
+            }
+            
+            .date-range-field {
+                min-width: 140px;
+            }
+
+            .partnership-ci--compact .partnership-ci__entity {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 1280px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .middle-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .middle-section .panel:first-child {
+                grid-column: span 1;
+            }
+            
+            .bottom-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" role="navigation" aria-label="메인 내비게이션">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <div class="logo-icon">K7</div>
+                    <div class="logo-text">
+                        <span class="logo-title">T-CMS RMN</span>
+                        <span class="logo-subtitle">Edition v1.0</span>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">메인</div>
+                    <a href="#" class="nav-item active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                        대시보드
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <header class="header" role="banner">
+                <div class="header-left">
+                    <h1 class="page-title">전체 현황 대시보드</h1>
+                    <!-- Partnership CI Component (Reusable Module — see partnership-ci-component.html) -->
+                    <div class="partnership-ci partnership-ci--compact" role="img" aria-label="롯데이노베이트 X Korea7 파트너십">
+                        <span class="partnership-ci__entity">
+                            <span class="partnership-ci__logo partnership-ci__logo--lit">LIT</span>
+                            롯데이노베이트
+                        </span>
+                        <span class="partnership-ci__divider">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <line x1="7" y1="7" x2="17" y2="17"/>
+                                <line x1="17" y1="7" x2="7" y2="17"/>
+                            </svg>
+                        </span>
+                        <span class="partnership-ci__entity">
+                            <span class="partnership-ci__logo partnership-ci__logo--k7">K7</span>
+                            Korea7
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Date Range Picker with Period Tabs (REQ-DSH-001-ENH: From-To 수동 날짜 조회 + 기간 프리셋) -->
+                <div class="header-center">
+                    <div class="period-tabs">
+                        <button class="period-tab active" data-period="daily" onclick="setPeriod('daily', this)">당일<span class="period-tab-default">(기본)</span></button>
+                        <button class="period-tab" data-period="weekly" onclick="setPeriod('weekly', this)">주간</button>
+                        <button class="period-tab" data-period="monthly" onclick="setPeriod('monthly', this)">월간</button>
+                    </div>
+                    <div class="date-range-picker">
+                        <span class="date-range-label">조회기간</span>
+                        <div class="date-range-field">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <path d="M16 2v4M8 2v4M3 10h18"/>
+                            </svg>
+                            <input type="date" id="dateFrom" value="2026-01-26" title="시작 날짜" onchange="clearPeriodActive()"/>
+                        </div>
+                        <span class="date-range-separator">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14"/>
+                                <path d="M13 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                        <div class="date-range-field">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <path d="M16 2v4M8 2v4M3 10h18"/>
+                            </svg>
+                            <input type="date" id="dateTo" value="2026-01-26" title="종료 날짜" onchange="clearPeriodActive()"/>
+                        </div>
+                        <button class="date-range-apply" title="조회" onclick="applyDateRange()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                            조회
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <button class="btn-refresh" aria-label="데이터 새로고침">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6M1 20v-6h6"/>
+                            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        </svg>
+                        새로고침
+                    </button>
+                    
+                    <button class="btn-notification" aria-label="알림 3건 확인">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    
+                    <div class="user-menu">
+                        <div class="user-avatar">김</div>
+                        <div class="user-info">
+                            <span class="user-name">김운영</span>
+                            <span class="user-role">운영 관리자</span>
+                        </div>
+                        <svg class="user-dropdown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <main class="main-content" role="main" aria-label="대시보드 콘텐츠">
+                
+                <!-- KPI Section (REQ-DSH-005) -->
+                <section class="kpi-section" aria-label="핵심 성과 지표">
+                    <div class="kpi-grid">
+                        
+                        <!-- KPI Card 1: 매장 수 현황 (REQ-DSH-001, REQ-DSH-005) -->
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                        <path d="M9 22V12h6v10"/>
+                                    </svg>
+                                    매장 수 현황
+                                </span>
+                                <!-- 실시간 배지 (REQ-DSH-001) -->
+                                <span class="realtime-badge">
+                                    <span class="live-dot"></span>
+                                    실시간
+                                </span>
+                            </div>
+                            <div class="kpi-value">10</div>
+                            <div class="kpi-sub-value">전체 연동 매장</div>
+                            <!-- 상태별 분류 (REQ-DSH-005) -->
+                            <div class="store-status-grid">
+                                <div class="store-status-item perfect">
+                                    <span class="store-status-count">4</span>
+                                    <span class="store-status-label">완벽</span>
+                                </div>
+                                <div class="store-status-item good">
+                                    <span class="store-status-count">3</span>
+                                    <span class="store-status-label">좋음</span>
+                                </div>
+                                <div class="store-status-item caution">
+                                    <span class="store-status-count">1</span>
+                                    <span class="store-status-label">주의</span>
+                                </div>
+                                <div class="store-status-item bad">
+                                    <span class="store-status-count">1</span>
+                                    <span class="store-status-label">나쁨</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- KPI Card 2: 매장 방문 수 (REQ-DSH-005, REQ-DSH-005-ENH) -->
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                                    </svg>
+                                    전체 매장 방문 수
+                                </span>
+                                <div class="kpi-icon cyan">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-dual-value">
+                                <div class="kpi-dual-item">
+                                    <span class="kpi-dual-label">전체방문</span>
+                                    <span class="kpi-value">10,234<span class="kpi-dual-unit">명</span></span>
+                                </div>
+                                <div class="kpi-dual-item">
+                                    <span class="kpi-dual-label">광고 존 체류</span>
+                                    <span class="kpi-value">1,523<span class="kpi-dual-unit">명</span></span>
+                                </div>
+                            </div>
+                            <div class="kpi-footer">
+                                <span class="kpi-change positive">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 15l-6-6-6 6"/>
+                                    </svg>
+                                    전일대비 (매장 방문: +12.5% / 광고존 체류: +5.5%)
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- KPI Card 3: 광고 송출 수 (REQ-DSH-005) -->
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2"/>
+                                    </svg>
+                                    광고 송출 수
+                                </span>
+                                <div class="kpi-icon violet">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value">1,234,567</div>
+                            <div class="kpi-sub-value">전체 광고 노출</div>
+                            <div class="kpi-footer">
+                                <span class="kpi-change positive">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 15l-6-6-6 6"/>
+                                    </svg>
+                                    +8.3%
+                                </span>
+                                <span class="kpi-compare">전일 대비</span>
+                            </div>
+                        </div>
+                        
+                        <!-- KPI Card 4: 광고 주목률 (REQ-DSH-005) -->
+                        <div class="kpi-card highlight">
+                            <div class="kpi-header">
+                                <span class="kpi-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    전체 점포 주목률
+                                </span>
+                                <div class="kpi-icon magenta">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value highlight">37.0%</div>
+                            <!-- 분모/분자 표시 (REQ-DSH-005) -->
+                            <div class="kpi-sub-value">PLAY: <strong>1,234,567</strong> / 주목: <strong>456,789</strong></div>
+                            <div class="kpi-footer">
+                                <span class="kpi-change positive">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 15l-6-6-6 6"/>
+                                    </svg>
+                                    +2.1%p
+                                </span>
+                                <span class="kpi-compare">전일 대비</span>
+                            </div>
+                        </div>
+                        
+                        <!-- KPI Card 5: 평균 주목시간 (REQ-DSH-005) -->
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M12 6v6l4 2"/>
+                                    </svg>
+                                    평균 주목시간
+                                </span>
+                                <div class="kpi-icon amber">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M12 6v6l4 2"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value">4.2초</div>
+                            <div class="kpi-sub-value">광고 평균 주목 시간</div>
+                            <div class="kpi-footer">
+                                <span class="kpi-change positive">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 15l-6-6-6 6"/>
+                                    </svg>
+                                    +0.3초
+                                </span>
+                                <span class="kpi-compare">전일 대비</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </section>
+                
+                <!-- Middle Section: Store Table, Campaign Table, Target Distribution -->
+                <section class="middle-section" aria-label="상세 현황 패널">
+                    
+                    <!-- Store Status Table (REQ-DSH-002) -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                    <path d="M9 22V12h6v10"/>
+                                </svg>
+                                매장별 현황
+                                <span class="panel-subtitle">(상태 나쁨 우선순위)</span>
+                            </h3>
+                            <a href="#" class="btn-more">
+                                더보기
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <table class="store-table">
+                            <thead>
+                                <tr>
+                                    <th>매장명</th>
+                                    <th class="sorted">
+                                        상태
+                                        <span class="sort-icon">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M6 9l6 6 6-6"/>
+                                            </svg>
+                                        </span>
+                                    </th>
+                                    <th>노출수</th>
+                                    <th>주목률</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- REQ-DSH-002: 상태 나쁨 우선순위 정렬 -->
+                                <tr>
+                                    <td>
+                                        <div class="store-info">
+                                            <span class="store-name">K7 잠실역점</span>
+                                            <span class="store-meta mall">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                                </svg>
+                                                대형몰
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge bad">
+                                            <span class="status-dot bad"></span>
+                                            나쁨
+                                        </span>
+                                    </td>
+                                    <td class="data-value">2,134</td>
+                                    <td class="data-attention">
+                                        <span class="attention-badge low">18.2%</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="store-info">
+                                            <span class="store-name">K7 신림점</span>
+                                            <span class="store-meta university">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+                                                </svg>
+                                                대학가
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge caution">
+                                            <span class="status-dot caution"></span>
+                                            주의
+                                        </span>
+                                    </td>
+                                    <td class="data-value">3,234</td>
+                                    <td class="data-attention">
+                                        <span class="attention-badge low">24.5%</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="store-info">
+                                            <span class="store-name">K7 여의도점</span>
+                                            <span class="store-meta office">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="4" y="2" width="16" height="20" rx="2"/>
+                                                    <path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01"/>
+                                                </svg>
+                                                오피스
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge good">
+                                            <span class="status-dot good"></span>
+                                            좋음
+                                        </span>
+                                    </td>
+                                    <td class="data-value">3,987</td>
+                                    <td class="data-attention">
+                                        <span class="attention-badge medium">28.7%</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="store-info">
+                                            <span class="store-name">K7 신촌점</span>
+                                            <span class="store-meta single">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                                    <circle cx="12" cy="7" r="4"/>
+                                                </svg>
+                                                독신
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge good">
+                                            <span class="status-dot good"></span>
+                                            좋음
+                                        </span>
+                                    </td>
+                                    <td class="data-value">4,521</td>
+                                    <td class="data-attention">
+                                        <span class="attention-badge medium">36.2%</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="store-info">
+                                            <span class="store-name">K7 강남역점</span>
+                                            <span class="store-meta commercial">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                                    <circle cx="12" cy="10" r="3"/>
+                                                </svg>
+                                                상업/유흥
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge perfect">
+                                            <span class="status-dot perfect"></span>
+                                            완벽
+                                        </span>
+                                    </td>
+                                    <td class="data-value">5,234</td>
+                                    <td class="data-attention">
+                                        <span class="attention-badge high">42.3%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Top 5 Campaign Performance Table (REQ-DSH-007) -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                Top 5 캠페인 성과
+                            </h3>
+                            <a href="#" class="btn-more">
+                                더보기
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <table class="campaign-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">순위</th>
+                                    <th>캠페인명</th>
+                                    <th>상태</th>
+                                    <th>노출수</th>
+                                    <th>주목수</th>
+                                    <th>주목률</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="rank-badge gold">1</span></td>
+                                    <td>
+                                        <div class="campaign-info">
+                                            <span class="campaign-name">신상 음료 A 런칭</span>
+                                            <div class="meta-tags">
+                                                <span class="meta-tag celebrity">연예인</span>
+                                                <span class="meta-tag product">제품 실물</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="campaign-status active">진행중</span></td>
+                                    <td>12,345</td>
+                                    <td>5,432</td>
+                                    <td><span class="attention-badge high">44.0%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-badge silver">2</span></td>
+                                    <td>
+                                        <div class="campaign-info">
+                                            <span class="campaign-name">간식 프로모션</span>
+                                            <div class="meta-tags">
+                                                <span class="meta-tag animation">애니메이션/캐릭터</span>
+                                                <span class="meta-tag message">메시지/카피</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="campaign-status active">진행중</span></td>
+                                    <td>10,567</td>
+                                    <td>4,123</td>
+                                    <td><span class="attention-badge high">39.0%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-badge bronze">3</span></td>
+                                    <td>
+                                        <div class="campaign-info">
+                                            <span class="campaign-name">계절 한정 B</span>
+                                            <div class="meta-tags">
+                                                <span class="meta-tag art">아트/일러스트</span>
+                                                <span class="meta-tag product">제품 실물</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="campaign-status review">현장리뷰중</span></td>
+                                    <td>9,876</td>
+                                    <td>3,567</td>
+                                    <td><span class="attention-badge medium">36.1%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-badge default">4</span></td>
+                                    <td>
+                                        <div class="campaign-info">
+                                            <span class="campaign-name">도시락 특가</span>
+                                            <div class="meta-tags">
+                                                <span class="meta-tag model">일반인 모델</span>
+                                                <span class="meta-tag review">후기/체험담</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="campaign-status completed">진행완료</span></td>
+                                    <td>8,543</td>
+                                    <td>2,831</td>
+                                    <td><span class="attention-badge medium">33.1%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-badge default">5</span></td>
+                                    <td>
+                                        <div class="campaign-info">
+                                            <span class="campaign-name">커피 1+1 이벤트</span>
+                                            <div class="meta-tags">
+                                                <span class="meta-tag event">현장 이벤트</span>
+                                                <span class="meta-tag message">메시지/카피</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="campaign-status pending">승인대기</span></td>
+                                    <td>7,234</td>
+                                    <td>2,279</td>
+                                    <td><span class="attention-badge low">31.5%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Target Distribution Donut Chart (REQ-DSH-006) -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                                </svg>
+                                타겟 그룹별 분포
+                            </h3>
+                            <a href="#" class="btn-more">
+                                더보기
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="panel-body">
+                            <div class="donut-chart-area">
+                                <div class="donut-svg-container">
+                                    <svg class="donut-svg" viewBox="0 0 100 100">
+                                        <!-- 20대 여성 24.5% -->
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#2563EB" stroke-width="20"
+                                            stroke-dasharray="61.5 188.5" stroke-dashoffset="0"/>
+                                        <!-- 30대 남성 21.3% -->
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" stroke-width="20"
+                                            stroke-dasharray="53.5 196.5" stroke-dashoffset="-61.5"/>
+                                        <!-- 20대 남성 18.7% -->
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#22C55E" stroke-width="20"
+                                            stroke-dasharray="47 203" stroke-dashoffset="-115"/>
+                                        <!-- 30대 여성 15.2% -->
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#F97316" stroke-width="20"
+                                            stroke-dasharray="38 212" stroke-dashoffset="-162"/>
+                                        <!-- 기타 20.3% -->
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#9CA3AF" stroke-width="20"
+                                            stroke-dasharray="51 199" stroke-dashoffset="-200"/>
+                                    </svg>
+                                    <div class="donut-center-label">
+                                        <div class="donut-center-value">456K</div>
+                                        <div class="donut-center-text">총 주목수</div>
+                                    </div>
+                                </div>
+                                <div class="donut-legend">
+                                    <div class="donut-legend-item">
+                                        <div class="donut-legend-color" style="background: #2563EB;"></div>
+                                        <span class="donut-legend-label">20대 여성</span>
+                                        <span class="donut-legend-value">24.5%</span>
+                                    </div>
+                                    <div class="donut-legend-item">
+                                        <div class="donut-legend-color" style="background: #8B5CF6;"></div>
+                                        <span class="donut-legend-label">30대 남성</span>
+                                        <span class="donut-legend-value">21.3%</span>
+                                    </div>
+                                    <div class="donut-legend-item">
+                                        <div class="donut-legend-color" style="background: #22C55E;"></div>
+                                        <span class="donut-legend-label">20대 남성</span>
+                                        <span class="donut-legend-value">18.7%</span>
+                                    </div>
+                                    <div class="donut-legend-item">
+                                        <div class="donut-legend-color" style="background: #F97316;"></div>
+                                        <span class="donut-legend-label">30대 여성</span>
+                                        <span class="donut-legend-value">15.2%</span>
+                                    </div>
+                                    <div class="donut-legend-item">
+                                        <div class="donut-legend-color" style="background: #9CA3AF;"></div>
+                                        <span class="donut-legend-label">기타</span>
+                                        <span class="donut-legend-value">20.3%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- Bottom Section: Charts -->
+                <section class="bottom-section" aria-label="광고 효과 분석 차트">
+                    
+                    <!-- Ad Effect Analysis Bar Chart (REQ-DSH-003) -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 20V10M12 20V4M6 20v-6"/>
+                                </svg>
+                                광고 전후 대비 효과 분석 TOP 5
+                                <!-- Mock Data 표시 (REQ-DSH-003) -->
+                                <span class="chart-badge">Mock Data</span>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-plum-600);"></span>
+                                    광고 전
+                                </div>
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-chart-primary);"></span>
+                                    광고 후
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-chart-area">
+                            <div class="bar-chart-items">
+                                <div class="bar-chart-item">
+                                    <div class="bar-label">신상 음료 A</div>
+                                    <div class="bar-container">
+                                        <div class="bar-group">
+                                            <div class="bar-wrapper">
+                                                <div class="bar before" style="width: 45%;"></div>
+                                                <span class="bar-value">120만원</span>
+                                            </div>
+                                            <div class="bar-wrapper">
+                                                <div class="bar after" style="width: 78%;"></div>
+                                                <span class="bar-value">210만원</span>
+                                            </div>
+                                        </div>
+                                        <span class="lift-badge">+75%</span>
+                                    </div>
+                                </div>
+                                <div class="bar-chart-item">
+                                    <div class="bar-label">간식 프로모션</div>
+                                    <div class="bar-container">
+                                        <div class="bar-group">
+                                            <div class="bar-wrapper">
+                                                <div class="bar before" style="width: 52%;"></div>
+                                                <span class="bar-value">140만원</span>
+                                            </div>
+                                            <div class="bar-wrapper">
+                                                <div class="bar after" style="width: 85%;"></div>
+                                                <span class="bar-value">230만원</span>
+                                            </div>
+                                        </div>
+                                        <span class="lift-badge">+64%</span>
+                                    </div>
+                                </div>
+                                <div class="bar-chart-item">
+                                    <div class="bar-label">계절 한정 B</div>
+                                    <div class="bar-container">
+                                        <div class="bar-group">
+                                            <div class="bar-wrapper">
+                                                <div class="bar before" style="width: 40%;"></div>
+                                                <span class="bar-value">110만원</span>
+                                            </div>
+                                            <div class="bar-wrapper">
+                                                <div class="bar after" style="width: 62%;"></div>
+                                                <span class="bar-value">170만원</span>
+                                            </div>
+                                        </div>
+                                        <span class="lift-badge">+55%</span>
+                                    </div>
+                                </div>
+                                <div class="bar-chart-item">
+                                    <div class="bar-label">도시락 특가</div>
+                                    <div class="bar-container">
+                                        <div class="bar-group">
+                                            <div class="bar-wrapper">
+                                                <div class="bar before" style="width: 48%;"></div>
+                                                <span class="bar-value">130만원</span>
+                                            </div>
+                                            <div class="bar-wrapper">
+                                                <div class="bar after" style="width: 68%;"></div>
+                                                <span class="bar-value">180만원</span>
+                                            </div>
+                                        </div>
+                                        <span class="lift-badge">+38%</span>
+                                    </div>
+                                </div>
+                                <div class="bar-chart-item">
+                                    <div class="bar-label">커피 1+1</div>
+                                    <div class="bar-container">
+                                        <div class="bar-group">
+                                            <div class="bar-wrapper">
+                                                <div class="bar before" style="width: 55%;"></div>
+                                                <span class="bar-value">150만원</span>
+                                            </div>
+                                            <div class="bar-wrapper">
+                                                <div class="bar after" style="width: 72%;"></div>
+                                                <span class="bar-value">195만원</span>
+                                            </div>
+                                        </div>
+                                        <span class="lift-badge">+30%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-insight">
+                            <div class="chart-insight-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/>
+                                </svg>
+                            </div>
+                            <div class="chart-insight-text">
+                                <strong>AI 인사이트:</strong> 상위 5개 캠페인의 평균 매출 리프트는 <strong>+52.4%</strong>입니다. 
+                                '간식 프로모션' 캠페인이 가장 높은 매출 증가를 보이고 있으며, 
+                                LIT 분석 시스템 연동 후 실제 POS 데이터 기반 효과 측정 결과입니다.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hourly Campaign Performance Line Chart (REQ-DSH-004) -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 21H4a1 1 0 01-1-1V3"/>
+                                    <path d="M18 9l-5 5-4-4-5 5"/>
+                                </svg>
+                                TOP 5 제품 시간대별 캠페인 성과
+                            </div>
+                            <div class="chart-legend">
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-chart-primary);"></span>
+                                    신상 음료 A
+                                </div>
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-chart-secondary);"></span>
+                                    간식 프로모션
+                                </div>
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-chart-tertiary);"></span>
+                                    계절 한정 B
+                                </div>
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-chart-quaternary);"></span>
+                                    도시락 특가
+                                </div>
+                                <div class="chart-legend-item">
+                                    <span class="chart-legend-dot" style="background: var(--tj-chart-quinary);"></span>
+                                    커피 1+1
+                                </div>
+                            </div>
+                        </div>
+                        <div class="line-chart-area">
+                            <div class="chart-y-axis">
+                                <span>2,500</span>
+                                <span>2,000</span>
+                                <span>1,500</span>
+                                <span>1,000</span>
+                                <span>500</span>
+                                <span>0</span>
+                            </div>
+                            <div class="chart-main">
+                                <div class="chart-grid">
+                                    <div class="chart-grid-line"></div>
+                                    <div class="chart-grid-line"></div>
+                                    <div class="chart-grid-line"></div>
+                                    <div class="chart-grid-line"></div>
+                                    <div class="chart-grid-line"></div>
+                                </div>
+                                <svg class="chart-svg" viewBox="0 0 600 220" preserveAspectRatio="none">
+                                    <!-- Campaign 1: 신상 음료 A (Cyan) -->
+                                    <path class="chart-line campaign1" d="M0,180 L60,165 L120,140 L180,100 L240,75 L300,55 L360,70 L420,90 L480,110 L540,130 L600,150"/>
+                                    
+                                    <!-- Campaign 2: 간식 프로모션 (Violet) -->
+                                    <path class="chart-line campaign2" d="M0,190 L60,175 L120,155 L180,120 L240,85 L300,65 L360,80 L420,100 L480,120 L540,145 L600,165"/>
+                                    
+                                    <!-- Campaign 3: 계절 한정 B (Magenta) -->
+                                    <path class="chart-line campaign3" d="M0,195 L60,185 L120,170 L180,145 L240,115 L300,95 L360,105 L420,125 L480,140 L540,160 L600,175"/>
+                                    
+                                    <!-- Campaign 4: 도시락 특가 (Amber) -->
+                                    <path class="chart-line campaign4" d="M0,200 L60,195 L120,185 L180,155 L240,130 L300,110 L360,100 L420,115 L480,135 L540,155 L600,180"/>
+                                    
+                                    <!-- Campaign 5: 커피 1+1 (Green) -->
+                                    <path class="chart-line campaign5" d="M0,185 L60,170 L120,150 L180,130 L240,145 L300,135 L360,140 L420,155 L480,165 L540,175 L600,185"/>
+                                </svg>
+                                <div class="chart-x-axis">
+                                    <span>06시</span>
+                                    <span>08시</span>
+                                    <span>10시</span>
+                                    <span>12시</span>
+                                    <span>14시</span>
+                                    <span>16시</span>
+                                    <span>18시</span>
+                                    <span>20시</span>
+                                    <span>22시</span>
+                                    <span>24시</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-insight">
+                            <div class="chart-insight-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"/>
+                                </svg>
+                            </div>
+                            <div class="chart-insight-text">
+                                <strong>AI 인사이트:</strong> 전체 캠페인의 피크 타임은 <strong>14시~16시</strong>이며, 
+                                '신상 음료 A'와 '간식 프로모션'이 이 시간대에 가장 높은 주목수를 기록합니다. 
+                                '커피 1+1'은 출근 시간대(08시)에 상대적으로 높은 성과를 보입니다.
+                            </div>
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- Footer -->
+                <footer class="dashboard-footer" role="contentinfo" aria-label="시스템 상태 정보">
+                    <div class="last-update">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        마지막 업데이트: 2026-01-26 14:32:15 KST
+                    </div>
+                    <div class="system-status">
+                        <div class="status-item">
+                            <span class="status-dot active"></span>
+                            T-CMS 정상
+                        </div>
+                        <div class="status-item">
+                            <span class="status-dot active"></span>
+                            AI 엣지 정상
+                        </div>
+                        <div class="status-item">
+                            <span class="status-dot active"></span>
+                            API 연동 정상
+                        </div>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+    <script>
+    /* ============================================================
+       [SECTION: Date Range Picker Interaction (REQ-DSH-001-ENH)]
+       기간 프리셋 탭(당일/주간/월간) 클릭 시 From-To 날짜 자동 반영
+       ============================================================ */
+    (function() {
+        // 기준 날짜: 2026-01-26 (월요일)
+        var BASE_DATE = '2026-01-26';
+        
+        function formatDate(date) {
+            var y = date.getFullYear();
+            var m = String(date.getMonth() + 1).padStart(2, '0');
+            var d = String(date.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + d;
+        }
+        
+        window.setPeriod = function(period, btnEl) {
+            var dateFrom = document.getElementById('dateFrom');
+            var dateTo = document.getElementById('dateTo');
+            var today = new Date(BASE_DATE + 'T00:00:00');
+            var from, to;
+            
+            switch(period) {
+                case 'daily':
+                    from = new Date(today);
+                    to = new Date(today);
+                    break;
+                case 'weekly':
+                    // 월요일 기준 해당 주 (월~일)
+                    var dayOfWeek = today.getDay();
+                    var mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                    from = new Date(today);
+                    from.setDate(today.getDate() + mondayOffset);
+                    to = new Date(today);
+                    break;
+                case 'monthly':
+                    from = new Date(today.getFullYear(), today.getMonth(), 1);
+                    to = new Date(today);
+                    break;
+            }
+            
+            dateFrom.value = formatDate(from);
+            dateTo.value = formatDate(to);
+            
+            // 활성 탭 스타일 갱신
+            var tabs = document.querySelectorAll('.period-tab');
+            tabs.forEach(function(tab) { tab.classList.remove('active'); });
+            btnEl.classList.add('active');
+        };
+        
+        window.clearPeriodActive = function() {
+            // 수동 날짜 변경 시 프리셋 탭 활성 해제
+            var tabs = document.querySelectorAll('.period-tab');
+            tabs.forEach(function(tab) { tab.classList.remove('active'); });
+        };
+        
+        window.applyDateRange = function() {
+            var dateFrom = document.getElementById('dateFrom');
+            var dateTo = document.getElementById('dateTo');
+            // 유효성 검증: From이 To보다 미래일 수 없음
+            if (dateFrom.value > dateTo.value) {
+                var temp = dateFrom.value;
+                dateFrom.value = dateTo.value;
+                dateTo.value = temp;
+            }
+            // 실제 구현 시 서버 API 호출 또는 대시보드 데이터 리로드
+            console.log('[Dashboard] 조회 기간:', dateFrom.value, '~', dateTo.value);
+        };
+    })();
+    </script>
+</body>
+</html>
