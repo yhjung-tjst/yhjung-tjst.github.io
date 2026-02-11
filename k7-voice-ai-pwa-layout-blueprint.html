@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인 단말(PWA) 레이아웃 배치도 — K7 Voice AI PoC v1.0</title>
+    
+    <!-- ============================================================
+         K7 Voice AI — 개인 단말(PWA) 레이아웃 배치도
+         Version: 1.0.0
+         Base: K7 Voice AI Design System v1.0.0
+         Project: 지능형 음성 AI 기반 무인 택배 접수 서비스 (PoC)
+         Client: 코리아세븐 / 롯데이노베이트
+         Author: 태정에스티 DX R&D Team
+         Last Updated: 2026-02-11
+         
+         Purpose:
+         주니어 디자이너·개발자가 각 컴포넌트의 위치·사이즈를
+         반복 조정하여 최적 UI/UX를 구현하기 위한 레이아웃 배치도.
+         
+         PWA Screens:
+         SCR-P-001: 초기 접속 / 권한 요청
+         SCR-P-002: 연결 완료
+         SCR-P-003: 음성 입력 활성
+         SCR-P-004: 보안 키패드 입력
+         SCR-P-005: 최종 요약 + 1차 확인
+         SCR-P-006: 접수 완료 안내
+    ============================================================ -->
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           DESIGN TOKENS (from K7 Voice AI Design System v1.0.0)
+        ============================================================ */
+        :root {
+            /* Foundation Colors */
+            --cyan-050: #ECFEFF;
+            --cyan-100: #CFFAFE;
+            --cyan-200: #A5F3FC;
+            --cyan-300: #67E8F9;
+            --cyan-500: #22D3EE;
+            --cyan-600: #06B6D4;
+            --cyan-700: #0891B2;
+
+            --gray-000: #FFFFFF;
+            --gray-025: #FCFCFD;
+            --gray-050: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+
+            --green-500: #22C55E;
+            --green-600: #16A34A;
+
+            --red-500: #EF4444;
+            --amber-500: #F59E0B;
+            --blue-500: #3B82F6;
+            --violet-500: #8B5CF6;
+
+            /* Partner Colors */
+            --k7-green-050: #E6F5F0;
+            --k7-green-500: #008062;
+            --k7-green-600: #006B52;
+            --k7-orange-500: #F4811F;
+            --k7-red-500: #ED2525;
+
+            /* Typography */
+            --font-primary: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+            /* Spacing (4px base) */
+            --sp-1: 4px;
+            --sp-2: 8px;
+            --sp-3: 12px;
+            --sp-4: 16px;
+            --sp-5: 20px;
+            --sp-6: 24px;
+            --sp-8: 32px;
+            --sp-10: 40px;
+            --sp-12: 48px;
+
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-default: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.06);
+
+            /* Document Layout */
+            --doc-max-width: 1440px;
+            --phone-width: 375px;
+            --phone-height: 812px;
+        }
+
+        /* ============================================================
+           GLOBAL STYLES
+        ============================================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--gray-050);
+            color: var(--gray-800);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================================
+           DOCUMENT HEADER
+        ============================================================ */
+        .doc-header {
+            background: linear-gradient(135deg, var(--k7-green-500) 0%, var(--cyan-500) 100%);
+            color: white;
+            padding: var(--sp-10) var(--sp-8);
+        }
+        .doc-header-inner {
+            max-width: var(--doc-max-width);
+            margin: 0 auto;
+        }
+        .doc-header .doc-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border-radius: var(--radius-full);
+            padding: var(--sp-1) var(--sp-4);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: var(--sp-4);
+        }
+        .doc-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--sp-2);
+        }
+        .doc-header .doc-subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        .doc-meta {
+            display: flex;
+            gap: var(--sp-6);
+            margin-top: var(--sp-5);
+            font-size: 13px;
+            opacity: 0.85;
+            flex-wrap: wrap;
+        }
+        .doc-meta span { display: flex; align-items: center; gap: var(--sp-1); }
+
+        /* ============================================================
+           NAVIGATION
+        ============================================================ */
+        .doc-nav {
+            background: var(--gray-000);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .doc-nav-inner {
+            max-width: var(--doc-max-width);
+            margin: 0 auto;
+            padding: 0 var(--sp-8);
+            display: flex;
+            overflow-x: auto;
+            gap: var(--sp-1);
+        }
+        .doc-nav a {
+            display: block;
+            padding: var(--sp-3) var(--sp-4);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-500);
+            text-decoration: none;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .doc-nav a:hover { color: var(--k7-green-500); }
+        .doc-nav a.active {
+            color: var(--k7-green-500);
+            border-bottom-color: var(--k7-green-500);
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           CONTENT AREA
+        ============================================================ */
+        .doc-content {
+            max-width: var(--doc-max-width);
+            margin: 0 auto;
+            padding: var(--sp-8);
+        }
+
+        /* ============================================================
+           INFO PANELS
+        ============================================================ */
+        .info-panel {
+            background: var(--gray-000);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-6);
+            margin-bottom: var(--sp-8);
+        }
+        .info-panel h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--sp-4);
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: var(--sp-2);
+        }
+        .info-panel h2 .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--sp-4);
+        }
+        .info-card {
+            background: var(--gray-050);
+            border-radius: var(--radius-md);
+            padding: var(--sp-4);
+        }
+        .info-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-400);
+            margin-bottom: var(--sp-1);
+        }
+        .info-card-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+        .info-card-value code {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            background: var(--gray-200);
+            padding: 1px 6px;
+            border-radius: var(--radius-sm);
+            color: var(--k7-green-600);
+        }
+
+        /* ============================================================
+           GRID SYSTEM REFERENCE
+        ============================================================ */
+        .grid-ref {
+            background: var(--gray-000);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-6);
+            margin-bottom: var(--sp-8);
+        }
+        .grid-ref h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: var(--sp-4);
+        }
+        .grid-cols-demo {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: var(--sp-4);
+        }
+        .grid-col-item {
+            background: linear-gradient(180deg, rgba(0,128,98,0.08) 0%, rgba(34,211,238,0.08) 100%);
+            border: 1px dashed rgba(0,128,98,0.3);
+            border-radius: var(--radius-default);
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        /* ============================================================
+           SCREEN SECTION
+        ============================================================ */
+        .screen-section {
+            margin-bottom: var(--sp-12);
+            scroll-margin-top: 60px;
+        }
+        .screen-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--sp-4);
+            margin-bottom: var(--sp-6);
+        }
+        .screen-id-badge {
+            background: var(--k7-green-500);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: var(--sp-1) var(--sp-3);
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+        }
+        .screen-header-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--sp-1);
+        }
+        .screen-header-text p {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+        .screen-phase {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--cyan-700);
+            background: var(--cyan-050);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            margin-left: var(--sp-2);
+        }
+
+        /* ============================================================
+           PHONE MOCKUP + LAYOUT BLUEPRINT
+        ============================================================ */
+        .screen-layout-area {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: var(--sp-8);
+            align-items: start;
+        }
+
+        .phone-mockup {
+            width: var(--phone-width);
+            flex-shrink: 0;
+        }
+        .phone-frame {
+            background: var(--gray-000);
+            border: 2px solid var(--gray-300);
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(0,0,0,0.02);
+            position: relative;
+        }
+        .phone-notch {
+            width: 150px;
+            height: 30px;
+            background: var(--gray-300);
+            border-radius: 0 0 20px 20px;
+            margin: 0 auto 0;
+            position: relative;
+            z-index: 2;
+        }
+        .phone-screen {
+            background: var(--gray-000);
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            min-height: 680px;
+        }
+
+        /* Grid Overlay */
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .grid-overlay.show {
+            opacity: 1;
+        }
+        .grid-overlay-cols {
+            display: grid;
+            grid-template-columns: var(--sp-4) repeat(4, 1fr) var(--sp-4);
+            gap: var(--sp-2);
+            height: 100%;
+        }
+        .grid-overlay-cols > div {
+            background: rgba(0, 128, 98, 0.06);
+            border-left: 1px dashed rgba(0, 128, 98, 0.15);
+            border-right: 1px dashed rgba(0, 128, 98, 0.15);
+        }
+        .grid-overlay-cols > div:first-child,
+        .grid-overlay-cols > div:last-child {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        /* Screen Components */
+        .scr-component {
+            position: relative;
+        }
+        .scr-component::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(0,128,98,0.5);
+            letter-spacing: 0.02em;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .show-labels .scr-component::before {
+            opacity: 1;
+        }
+
+        /* ============================================================
+           SPEC TABLE (Right Side)
+        ============================================================ */
+        .spec-panel {
+            background: var(--gray-000);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .spec-panel-header {
+            background: var(--gray-050);
+            padding: var(--sp-3) var(--sp-4);
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: var(--sp-2);
+        }
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .spec-table th {
+            text-align: left;
+            padding: var(--sp-2) var(--sp-3);
+            font-weight: 600;
+            color: var(--gray-500);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: var(--gray-025);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .spec-table td {
+            padding: var(--sp-2) var(--sp-3);
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: top;
+        }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .spec-table .comp-name {
+            font-weight: 600;
+            color: var(--gray-800);
+            white-space: nowrap;
+        }
+        .spec-table .comp-zone {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gray-000);
+            padding: 1px 6px;
+            border-radius: var(--radius-full);
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .zone-header { background: var(--k7-green-500); }
+        .zone-content { background: var(--blue-500); }
+        .zone-action { background: var(--k7-orange-500); }
+        .zone-footer { background: var(--gray-500); }
+        .zone-status { background: var(--cyan-600); }
+        .zone-security { background: var(--violet-500); }
+        .zone-overlay { background: var(--gray-700); }
+
+        .spec-table code {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            background: var(--gray-100);
+            padding: 1px 4px;
+            border-radius: 3px;
+            color: var(--k7-green-600);
+        }
+
+        .spec-note {
+            padding: var(--sp-3) var(--sp-4);
+            background: var(--cyan-050);
+            border-top: 1px solid var(--gray-200);
+            font-size: 12px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        .spec-note strong { color: var(--gray-800); }
+
+        /* ============================================================
+           CONTROLS
+        ============================================================ */
+        .controls-bar {
+            display: flex;
+            gap: var(--sp-3);
+            margin-bottom: var(--sp-4);
+            flex-wrap: wrap;
+        }
+        .ctrl-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-1);
+            padding: var(--sp-2) var(--sp-3);
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-default);
+            background: var(--gray-000);
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-primary);
+        }
+        .ctrl-btn:hover { border-color: var(--k7-green-500); color: var(--k7-green-500); }
+        .ctrl-btn.active {
+            background: var(--k7-green-500);
+            color: white;
+            border-color: var(--k7-green-500);
+        }
+
+        /* ============================================================
+           PHONE SCREEN INTERNAL STYLES
+        ============================================================ */
+        /* Common Phone Layout */
+        .pwa-screen {
+            display: flex;
+            flex-direction: column;
+            min-height: 680px;
+            font-family: var(--font-primary);
+            background: var(--gray-000);
+            position: relative;
+        }
+
+        /* Status Bar (simulated) */
+        .pwa-statusbar {
+            height: 44px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 0 var(--sp-4) var(--sp-1);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        /* PWA Header Zone */
+        .pwa-header {
+            padding: var(--sp-3) var(--sp-4);
+            text-align: center;
+        }
+        .pwa-header-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .pwa-header-subtitle {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        /* Content Zone */
+        .pwa-content {
+            flex: 1;
+            padding: 0 var(--sp-4);
+            overflow-y: auto;
+        }
+
+        /* Footer / Action Zone */
+        .pwa-footer {
+            padding: var(--sp-3) var(--sp-4) var(--sp-5);
+            border-top: 1px solid var(--gray-100);
+        }
+
+        /* Dimension Annotations */
+        .dim-annotation {
+            position: absolute;
+            font-size: 9px;
+            font-family: var(--font-mono);
+            color: var(--red-500);
+            font-weight: 600;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 20;
+        }
+        .show-dims .dim-annotation { opacity: 1; }
+
+        .dim-h {
+            border-top: 1px solid rgba(239,68,68,0.4);
+            border-bottom: 1px solid rgba(239,68,68,0.4);
+            padding: 0 2px;
+            background: rgba(255,255,255,0.9);
+        }
+        .dim-w {
+            border-left: 1px solid rgba(239,68,68,0.4);
+            border-right: 1px solid rgba(239,68,68,0.4);
+            padding: 0 2px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        /* ============================================================
+           COMPONENT HIGHLIGHT
+        ============================================================ */
+        .show-zones .scr-component[data-zone="header"] { outline: 2px dashed var(--k7-green-500); outline-offset: -1px; }
+        .show-zones .scr-component[data-zone="content"] { outline: 2px dashed var(--blue-500); outline-offset: -1px; }
+        .show-zones .scr-component[data-zone="action"] { outline: 2px dashed var(--k7-orange-500); outline-offset: -1px; }
+        .show-zones .scr-component[data-zone="footer"] { outline: 2px dashed var(--gray-500); outline-offset: -1px; }
+        .show-zones .scr-component[data-zone="status"] { outline: 2px dashed var(--cyan-600); outline-offset: -1px; }
+        .show-zones .scr-component[data-zone="security"] { outline: 2px dashed var(--violet-500); outline-offset: -1px; }
+
+        /* ============================================================
+           COMMON UI COMPONENTS (Inside Phone)
+        ============================================================ */
+        .ui-btn {
+            display: block;
+            width: 100%;
+            padding: var(--sp-3);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            cursor: default;
+            font-family: var(--font-primary);
+        }
+        .ui-btn-primary {
+            background: var(--k7-green-500);
+            color: white;
+        }
+        .ui-btn-disabled {
+            background: var(--gray-200);
+            color: var(--gray-400);
+        }
+        .ui-btn-ghost {
+            background: transparent;
+            color: var(--gray-500);
+            border: 1px solid var(--gray-200);
+        }
+
+        .ui-card {
+            background: var(--gray-050);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--sp-3);
+            margin-bottom: var(--sp-2);
+        }
+        .ui-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            margin-bottom: var(--sp-1);
+        }
+        .ui-card-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--gray-800);
+            padding: 2px 0;
+        }
+        .ui-card-row .label { color: var(--gray-500); font-size: 12px; }
+        .ui-card-row .value { font-weight: 500; }
+
+        .ui-icon-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto;
+        }
+
+        .ui-divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: var(--sp-3) 0;
+        }
+
+        .ui-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        /* Security indicator */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--k7-green-600);
+            font-weight: 500;
+        }
+
+        /* Voice Waveform */
+        .voice-waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 48px;
+            margin: var(--sp-3) 0;
+        }
+        .voice-waveform .bar {
+            width: 4px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, var(--cyan-500) 0%, var(--k7-green-500) 100%);
+        }
+
+        /* Numpad */
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: var(--sp-2);
+        }
+        .numpad-key {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-050);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-default);
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+        .numpad-key.empty { background: transparent; border: none; }
+
+        /* Progress Steps */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: var(--sp-2) 0;
+        }
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-300);
+        }
+        .step-dot.active { background: var(--k7-green-500); }
+        .step-dot.completed { background: var(--green-500); }
+        .step-connector {
+            width: 16px;
+            height: 2px;
+            background: var(--gray-300);
+        }
+        .step-connector.completed { background: var(--green-500); }
+
+        /* Spinner */
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--k7-green-500);
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+        ============================================================ */
+        @media (max-width: 1100px) {
+            .screen-layout-area {
+                grid-template-columns: 1fr;
+            }
+            .phone-mockup {
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .doc-content { padding: var(--sp-4); }
+            .phone-mockup { width: 100%; max-width: var(--phone-width); }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ============================================================
+           PRINT
+        ============================================================ */
+        @media print {
+            .doc-nav, .controls-bar { display: none; }
+            .screen-section { break-inside: avoid; page-break-inside: avoid; }
+            .doc-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+         DOCUMENT HEADER
+    ============================================================ -->
+    <header class="doc-header">
+        <div class="doc-header-inner">
+            <div class="doc-badge">UI/UX Design · 개인단말(PWA) Layout Blueprint</div>
+            <h1>개인 단말(PWA) 레이아웃 배치도</h1>
+            <p class="doc-subtitle">지능형 음성 AI 기반 무인 택배 접수 서비스 — 컴포넌트 구조도 &amp; 그리드 시스템</p>
+            <div class="doc-meta">
+                <span>📋 문서 버전: v1.0</span>
+                <span>📅 작성일: 2026-02-11</span>
+                <span>🏢 작성: 태정에스티 DX R&D Team</span>
+                <span>📨 수신: 롯데이노베이트</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================
+         STICKY NAVIGATION
+    ============================================================ -->
+    <nav class="doc-nav">
+        <div class="doc-nav-inner">
+            <a href="#overview" class="active">개요</a>
+            <a href="#grid-system">그리드 시스템</a>
+            <a href="#scr-p-001">P-001 초기접속</a>
+            <a href="#scr-p-002">P-002 연결완료</a>
+            <a href="#scr-p-003">P-003 음성입력</a>
+            <a href="#scr-p-004">P-004 보안키패드</a>
+            <a href="#scr-p-005">P-005 최종확인</a>
+            <a href="#scr-p-006">P-006 접수완료</a>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+         MAIN CONTENT
+    ============================================================ -->
+    <main class="doc-content">
+
+        <!-- ========== 개요 ========== -->
+        <section id="overview" class="info-panel">
+            <h2><span class="icon" style="background:var(--k7-green-050);color:var(--k7-green-500);">📐</span> 레이아웃 배치도 개요</h2>
+            <p style="font-size:14px;color:var(--gray-600);margin-bottom:var(--sp-5);line-height:1.7;">
+                개인 단말(PWA) 6개 화면(SCR-P-001 ~ SCR-P-006)의 레이아웃 구조와 컴포넌트 배치 정보를 포함합니다.
+            </p>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card-label">기준 디바이스</div>
+                    <div class="info-card-value">iPhone 14 기준 — <code>375 × 812 pt</code></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">설계 방향</div>
+                    <div class="info-card-value">반응형(Responsive) — 최소 320pt ~ 최대 428pt 대응</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">Safe Area</div>
+                    <div class="info-card-value">상단 <code>44pt</code> (노치) · 하단 <code>34pt</code> (홈 인디케이터)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">그리드 시스템</div>
+                    <div class="info-card-value">4컬럼 · 거터 <code>8pt</code> · 마진 <code>16pt</code></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">터치 타겟 최소</div>
+                    <div class="info-card-value"><code>44 × 44 pt</code> (WCAG 2.1 AA)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">디자인 시스템</div>
+                    <div class="info-card-value">K7 Voice AI Design System v1.0.0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== 그리드 시스템 ========== -->
+        <section id="grid-system" class="grid-ref">
+            <h3>📏 PWA 그리드 시스템 (4-Column Grid)</h3>
+            <p style="font-size:13px;color:var(--gray-500);margin-bottom:var(--sp-4);">
+                모든 PWA 화면은 아래 4컬럼 그리드를 기본 뼈대로 사용합니다. 
+                좌우 마진 16pt, 거터 8pt 기준이며, 각 컬럼 너비는 <code style="font-family:var(--font-mono);font-size:12px;background:var(--gray-100);padding:1px 4px;border-radius:3px;">(375 - 16×2 - 8×3) ÷ 4 = 79.25pt</code> 입니다.
+            </p>
+
+            <div style="max-width:375px;margin:0 auto;">
+                <!-- Margin + Column Visualization -->
+                <div style="display:flex;gap:0;margin-bottom:8px;">
+                    <div style="width:16px;background:rgba(239,68,68,0.08);border:1px dashed rgba(239,68,68,0.3);border-radius:4px;height:56px;display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:8px;color:var(--red-500);writing-mode:vertical-lr;font-weight:600;">16pt</span>
+                    </div>
+                    <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0;">
+                        <div class="grid-col-item">Col 1</div>
+                        <div class="grid-col-item">Col 2</div>
+                        <div class="grid-col-item">Col 3</div>
+                        <div class="grid-col-item">Col 4</div>
+                    </div>
+                    <div style="width:16px;background:rgba(239,68,68,0.08);border:1px dashed rgba(239,68,68,0.3);border-radius:4px;height:56px;display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:8px;color:var(--red-500);writing-mode:vertical-lr;font-weight:600;">16pt</span>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-bottom:var(--sp-4);">
+                    <span style="font-size:11px;color:var(--gray-400);font-weight:500;">← 전체 너비: 375pt →</span>
+                </div>
+            </div>
+
+            <!-- Zone Legend -->
+            <div style="display:flex;flex-wrap:wrap;gap:var(--sp-3);margin-top:var(--sp-4);padding-top:var(--sp-4);border-top:1px solid var(--gray-200);">
+                <span style="font-size:12px;font-weight:600;color:var(--gray-700);margin-right:var(--sp-2);">영역 구분:</span>
+                <span class="comp-zone zone-header">Header Zone</span>
+                <span class="comp-zone zone-content">Content Zone</span>
+                <span class="comp-zone zone-action">Action Zone</span>
+                <span class="comp-zone zone-status">Status Zone</span>
+                <span class="comp-zone zone-security">Security Zone</span>
+                <span class="comp-zone zone-footer">Footer Zone</span>
+            </div>
+        </section>
+
+        <!-- ========== Vertical Zones ========== -->
+        <section class="info-panel">
+            <h2><span class="icon" style="background:var(--cyan-050);color:var(--cyan-600);">📱</span> PWA 수직 영역(Vertical Zone) 정의</h2>
+            <p style="font-size:13px;color:var(--gray-500);margin-bottom:var(--sp-4);">
+                모든 PWA 화면은 아래 수직 영역 체계를 공통으로 적용합니다. 각 영역의 높이는 콘텐츠에 따라 유동적이나, 최소/최대 제약이 존재합니다.
+            </p>
+            <div style="max-width:375px;margin:0 auto;">
+                <div style="border:2px solid var(--gray-300);border-radius:28px;overflow:hidden;">
+                    <!-- Safe Area Top -->
+                    <div style="height:44px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;border-bottom:1px dashed var(--gray-300);">
+                        <span style="font-size:10px;color:var(--gray-400);font-weight:500;">Safe Area Top — 44pt</span>
+                    </div>
+                    <!-- Header -->
+                    <div style="padding:12px 16px;background:rgba(0,128,98,0.06);border-bottom:1px dashed var(--k7-green-500);">
+                        <div style="font-size:10px;color:var(--k7-green-500);font-weight:700;">HEADER ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">높이: 가변 (min 48pt) · 단계 인디케이터, 제목</div>
+                    </div>
+                    <!-- Content -->
+                    <div style="padding:16px;background:rgba(59,130,246,0.04);border-bottom:1px dashed var(--blue-500);min-height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                        <div style="font-size:10px;color:var(--blue-500);font-weight:700;">CONTENT ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-500);margin-top:2px;text-align:center;">높이: flex:1 (가용 공간 전체 차지)<br>메인 컨텐츠, 입력 UI, 정보 카드</div>
+                    </div>
+                    <!-- Action -->
+                    <div style="padding:12px 16px;background:rgba(244,129,31,0.06);border-bottom:1px dashed var(--k7-orange-500);">
+                        <div style="font-size:10px;color:var(--k7-orange-500);font-weight:700;">ACTION ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">높이: 가변 (min 56pt) · CTA 버튼, 보조 액션</div>
+                    </div>
+                    <!-- Footer -->
+                    <div style="padding:8px 16px;background:rgba(107,114,128,0.06);border-bottom:1px dashed var(--gray-400);">
+                        <div style="font-size:10px;color:var(--gray-500);font-weight:700;">FOOTER ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">높이: 가변 · 보안 배지, 부가 안내</div>
+                    </div>
+                    <!-- Safe Area Bottom -->
+                    <div style="height:34px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:10px;color:var(--gray-400);font-weight:500;">Safe Area Bottom — 34pt</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-001: PWA 초기 접속 / 권한 요청
+        ============================================================ -->
+        <section id="scr-p-001" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-001</span>
+                <div class="screen-header-text">
+                    <h2>PWA 초기 접속 / 권한 요청 화면 <span class="screen-phase">Phase 2 — 세션 페어링</span></h2>
+                    <p>QR 스캔 후 PWA 로딩 → 마이크 권한 요청 → WebRTC 연결 수립</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p001')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p001')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p001')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p001')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <!-- Phone Mockup -->
+                <div class="phone-mockup" id="p001">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <!-- Status Bar -->
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <!-- Header: Logo + Title -->
+                                <div class="scr-component" data-label="LOGO-AREA" data-zone="header" style="padding:var(--sp-8) var(--sp-4) var(--sp-4);text-align:center;">
+                                    <div class="ui-icon-circle" style="background:linear-gradient(135deg,var(--k7-green-500),var(--cyan-500));color:white;width:64px;height:64px;font-size:28px;margin-bottom:var(--sp-3);">
+                                        📦
+                                    </div>
+                                    <div style="font-size:17px;font-weight:700;color:var(--gray-900);">세븐일레븐 택배</div>
+                                    <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">음성 AI 접수 서비스</div>
+                                </div>
+                                <!-- Content: Connection Status -->
+                                <div class="scr-component" data-label="CONNECTION-STATUS" data-zone="content" style="padding:var(--sp-5) var(--sp-4);text-align:center;">
+                                    <div class="spinner" style="margin-bottom:var(--sp-3);"></div>
+                                    <div style="font-size:15px;font-weight:600;color:var(--gray-700);">키오스크 연결 중...</div>
+                                    <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">잠시만 기다려주세요</div>
+                                </div>
+                                <div class="ui-divider" style="margin:0 var(--sp-4);"></div>
+                                <!-- Content: Permission Request -->
+                                <div class="scr-component" data-label="PERMISSION-REQUEST" data-zone="action" style="padding:var(--sp-5) var(--sp-4);">
+                                    <div style="display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-4);">
+                                        <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--cyan-050);display:flex;align-items:center;justify-content:center;font-size:20px;">🎤</div>
+                                        <div>
+                                            <div style="font-size:14px;font-weight:600;color:var(--gray-800);">마이크 사용 권한</div>
+                                            <div style="font-size:12px;color:var(--gray-500);">음성 입력을 위해 필요합니다.</div>
+                                        </div>
+                                    </div>
+                                    <button class="ui-btn ui-btn-primary" style="border-radius:var(--radius-full);">허용하기</button>
+                                </div>
+                                <!-- Footer: Security Badge -->
+                                <div style="flex:1;"></div>
+                                <div class="scr-component" data-label="SECURITY-BADGE" data-zone="security" style="padding:var(--sp-4);text-align:center;">
+                                    <div class="security-badge" style="justify-content:center;">
+                                        🔒 모든 데이터는 종단간 암호화됩니다.
+                                    </div>
+                                </div>
+                                <!-- Dimensions -->
+                                <div class="dim-annotation dim-h" style="top:0;left:-40px;height:44px;">44pt</div>
+                                <div class="dim-annotation dim-w" style="bottom:-18px;left:16px;right:16px;text-align:center;">343pt (가용 너비)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spec Panel -->
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-001 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th>컴포넌트</th>
+                                <th>영역</th>
+                                <th>위치(Position)</th>
+                                <th>크기(Size)</th>
+                                <th>여백(Spacing)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">Status Bar</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td><code>top: 0</code></td>
+                                <td><code>W: 100% H: 44pt</code></td>
+                                <td><code>px: 16pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">서비스 로고</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td><code>top: 44pt</code> · 수평 중앙</td>
+                                <td><code>64 × 64 pt</code></td>
+                                <td><code>pt: 32pt pb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">서비스명 텍스트</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>로고 하단 · 수평 중앙</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>gap: 4pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">연결 상태 스피너</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>콘텐츠 영역 상단 · 수평 중앙</td>
+                                <td><code>32 × 32 pt</code></td>
+                                <td><code>pt: 20pt pb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">연결 상태 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>스피너 하단 · 수평 중앙</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>mb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">마이크 권한 카드</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>구분선 하단 · 전체 너비</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>px: 16pt pt: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"허용하기" 버튼</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>권한 카드 내부 하단</td>
+                                <td><code>W: 100% H: min 44pt</code></td>
+                                <td><code>mt: 16pt R: full</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">보안 배지</td>
+                                <td><span class="comp-zone zone-security">Security</span></td>
+                                <td>화면 최하단 · 수평 중앙</td>
+                                <td><code>W: auto H: auto</code></td>
+                                <td><code>pb: 16pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> QR 스캔 후 3초 이내 WebRTC 연결 완료 목표(NFR-PERF-005). 
+                        마이크 권한 거부 시 DTMF/키패드 입력만으로 서비스 진행 가능. 
+                        "허용하기" 버튼은 pill shape(border-radius: full)로 친근한 느낌 유지.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-002: 연결 완료 화면
+        ============================================================ -->
+        <section id="scr-p-002" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-002</span>
+                <div class="screen-header-text">
+                    <h2>연결 완료 화면 <span class="screen-phase">Phase 2 — 페어링 완료</span></h2>
+                    <p>세션 페어링 성공 안내 → E2EE 적용 확인 → 음성 안내 시작 (약 2~3초 표시 후 자동 전환)</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p002')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p002')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p002')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p002')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p002">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen" style="justify-content:center;text-align:center;">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header" style="position:absolute;top:0;left:0;right:0;">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <div style="padding:0 var(--sp-6);">
+                                    <div class="scr-component" data-label="SUCCESS-ICON" data-zone="content" style="margin-bottom:var(--sp-5);">
+                                        <div class="ui-icon-circle" style="background:var(--green-500);color:white;width:72px;height:72px;font-size:32px;">✓</div>
+                                    </div>
+                                    <div class="scr-component" data-label="SUCCESS-TITLE" data-zone="content">
+                                        <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:var(--sp-2);">연결 완료!</div>
+                                    </div>
+                                    <div class="scr-component" data-label="SUCCESS-DESC" data-zone="content">
+                                        <div style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:var(--sp-5);">
+                                            키오스크와 안전하게<br>연결되었습니다.
+                                        </div>
+                                    </div>
+                                    <div class="scr-component" data-label="E2EE-BADGE" data-zone="security" style="margin-bottom:var(--sp-8);">
+                                        <div style="display:inline-flex;align-items:center;gap:6px;background:var(--k7-green-050);padding:8px 16px;border-radius:var(--radius-full);font-size:13px;font-weight:500;color:var(--k7-green-600);">
+                                            🔒 종단간 암호화 적용됨
+                                        </div>
+                                    </div>
+                                    <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content">
+                                        <div style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:var(--sp-3);">
+                                            지금부터 음성으로<br>안내해 드리겠습니다.
+                                        </div>
+                                    </div>
+                                    <div class="scr-component" data-label="AUDIO-GUIDE" data-zone="footer">
+                                        <div style="font-size:12px;color:var(--gray-400);line-height:1.5;">
+                                            ※ 스마트폰 스피커 또는<br>이어폰을 사용해주세요.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-002 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">성공 아이콘</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>수직·수평 중앙 (상단 그룹)</td>
+                                <td><code>72 × 72 pt</code></td>
+                                <td><code>mb: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"연결 완료!" 제목</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>아이콘 하단 · 수평 중앙</td>
+                                <td><code>20px bold</code></td>
+                                <td><code>mb: 8pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">설명 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>제목 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>mb: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">E2EE 보안 배지</td>
+                                <td><span class="comp-zone zone-security">Security</span></td>
+                                <td>설명 하단 · 수평 중앙</td>
+                                <td><code>auto × 36pt</code></td>
+                                <td><code>px: 16pt mb: 32pt R: full</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 안내 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>배지 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>mb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">오디오 가이드</td>
+                                <td><span class="comp-zone zone-footer">Footer</span></td>
+                                <td>안내 하단 · 수평 중앙</td>
+                                <td><code>12px regular</code></td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 이 화면은 약 2~3초간 표시 후 SCR-P-003으로 자동 전환됩니다. 
+                        E2EE 배지로 보안 신뢰감을 확보(REQ-CH-004)하며, TTS "안녕하세요. 택배 접수를 도와드리겠습니다."가 동시 출력됩니다.
+                        전체 레이아웃은 수직 중앙 정렬(justify-content: center)로 안정감을 줍니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-003: 음성 입력 활성 화면
+        ============================================================ -->
+        <section id="scr-p-003" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-003</span>
+                <div class="screen-header-text">
+                    <h2>음성 입력 활성 화면 <span class="screen-phase">Phase 3 — 정보 수집</span></h2>
+                    <p>음성 인식 파형 표시 · TTS 안내 수신 · 최근 인식 텍스트 확인 · 음소거/종료 제어</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p003')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p003')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p003')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p003')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p003">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <!-- Step + Current Phase -->
+                                <div class="scr-component" data-label="STEP-INDICATOR" data-zone="header" style="padding:var(--sp-2) var(--sp-4);">
+                                    <div class="step-indicator">
+                                        <div class="step-dot active"></div>
+                                        <div class="step-connector"></div>
+                                        <div class="step-dot"></div>
+                                        <div class="step-connector"></div>
+                                        <div class="step-dot"></div>
+                                        <div class="step-connector"></div>
+                                        <div class="step-dot"></div>
+                                    </div>
+                                </div>
+                                <div class="scr-component" data-label="PHASE-TITLE" data-zone="header" style="padding:0 var(--sp-4) var(--sp-3);text-align:center;">
+                                    <div style="font-size:13px;color:var(--gray-400);font-weight:500;">현재 단계</div>
+                                    <div style="font-size:16px;font-weight:700;color:var(--gray-900);">보내는 분 정보</div>
+                                </div>
+                                <div class="ui-divider" style="margin:0 var(--sp-4);"></div>
+                                <!-- Voice Status -->
+                                <div class="scr-component" data-label="VOICE-STATUS" data-zone="status" style="padding:var(--sp-6) var(--sp-4);text-align:center;">
+                                    <div style="font-size:15px;font-weight:600;color:var(--cyan-700);">🎤 듣고 있어요...</div>
+                                </div>
+                                <!-- Waveform -->
+                                <div class="scr-component" data-label="VOICE-WAVEFORM" data-zone="content" style="padding:0 var(--sp-4);">
+                                    <div class="voice-waveform">
+                                        <div class="bar" style="height:16px;"></div>
+                                        <div class="bar" style="height:32px;"></div>
+                                        <div class="bar" style="height:24px;"></div>
+                                        <div class="bar" style="height:40px;"></div>
+                                        <div class="bar" style="height:28px;"></div>
+                                        <div class="bar" style="height:36px;"></div>
+                                        <div class="bar" style="height:20px;"></div>
+                                        <div class="bar" style="height:30px;"></div>
+                                        <div class="bar" style="height:14px;"></div>
+                                    </div>
+                                </div>
+                                <div class="ui-divider" style="margin:0 var(--sp-4);"></div>
+                                <!-- Recent Recognition -->
+                                <div class="scr-component" data-label="RECOGNITION-TEXT" data-zone="content" style="padding:var(--sp-4);">
+                                    <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-bottom:var(--sp-2);">최근 인식:</div>
+                                    <div style="font-size:15px;color:var(--gray-800);font-weight:500;line-height:1.5;background:var(--gray-050);padding:var(--sp-3);border-radius:var(--radius-md);border:1px solid var(--gray-200);">
+                                        "보내는 사람은<br>홍길동이에요"
+                                    </div>
+                                </div>
+                                <!-- Bottom Controls -->
+                                <div style="flex:1;"></div>
+                                <div class="scr-component" data-label="BOTTOM-CONTROLS" data-zone="action" style="padding:var(--sp-3) var(--sp-4) var(--sp-5);">
+                                    <div style="display:flex;gap:var(--sp-3);">
+                                        <button class="ui-btn ui-btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">🔇 음소거</button>
+                                        <button class="ui-btn ui-btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--red-500);border-color:rgba(239,68,68,0.3);">✕ 종료</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-003 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">단계 인디케이터</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>상단 safe area 직하 · 수평 중앙</td>
+                                <td><code>W: 100% H: 32pt</code></td>
+                                <td><code>px: 16pt py: 8pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">현재 단계 제목</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>인디케이터 하단 · 수평 중앙</td>
+                                <td><code>16px bold</code></td>
+                                <td><code>pb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 상태 텍스트</td>
+                                <td><span class="comp-zone zone-status">Status</span></td>
+                                <td>구분선 하단 · 수평 중앙</td>
+                                <td><code>15px semibold</code></td>
+                                <td><code>py: 24pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 파형 애니메이션</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>상태 텍스트 하단 · 수평 중앙</td>
+                                <td><code>W: 200pt H: 48pt</code></td>
+                                <td><code>py: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">최근 인식 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>구분선 하단 · 좌측 정렬</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>p: 16pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음소거 / 종료 버튼</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>화면 최하단 · 50:50 분할</td>
+                                <td><code>각 W: 50% H: min 44pt</code></td>
+                                <td><code>gap: 12pt px: 16pt pb: 20pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 음성 파형 바는 gradient(cyan→k7-green)로 AI 청취 상태를 시각화합니다.
+                        TTS 출력 시 "처리 중..." 상태로 전환하여 사용자 인지를 돕습니다.
+                        하단 2버튼은 동일 비율(1:1)로 배치하며, 종료 버튼은 red 톤으로 구분합니다.
+                        단계 인디케이터 dot 크기: 8×8pt, 커넥터: 16×2pt.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-004: 보안 키패드 입력 화면
+        ============================================================ -->
+        <section id="scr-p-004" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-004</span>
+                <div class="screen-header-text">
+                    <h2>보안 키패드 입력 화면 <span class="screen-phase">Phase 3 — 민감 정보</span></h2>
+                    <p>연락처 등 민감 정보를 보안 키패드로 입력 · 음성 입력 자동 차단 · E2EE 채널 전송</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p004')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p004')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p004')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p004')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p004">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <!-- Header -->
+                                <div class="scr-component" data-label="PHASE-HEADER" data-zone="header" style="padding:var(--sp-3) var(--sp-4);display:flex;align-items:center;gap:var(--sp-2);">
+                                    <span style="font-size:16px;">🔒</span>
+                                    <div>
+                                        <div style="font-size:13px;color:var(--gray-400);">현재 단계</div>
+                                        <div style="font-size:16px;font-weight:700;color:var(--gray-900);">연락처 입력</div>
+                                    </div>
+                                </div>
+                                <!-- Guide Text -->
+                                <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content" style="padding:var(--sp-2) var(--sp-4);">
+                                    <div style="font-size:14px;color:var(--gray-600);text-align:center;">보안을 위해 키패드로 입력해주세요.</div>
+                                </div>
+                                <!-- Input Display -->
+                                <div class="scr-component" data-label="INPUT-DISPLAY" data-zone="content" style="padding:var(--sp-4);">
+                                    <div style="background:var(--gray-050);border:2px solid var(--k7-green-500);border-radius:var(--radius-md);padding:var(--sp-3) var(--sp-4);text-align:center;font-size:22px;font-weight:600;font-family:var(--font-mono);color:var(--gray-900);letter-spacing:2px;">
+                                        010-1234-5678
+                                    </div>
+                                </div>
+                                <!-- Numpad -->
+                                <div class="scr-component" data-label="NUMPAD" data-zone="content" style="padding:0 var(--sp-6);">
+                                    <div class="numpad-grid">
+                                        <div class="numpad-key">1</div>
+                                        <div class="numpad-key">2</div>
+                                        <div class="numpad-key">3</div>
+                                        <div class="numpad-key">4</div>
+                                        <div class="numpad-key">5</div>
+                                        <div class="numpad-key">6</div>
+                                        <div class="numpad-key">7</div>
+                                        <div class="numpad-key">8</div>
+                                        <div class="numpad-key">9</div>
+                                        <div class="numpad-key empty"></div>
+                                        <div class="numpad-key">0</div>
+                                        <div class="numpad-key" style="font-size:14px;">⌫</div>
+                                    </div>
+                                </div>
+                                <!-- Submit Button -->
+                                <div class="scr-component" data-label="SUBMIT-BTN" data-zone="action" style="padding:var(--sp-4);">
+                                    <button class="ui-btn ui-btn-primary">입력 완료</button>
+                                </div>
+                                <!-- Mic Blocked Notice -->
+                                <div class="scr-component" data-label="MIC-BLOCKED" data-zone="security" style="padding:0 var(--sp-4) var(--sp-4);text-align:center;">
+                                    <div style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--gray-400);">
+                                        🔇 음성 입력이 차단되었습니다.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-004 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">보안 헤더</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>상단 · 좌측 정렬</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>px: 16pt py: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">안내 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>헤더 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>py: 8pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">입력값 디스플레이</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>안내 하단 · 수평 중앙</td>
+                                <td><code>W: 343pt H: 52pt</code></td>
+                                <td><code>px: 16pt py: 16pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">숫자 키패드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>디스플레이 하단 · 수평 중앙</td>
+                                <td><code>W: 4col H: auto</code><br>각 키 <code>min 48 × 48pt</code></td>
+                                <td><code>gap: 8pt px: 24pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"입력 완료" 버튼</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>키패드 하단 · 전체 너비</td>
+                                <td><code>W: 100% H: min 48pt</code></td>
+                                <td><code>p: 16pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 차단 안내</td>
+                                <td><span class="comp-zone zone-security">Security</span></td>
+                                <td>버튼 하단 · 수평 중앙</td>
+                                <td><code>12px regular</code></td>
+                                <td><code>pb: 16pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 키패드는 표준 전화기 레이아웃(3×4 그리드)을 따릅니다(AC-DOM-002-1). 
+                        입력 디스플레이는 <code>border: 2px solid k7-green</code>으로 활성 상태를 강조합니다.
+                        입력값 유효성 검증(11자리 형식)을 실시간 수행하며, 검증 실패 시 border가 red로 변경됩니다.
+                        입력 완료 시 E2EE DataChannel을 통해 키오스크로 전송합니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-005: 최종 요약 + 1차 확인 화면
+        ============================================================ -->
+        <section id="scr-p-005" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-005</span>
+                <div class="screen-header-text">
+                    <h2>최종 요약 + 1차 확인 화면 <span class="screen-phase">Phase 4 — 최종 확인</span></h2>
+                    <p>전체 접수 정보 요약 · 마스킹 없는 전체 정보 표시 · 1차 확인(Pre-confirm) 버튼 → Attestation Token 생성</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p005')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p005')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p005')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p005')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p005">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <!-- Header -->
+                                <div class="scr-component" data-label="SCREEN-TITLE" data-zone="header" style="padding:var(--sp-3) var(--sp-4);display:flex;align-items:center;gap:var(--sp-2);">
+                                    <span style="font-size:16px;">📋</span>
+                                    <div style="font-size:17px;font-weight:700;color:var(--gray-900);">접수 정보 확인</div>
+                                </div>
+                                <!-- Scrollable Cards -->
+                                <div class="scr-component" data-label="INFO-CARDS" data-zone="content" style="padding:0 var(--sp-4);flex:1;overflow-y:auto;">
+                                    <!-- Sender Card -->
+                                    <div class="ui-card">
+                                        <div class="ui-card-title">보내는 분</div>
+                                        <div class="ui-card-row"><span class="label">이름</span><span class="value">홍길동</span></div>
+                                        <div class="ui-card-row"><span class="label">연락처</span><span class="value">010-1234-5678</span></div>
+                                    </div>
+                                    <!-- Recipient Card -->
+                                    <div class="ui-card">
+                                        <div class="ui-card-title">받는 분</div>
+                                        <div class="ui-card-row"><span class="label">이름</span><span class="value">김철수</span></div>
+                                        <div class="ui-card-row"><span class="label">연락처</span><span class="value">010-9876-5432</span></div>
+                                        <div class="ui-card-row"><span class="label">주소</span><span class="value" style="text-align:right;max-width:180px;">서울 강남구 테헤란로 123</span></div>
+                                    </div>
+                                    <!-- Item Card -->
+                                    <div class="ui-card">
+                                        <div class="ui-card-title">물품 정보</div>
+                                        <div class="ui-card-row"><span class="label">품목</span><span class="value">노트북 × 1</span></div>
+                                        <div class="ui-card-row"><span class="label">가액</span><span class="value">500,000원</span></div>
+                                    </div>
+                                    <!-- Delivery Card -->
+                                    <div class="ui-card" style="border-color:var(--k7-green-500);background:var(--k7-green-050);">
+                                        <div class="ui-card-title" style="color:var(--k7-green-600);">배송 정보</div>
+                                        <div class="ui-card-row"><span class="label">배송비</span><span class="value" style="color:var(--k7-green-600);font-weight:700;">5,000원</span></div>
+                                        <div class="ui-card-row"><span class="label">도착</span><span class="value">1/22(수)</span></div>
+                                    </div>
+                                </div>
+                                <!-- Divider -->
+                                <div class="ui-divider" style="margin:0;"></div>
+                                <!-- Confirm Button -->
+                                <div class="scr-component" data-label="CONFIRM-BTN" data-zone="action" style="padding:var(--sp-4);">
+                                    <button class="ui-btn" style="background:var(--k7-green-500);color:white;font-size:16px;padding:var(--sp-4);border-radius:var(--radius-lg);">
+                                        ✓ 확인
+                                    </button>
+                                </div>
+                                <!-- Footer Note -->
+                                <div class="scr-component" data-label="FOOTER-NOTE" data-zone="footer" style="padding:0 var(--sp-4) var(--sp-4);text-align:center;">
+                                    <div style="font-size:11px;color:var(--gray-400);line-height:1.5;">
+                                        ※ 확인 버튼을 누르면 키오스크에서<br>최종 접수가 가능합니다.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-005 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">화면 제목</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>상단 · 좌측 정렬</td>
+                                <td><code>17px bold</code></td>
+                                <td><code>px: 16pt py: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">보내는 분 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>제목 하단 · 전체 너비</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>px: 16pt mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">받는 분 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>보내는 분 하단</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">물품 정보 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>받는 분 하단</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">배송 정보 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>물품 정보 하단 (강조 스타일)</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"확인" 버튼 (CTA)</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>카드 영역 하단 · 전체 너비</td>
+                                <td><code>W: 100% H: 52pt</code></td>
+                                <td><code>p: 16pt R: 16pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">안내 텍스트</td>
+                                <td><span class="comp-zone zone-footer">Footer</span></td>
+                                <td>버튼 하단 · 수평 중앙</td>
+                                <td><code>11px regular</code></td>
+                                <td><code>pb: 16pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 개인 단말에서는 민감 정보가 마스킹 없이 전체 표시됩니다(키오스크에서는 마스킹 적용). 
+                        카드 영역은 스크롤 가능(overflow-y: auto)하며, 배송 정보 카드는 k7-green 강조 스타일로 비용/일정을 한눈에 인지시킵니다.
+                        "확인" 버튼 터치 시 Attestation Token(데이터 해시 + 타임스탬프 + 디바이스 정보)이 생성되어 E2EE 채널을 통해 키오스크로 전송됩니다(F-016).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-006: 접수 완료 안내 화면
+        ============================================================ -->
+        <section id="scr-p-006" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-006</span>
+                <div class="screen-header-text">
+                    <h2>접수 완료 안내 화면 <span class="screen-phase">Phase 5 — 완료</span></h2>
+                    <p>택배 접수 완료 확인 · 운송장 번호 표시 · 키오스크에서 운송장 수령 안내 · 세션 종료</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p006')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p006')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p006')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p006')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p006">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen" style="justify-content:center;text-align:center;">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header" style="position:absolute;top:0;left:0;right:0;">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <div style="padding:0 var(--sp-6);">
+                                    <!-- Success Icon -->
+                                    <div class="scr-component" data-label="SUCCESS-ICON" data-zone="content" style="margin-bottom:var(--sp-5);">
+                                        <div class="ui-icon-circle" style="background:var(--green-500);color:white;width:72px;height:72px;font-size:32px;">✓</div>
+                                    </div>
+                                    <!-- Title -->
+                                    <div class="scr-component" data-label="COMPLETE-TITLE" data-zone="content">
+                                        <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:var(--sp-5);">접수 완료!</div>
+                                    </div>
+                                    <!-- Waybill Number -->
+                                    <div class="scr-component" data-label="WAYBILL-NUMBER" data-zone="content" style="margin-bottom:var(--sp-5);">
+                                        <div style="background:var(--gray-050);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:var(--sp-3) var(--sp-4);">
+                                            <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-bottom:4px;">운송장 번호</div>
+                                            <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:var(--gray-900);letter-spacing:1px;">1234-5678-9012</div>
+                                        </div>
+                                    </div>
+                                    <!-- Guide -->
+                                    <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content" style="margin-bottom:var(--sp-8);">
+                                        <div style="font-size:14px;color:var(--gray-600);line-height:1.6;">
+                                            키오스크에서 운송장을<br>수령해주세요.
+                                        </div>
+                                    </div>
+                                    <div class="ui-divider"></div>
+                                    <!-- Thank You -->
+                                    <div class="scr-component" data-label="THANK-YOU" data-zone="footer" style="margin-top:var(--sp-3);">
+                                        <div style="font-size:14px;color:var(--gray-600);margin-bottom:var(--sp-3);">이용해주셔서 감사합니다.</div>
+                                        <div style="font-size:12px;color:var(--gray-400);">※ 이 페이지를 닫아도 됩니다.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-006 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">성공 아이콘</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>수직·수평 중앙 (상단 그룹)</td>
+                                <td><code>72 × 72 pt</code></td>
+                                <td><code>mb: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"접수 완료!" 제목</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>아이콘 하단 · 수평 중앙</td>
+                                <td><code>20px bold</code></td>
+                                <td><code>mb: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">운송장 번호 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>제목 하단 · 수평 중앙</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>px: 16pt mb: 20pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">안내 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>카드 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>mb: 32pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">감사 메시지</td>
+                                <td><span class="comp-zone zone-footer">Footer</span></td>
+                                <td>구분선 하단 · 수평 중앙</td>
+                                <td><code>14px / 12px</code></td>
+                                <td><code>mt: 12pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 운송장 번호는 mono 폰트(JetBrains Mono / Consolas)로 명확히 표시합니다.
+                        이 화면에서 TTS 동시 출력: "접수가 완료되었습니다. 운송장을 부착해주세요."
+                        사용자가 이 페이지를 닫아도 키오스크 측에서 세션은 정상 종료됩니다.
+                        전체 레이아웃은 SCR-P-002와 동일한 수직 중앙 정렬 구조입니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ============================================================
+         FOOTER
+    ============================================================ -->
+    <footer style="background:var(--gray-800);color:var(--gray-400);padding:var(--sp-8);text-align:center;font-size:13px;line-height:1.6;">
+        <div style="max-width:var(--doc-max-width);margin:0 auto;">
+            <div style="font-weight:600;color:var(--gray-200);margin-bottom:var(--sp-2);">태정에스티 · DX R&D Team</div>
+            <div>지능형 음성 AI 기반 무인 택배 접수 서비스 PoC — 개인 단말(PWA) 레이아웃 배치도 v1.0</div>
+            <div style="margin-top:var(--sp-2);font-size:11px;">본 문서는 프로젝트 진행에 따라 업데이트될 수 있으며, 변경 시 버전 관리를 통해 이력을 추적합니다.</div>
+        </div>
+    </footer>
+
+
+    <!-- ============================================================
+         SCRIPTS — Toggle Controls
+    ============================================================ -->
+    <script>
+        // Toggle functions for each screen mockup
+        function toggleGrid(id) {
+            const el = document.querySelector('#' + id + ' .grid-overlay');
+            if (el) el.classList.toggle('show');
+            toggleBtnState(id, '📐 그리드');
+        }
+        function toggleZones(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('show-zones');
+            toggleBtnState(id, '🎨 영역 표시');
+        }
+        function toggleLabels(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('show-labels');
+            toggleBtnState(id, '🏷️ 라벨');
+        }
+        function toggleDims(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('show-dims');
+            toggleBtnState(id, '📏 치수');
+        }
+
+        function toggleBtnState(sectionId, btnText) {
+            const section = document.getElementById(sectionId)?.closest('.screen-section');
+            if (!section) return;
+            const btns = section.querySelectorAll('.ctrl-btn');
+            btns.forEach(btn => {
+                if (btn.textContent.trim() === btnText) {
+                    btn.classList.toggle('active');
+                }
+            });
+        }
+
+        // Sticky nav active state
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.doc-nav a');
+            const sections = document.querySelectorAll('[id]');
+            
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', 
+                                link.getAttribute('href') === '#' + entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-80px 0px -70% 0px' });
+
+            sections.forEach(section => {
+                if (document.querySelector('.doc-nav a[href="#' + section.id + '"]')) {
+                    observer.observe(section);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
