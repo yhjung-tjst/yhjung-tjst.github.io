@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>키오스크 레이아웃 배치도 — K7 Voice AI PoC v1.0</title>
+    <title>개인 단말(PWA) 레이아웃 배치도 — K7 Voice AI PoC v1.0</title>
     
     <!-- ============================================================
-         K7 Voice AI — 키오스크 레이아웃 배치도
+         K7 Voice AI — 개인 단말(PWA) 레이아웃 배치도
          Version: 1.0.0
          Base: K7 Voice AI Design System v1.0.0
          Project: 지능형 음성 AI 기반 무인 택배 접수 서비스 (PoC)
@@ -16,24 +16,15 @@
          
          Purpose:
          주니어 디자이너·개발자가 각 컴포넌트의 위치·사이즈를
-         반복 조정하여 최적 UI/UX를 구현하기 위한 키오스크 레이아웃 배치도.
+         반복 조정하여 최적 UI/UX를 구현하기 위한 레이아웃 배치도.
          
-         Kiosk Screens (총 11개 화면, 2가지 채널 모드 포함):
-         SCR-K-001: 서비스 시작 (대기) 화면
-         SCR-K-002: 채널 선택 화면
-         SCR-K-003: 세션 페어링 화면 (QR / 전화)
-         SCR-K-004: 연결 완료 화면
-         SCR-K-005: 정보 수집 화면 (음성 입력 모드) — PWA 연동 / 마이크 직접
-         SCR-K-006: 정보 수집 화면 (민감 정보 대기) — PWA 전용
-         SCR-K-007: 주소 후보 선택 화면
-         SCR-K-008: 최종 확인 화면 (2단계 확인) — PWA 연동 / 마이크 직접
-         SCR-K-009: 트랜잭션 처리 중 화면
-         SCR-K-010: 접수 완료 화면
-         SCR-K-011: 오류/재시도 화면
-         
-         Channel Modes:
-         [A] PWA 연동 모드 — 개인 단말(PWA) 음성 입력
-         [B] 마이크 직접 모드 — 키오스크 내장 마이크 음성 입력
+         PWA Screens:
+         SCR-P-001: 초기 접속 / 권한 요청
+         SCR-P-002: 연결 완료
+         SCR-P-003: 음성 입력 활성
+         SCR-P-004: 보안 키패드 입력
+         SCR-P-005: 최종 요약 + 1차 확인
+         SCR-P-006: 접수 완료 안내
     ============================================================ -->
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -66,25 +57,18 @@
             --gray-800: #1F2937;
             --gray-900: #111827;
 
-            --green-050: #F0FDF4;
             --green-500: #22C55E;
             --green-600: #16A34A;
 
-            --red-050: #FEF2F2;
             --red-500: #EF4444;
-            --amber-050: #FFFBEB;
             --amber-500: #F59E0B;
-            --blue-050: #EFF6FF;
             --blue-500: #3B82F6;
             --violet-500: #8B5CF6;
 
             /* Partner Colors */
             --k7-green-050: #E6F5F0;
-            --k7-green-300: #33A882;
             --k7-green-500: #008062;
             --k7-green-600: #006B52;
-            --k7-green-700: #005642;
-            --k7-orange-050: #FFF4E8;
             --k7-orange-500: #F4811F;
             --k7-red-500: #ED2525;
 
@@ -118,9 +102,8 @@
 
             /* Document Layout */
             --doc-max-width: 1440px;
-            /* Kiosk mockup: 1080×1920 portrait scaled to preview */
-            --kiosk-width: 270px;
-            --kiosk-height: 480px;
+            --phone-width: 375px;
+            --phone-height: 812px;
         }
 
         /* ============================================================
@@ -200,8 +183,8 @@
         }
         .doc-nav a {
             display: block;
-            padding: var(--sp-3) var(--sp-3);
-            font-size: 12px;
+            padding: var(--sp-3) var(--sp-4);
+            font-size: 13px;
             font-weight: 500;
             color: var(--gray-500);
             text-decoration: none;
@@ -302,6 +285,12 @@
             color: var(--gray-800);
             margin-bottom: var(--sp-4);
         }
+        .grid-cols-demo {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: var(--sp-4);
+        }
         .grid-col-item {
             background: linear-gradient(180deg, rgba(0,128,98,0.08) 0%, rgba(34,211,238,0.08) 100%);
             border: 1px dashed rgba(0,128,98,0.3);
@@ -358,20 +347,9 @@
             border-radius: var(--radius-full);
             margin-left: var(--sp-2);
         }
-        .channel-badge {
-            display: inline-block;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: var(--radius-full);
-            margin-left: var(--sp-1);
-        }
-        .channel-pwa { background: var(--violet-500); color: white; }
-        .channel-mic { background: var(--k7-orange-500); color: white; }
-        .channel-both { background: var(--gray-600); color: white; }
 
         /* ============================================================
-           KIOSK MOCKUP + LAYOUT BLUEPRINT
+           PHONE MOCKUP + LAYOUT BLUEPRINT
         ============================================================ */
         .screen-layout-area {
             display: grid;
@@ -380,37 +358,33 @@
             align-items: start;
         }
 
-        .kiosk-mockup {
-            width: var(--kiosk-width);
+        .phone-mockup {
+            width: var(--phone-width);
             flex-shrink: 0;
         }
-        .kiosk-frame {
+        .phone-frame {
             background: var(--gray-000);
             border: 2px solid var(--gray-300);
-            border-radius: 12px;
-            padding: 6px;
+            border-radius: 40px;
+            padding: 12px;
             box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(0,0,0,0.02);
             position: relative;
         }
-        .kiosk-bezel-top {
-            height: 16px;
-            background: var(--gray-200);
-            border-radius: 6px 6px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .phone-notch {
+            width: 150px;
+            height: 30px;
+            background: var(--gray-300);
+            border-radius: 0 0 20px 20px;
+            margin: 0 auto 0;
+            position: relative;
+            z-index: 2;
         }
-        .kiosk-bezel-top .cam {
-            width: 6px; height: 6px;
-            background: var(--gray-400);
-            border-radius: 50%;
-        }
-        .kiosk-screen {
+        .phone-screen {
             background: var(--gray-000);
-            border-radius: 4px;
+            border-radius: 28px;
             overflow: hidden;
             position: relative;
-            height: var(--kiosk-height);
+            min-height: 680px;
         }
 
         /* Grid Overlay */
@@ -422,11 +396,13 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
-        .grid-overlay.show { opacity: 1; }
+        .grid-overlay.show {
+            opacity: 1;
+        }
         .grid-overlay-cols {
             display: grid;
-            grid-template-columns: var(--sp-3) repeat(6, 1fr) var(--sp-3);
-            gap: 3px;
+            grid-template-columns: var(--sp-4) repeat(4, 1fr) var(--sp-4);
+            gap: var(--sp-2);
             height: 100%;
         }
         .grid-overlay-cols > div {
@@ -441,13 +417,15 @@
         }
 
         /* Screen Components */
-        .scr-component { position: relative; }
+        .scr-component {
+            position: relative;
+        }
         .scr-component::before {
             content: attr(data-label);
             position: absolute;
-            top: 1px;
-            right: 2px;
-            font-size: 7px;
+            top: 2px;
+            right: 4px;
+            font-size: 9px;
             font-weight: 700;
             color: rgba(0,128,98,0.5);
             letter-spacing: 0.02em;
@@ -456,7 +434,9 @@
             z-index: 5;
             pointer-events: none;
         }
-        .show-labels .scr-component::before { opacity: 1; }
+        .show-labels .scr-component::before {
+            opacity: 1;
+        }
 
         /* ============================================================
            SPEC TABLE (Right Side)
@@ -573,216 +553,63 @@
         }
 
         /* ============================================================
-           KIOSK SCREEN INTERNAL STYLES
+           PHONE SCREEN INTERNAL STYLES
         ============================================================ */
-        .kio-screen {
+        /* Common Phone Layout */
+        .pwa-screen {
             display: flex;
             flex-direction: column;
-            height: var(--kiosk-height);
+            min-height: 680px;
             font-family: var(--font-primary);
             background: var(--gray-000);
             position: relative;
-            font-size: 9px;
         }
 
-        /* K7 Brand Header */
-        .kio-brand-header {
-            height: 28px;
-            background: var(--k7-green-500);
-            color: white;
+        /* Status Bar (simulated) */
+        .pwa-statusbar {
+            height: 44px;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: space-between;
-            padding: 0 10px;
-            font-size: 8px;
+            padding: 0 var(--sp-4) var(--sp-1);
+            font-size: 12px;
             font-weight: 600;
+            color: var(--gray-800);
         }
 
-        /* Step Indicator Bar */
-        .kio-step-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            padding: 6px 10px;
-            background: var(--gray-050);
-            border-bottom: 1px solid var(--gray-200);
+        /* PWA Header Zone */
+        .pwa-header {
+            padding: var(--sp-3) var(--sp-4);
+            text-align: center;
         }
-        .kio-step-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--gray-300);
+        .pwa-header-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
         }
-        .kio-step-dot.done { background: var(--green-500); }
-        .kio-step-dot.active { background: var(--k7-green-500); width: 8px; height: 8px; }
-        .kio-step-line {
-            width: 12px; height: 2px;
-            background: var(--gray-300);
+        .pwa-header-subtitle {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
         }
-        .kio-step-line.done { background: var(--green-500); }
 
         /* Content Zone */
-        .kio-content {
+        .pwa-content {
             flex: 1;
-            padding: 8px 10px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            padding: 0 var(--sp-4);
+            overflow-y: auto;
         }
 
-        /* Guide Message */
-        .kio-guide {
-            background: var(--cyan-050);
-            border: 1px solid var(--cyan-200);
-            border-radius: 6px;
-            padding: 6px 8px;
-            font-size: 9px;
-            color: var(--gray-700);
-            text-align: center;
-            margin-bottom: 6px;
-        }
-
-        /* Transcript Area */
-        .kio-transcript {
-            background: var(--gray-050);
-            border: 1px solid var(--gray-200);
-            border-radius: 6px;
-            padding: 6px;
-            margin-bottom: 6px;
-            min-height: 24px;
-            font-size: 8px;
-            color: var(--gray-600);
-        }
-
-        /* Info Cards */
-        .kio-card {
-            background: var(--gray-050);
-            border: 1px solid var(--gray-200);
-            border-radius: 6px;
-            padding: 6px 8px;
-            margin-bottom: 4px;
-        }
-        .kio-card-title {
-            font-size: 7px;
-            font-weight: 600;
-            color: var(--gray-500);
-            margin-bottom: 3px;
-        }
-        .kio-card-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 8px;
-            color: var(--gray-700);
-            padding: 1px 0;
-        }
-        .kio-card-row .label { color: var(--gray-400); }
-        .kio-card-row .value { font-weight: 500; }
-        .kio-card-row .check { color: var(--green-500); }
-
-        /* Action Footer */
-        .kio-footer {
-            padding: 6px 10px 8px;
-            border-top: 1px solid var(--gray-200);
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .kio-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 8px;
-            font-weight: 600;
-            font-family: var(--font-primary);
-            border: none;
-            cursor: default;
-        }
-        .kio-btn-primary {
-            background: var(--k7-green-500);
-            color: white;
-            flex: 1;
-        }
-        .kio-btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-600);
-            border: 1px solid var(--gray-300);
-        }
-        .kio-btn-disabled {
-            background: var(--gray-200);
-            color: var(--gray-400);
-            flex: 1;
-        }
-        .kio-btn-ghost {
-            background: transparent;
-            color: var(--gray-500);
-            font-size: 7px;
-        }
-        .kio-btn-danger {
-            background: var(--red-050);
-            color: var(--red-500);
-            border: 1px solid rgba(239,68,68,0.2);
-        }
-
-        /* Fallback footer */
-        .kio-fallback-bar {
-            padding: 4px 10px;
+        /* Footer / Action Zone */
+        .pwa-footer {
+            padding: var(--sp-3) var(--sp-4) var(--sp-5);
             border-top: 1px solid var(--gray-100);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 7px;
-            color: var(--gray-400);
-            background: var(--gray-025);
-        }
-        .kio-fallback-link {
-            color: var(--gray-500);
-            font-weight: 500;
-        }
-
-        /* QR Code placeholder */
-        .kio-qr {
-            width: 70px; height: 70px;
-            background: var(--gray-100);
-            border: 2px solid var(--gray-300);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            margin: 0 auto;
-        }
-
-        /* Voice Indicator */
-        .kio-voice-orb {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--k7-green-500) 0%, var(--cyan-500) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            font-size: 14px;
-            color: white;
-        }
-        .kio-voice-bars {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            height: 20px;
-        }
-        .kio-voice-bars .bar {
-            width: 2px;
-            border-radius: 1px;
-            background: linear-gradient(180deg, var(--cyan-500) 0%, var(--k7-green-500) 100%);
         }
 
         /* Dimension Annotations */
         .dim-annotation {
             position: absolute;
-            font-size: 7px;
+            font-size: 9px;
             font-family: var(--font-mono);
             color: var(--red-500);
             font-weight: 600;
@@ -793,7 +620,22 @@
         }
         .show-dims .dim-annotation { opacity: 1; }
 
-        /* Component Highlight */
+        .dim-h {
+            border-top: 1px solid rgba(239,68,68,0.4);
+            border-bottom: 1px solid rgba(239,68,68,0.4);
+            padding: 0 2px;
+            background: rgba(255,255,255,0.9);
+        }
+        .dim-w {
+            border-left: 1px solid rgba(239,68,68,0.4);
+            border-right: 1px solid rgba(239,68,68,0.4);
+            padding: 0 2px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        /* ============================================================
+           COMPONENT HIGHLIGHT
+        ============================================================ */
         .show-zones .scr-component[data-zone="header"] { outline: 2px dashed var(--k7-green-500); outline-offset: -1px; }
         .show-zones .scr-component[data-zone="content"] { outline: 2px dashed var(--blue-500); outline-offset: -1px; }
         .show-zones .scr-component[data-zone="action"] { outline: 2px dashed var(--k7-orange-500); outline-offset: -1px; }
@@ -801,144 +643,161 @@
         .show-zones .scr-component[data-zone="status"] { outline: 2px dashed var(--cyan-600); outline-offset: -1px; }
         .show-zones .scr-component[data-zone="security"] { outline: 2px dashed var(--violet-500); outline-offset: -1px; }
 
-        /* Numpad mini */
-        .kio-numpad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
-            padding: 4px;
-        }
-        .kio-numpad-key {
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--gray-050);
-            border: 1px solid var(--gray-200);
-            border-radius: 3px;
-            font-size: 8px;
-            font-weight: 500;
-            color: var(--gray-700);
-        }
-        .kio-numpad-key.empty { background: transparent; border: none; }
-
-        /* Address candidates */
-        .kio-address-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 6px;
-            background: var(--gray-050);
-            border: 1px solid var(--gray-200);
-            border-radius: 4px;
-            margin-bottom: 3px;
-            font-size: 7px;
-        }
-        .kio-address-item .confidence {
+        /* ============================================================
+           COMMON UI COMPONENTS (Inside Phone)
+        ============================================================ */
+        .ui-btn {
+            display: block;
+            width: 100%;
+            padding: var(--sp-3);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
             font-weight: 600;
-            color: var(--k7-green-500);
-            font-size: 7px;
-        }
-
-        /* Channel selection cards */
-        .kio-channel-cards {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-            margin: 8px 0;
-        }
-        .kio-channel-card {
-            flex: 1;
             text-align: center;
-            padding: 8px 4px;
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            background: var(--gray-000);
-            font-size: 7px;
+            cursor: default;
+            font-family: var(--font-primary);
         }
-        .kio-channel-card.recommended {
-            border-color: var(--k7-green-500);
-            background: var(--k7-green-050);
-        }
-        .kio-channel-card .icon { font-size: 16px; margin-bottom: 3px; }
-        .kio-channel-card .title { font-weight: 600; color: var(--gray-800); }
-        .kio-channel-card .desc { color: var(--gray-500); font-size: 6px; margin-top: 2px; }
-        .kio-recommend-badge {
-            display: inline-block;
-            font-size: 5px;
-            font-weight: 700;
+        .ui-btn-primary {
             background: var(--k7-green-500);
             color: white;
-            padding: 1px 4px;
-            border-radius: var(--radius-full);
-            margin-top: 2px;
+        }
+        .ui-btn-disabled {
+            background: var(--gray-200);
+            color: var(--gray-400);
+        }
+        .ui-btn-ghost {
+            background: transparent;
+            color: var(--gray-500);
+            border: 1px solid var(--gray-200);
         }
 
-        /* Progress dots for secure input */
-        .kio-progress-dots {
-            display: flex;
-            gap: 3px;
-            justify-content: center;
-            margin: 4px 0;
+        .ui-card {
+            background: var(--gray-050);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--sp-3);
+            margin-bottom: var(--sp-2);
         }
-        .kio-progress-dots .dot {
-            width: 8px; height: 8px;
+        .ui-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            margin-bottom: var(--sp-1);
+        }
+        .ui-card-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--gray-800);
+            padding: 2px 0;
+        }
+        .ui-card-row .label { color: var(--gray-500); font-size: 12px; }
+        .ui-card-row .value { font-weight: 500; }
+
+        .ui-icon-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto;
+        }
+
+        .ui-divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: var(--sp-3) 0;
+        }
+
+        .ui-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        /* Security indicator */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--k7-green-600);
+            font-weight: 500;
+        }
+
+        /* Voice Waveform */
+        .voice-waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 48px;
+            margin: var(--sp-3) 0;
+        }
+        .voice-waveform .bar {
+            width: 4px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, var(--cyan-500) 0%, var(--k7-green-500) 100%);
+        }
+
+        /* Numpad */
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: var(--sp-2);
+        }
+        .numpad-key {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-050);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-default);
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+        .numpad-key.empty { background: transparent; border: none; }
+
+        /* Progress Steps */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: var(--sp-2) 0;
+        }
+        .step-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--gray-300);
         }
-        .kio-progress-dots .dot.filled {
-            background: var(--k7-green-500);
+        .step-dot.active { background: var(--k7-green-500); }
+        .step-dot.completed { background: var(--green-500); }
+        .step-connector {
+            width: 16px;
+            height: 2px;
+            background: var(--gray-300);
         }
+        .step-connector.completed { background: var(--green-500); }
 
-        /* Mode tab */
-        .mode-tabs {
-            display: flex;
-            gap: var(--sp-2);
-            margin-bottom: var(--sp-4);
+        /* Spinner */
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--k7-green-500);
+            border-radius: 50%;
+            margin: 0 auto;
         }
-        .mode-tab {
-            padding: var(--sp-2) var(--sp-4);
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-default);
-            background: var(--gray-000);
-            color: var(--gray-500);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font-primary);
-        }
-        .mode-tab.active-pwa {
-            background: var(--violet-500);
-            color: white;
-            border-color: var(--violet-500);
-        }
-        .mode-tab.active-mic {
-            background: var(--k7-orange-500);
-            color: white;
-            border-color: var(--k7-orange-500);
-        }
-
-        /* Dual mockup layout */
-        .dual-mockup-area {
-            display: flex;
-            gap: var(--sp-6);
-            flex-wrap: wrap;
-        }
-        .dual-mockup-col {
-            flex: 1;
-            min-width: 0;
-        }
-        .dual-mockup-col .mode-label {
-            text-align: center;
-            font-size: 11px;
-            font-weight: 600;
-            padding: var(--sp-2);
-            border-radius: var(--radius-default);
-            margin-bottom: var(--sp-2);
-        }
-        .mode-label-pwa { background: rgba(139,92,246,0.1); color: var(--violet-500); }
-        .mode-label-mic { background: rgba(244,129,31,0.1); color: var(--k7-orange-500); }
 
         /* ============================================================
            RESPONSIVE
@@ -947,22 +806,22 @@
             .screen-layout-area {
                 grid-template-columns: 1fr;
             }
-            .kiosk-mockup {
+            .phone-mockup {
                 margin: 0 auto;
             }
         }
 
         @media (max-width: 768px) {
             .doc-content { padding: var(--sp-4); }
+            .phone-mockup { width: 100%; max-width: var(--phone-width); }
             .info-grid { grid-template-columns: 1fr; }
-            .dual-mockup-area { flex-direction: column; align-items: center; }
         }
 
         /* ============================================================
            PRINT
         ============================================================ */
         @media print {
-            .doc-nav, .controls-bar, .mode-tabs { display: none; }
+            .doc-nav, .controls-bar { display: none; }
             .screen-section { break-inside: avoid; page-break-inside: avoid; }
             .doc-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
@@ -976,8 +835,8 @@
     ============================================================ -->
     <header class="doc-header">
         <div class="doc-header-inner">
-            <div class="doc-badge">UI/UX Design · Kiosk Layout Blueprint</div>
-            <h1>키오스크 레이아웃 배치도</h1>
+            <div class="doc-badge">UI/UX Design · 개인단말(PWA) Layout Blueprint</div>
+            <h1>개인 단말(PWA) 레이아웃 배치도</h1>
             <p class="doc-subtitle">지능형 음성 AI 기반 무인 택배 접수 서비스 — 컴포넌트 구조도 &amp; 그리드 시스템</p>
             <div class="doc-meta">
                 <span>📋 문서 버전: v1.0</span>
@@ -994,18 +853,13 @@
     <nav class="doc-nav">
         <div class="doc-nav-inner">
             <a href="#overview" class="active">개요</a>
-            <a href="#grid-system">그리드</a>
-            <a href="#scr-k-001">K-001</a>
-            <a href="#scr-k-002">K-002</a>
-            <a href="#scr-k-003">K-003</a>
-            <a href="#scr-k-004">K-004</a>
-            <a href="#scr-k-005">K-005</a>
-            <a href="#scr-k-006">K-006</a>
-            <a href="#scr-k-007">K-007</a>
-            <a href="#scr-k-008">K-008</a>
-            <a href="#scr-k-009">K-009</a>
-            <a href="#scr-k-010">K-010</a>
-            <a href="#scr-k-011">K-011</a>
+            <a href="#grid-system">그리드 시스템</a>
+            <a href="#scr-p-001">P-001 초기접속</a>
+            <a href="#scr-p-002">P-002 연결완료</a>
+            <a href="#scr-p-003">P-003 음성입력</a>
+            <a href="#scr-p-004">P-004 보안키패드</a>
+            <a href="#scr-p-005">P-005 최종확인</a>
+            <a href="#scr-p-006">P-006 접수완료</a>
         </div>
     </nav>
 
@@ -1016,78 +870,64 @@
 
         <!-- ========== 개요 ========== -->
         <section id="overview" class="info-panel">
-            <h2><span class="icon" style="background:var(--k7-green-050);color:var(--k7-green-500);">📐</span> 키오스크 레이아웃 배치도 개요</h2>
+            <h2><span class="icon" style="background:var(--k7-green-050);color:var(--k7-green-500);">📐</span> 레이아웃 배치도 개요</h2>
             <p style="font-size:14px;color:var(--gray-600);margin-bottom:var(--sp-5);line-height:1.7;">
-                키오스크(공용 단말) 11개 화면(SCR-K-001 ~ SCR-K-011)의 레이아웃 구조와 컴포넌트 배치 정보를 포함하며, 
-                <strong>개인 단말(PWA) 음성 입력</strong>과 <strong>키오스크 마이크 직접 입력</strong> 2가지 채널 모드에 대한 시안을 제공합니다.
+                개인 단말(PWA) 6개 화면(SCR-P-001 ~ SCR-P-006)의 레이아웃 구조와 컴포넌트 배치 정보를 포함합니다.
             </p>
             <div class="info-grid">
                 <div class="info-card">
-                    <div class="info-card-label">기준 해상도</div>
-                    <div class="info-card-value">FHD 세로형 — <code>1080 × 1920 px</code></div>
+                    <div class="info-card-label">기준 디바이스</div>
+                    <div class="info-card-value">iPhone 14 기준 — <code>375 × 812 pt</code></div>
                 </div>
                 <div class="info-card">
-                    <div class="info-card-label">디스플레이 크기</div>
-                    <div class="info-card-value">21.5 ~ 32인치 터치스크린 (세로 Portrait)</div>
+                    <div class="info-card-label">설계 방향</div>
+                    <div class="info-card-value">반응형(Responsive) — 최소 320pt ~ 최대 428pt 대응</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-label">Safe Area</div>
+                    <div class="info-card-value">상단 <code>44pt</code> (노치) · 하단 <code>34pt</code> (홈 인디케이터)</div>
                 </div>
                 <div class="info-card">
                     <div class="info-card-label">그리드 시스템</div>
-                    <div class="info-card-value">6컬럼 · 거터 <code>16px</code> · 좌우 마진 <code>48px</code></div>
+                    <div class="info-card-value">4컬럼 · 거터 <code>8pt</code> · 마진 <code>16pt</code></div>
                 </div>
                 <div class="info-card">
-                    <div class="info-card-label">터치 타겟</div>
-                    <div class="info-card-value">최소 <code>48 × 48 px</code> · CTA 권장 <code>72 × 72 px</code></div>
-                </div>
-                <div class="info-card">
-                    <div class="info-card-label">사용 거리</div>
-                    <div class="info-card-value">40cm ~ 80cm (키오스크 앞 서서 사용)</div>
+                    <div class="info-card-label">터치 타겟 최소</div>
+                    <div class="info-card-value"><code>44 × 44 pt</code> (WCAG 2.1 AA)</div>
                 </div>
                 <div class="info-card">
                     <div class="info-card-label">디자인 시스템</div>
                     <div class="info-card-value">K7 Voice AI Design System v1.0.0</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-card-label">채널 모드</div>
-                    <div class="info-card-value">
-                        <span class="channel-badge channel-pwa">📱 PWA 연동</span>
-                        <span class="channel-badge channel-mic">🎤 마이크 직접</span>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="info-card-label">CTA 배치 제약</div>
-                    <div class="info-card-value">하단 2/3 영역 (휠체어 접근성 고려)</div>
                 </div>
             </div>
         </section>
 
         <!-- ========== 그리드 시스템 ========== -->
         <section id="grid-system" class="grid-ref">
-            <h3>📏 키오스크 그리드 시스템 (6-Column Grid)</h3>
+            <h3>📏 PWA 그리드 시스템 (4-Column Grid)</h3>
             <p style="font-size:13px;color:var(--gray-500);margin-bottom:var(--sp-4);">
-                키오스크 화면은 6컬럼 그리드를 기본 뼈대로 사용합니다.
-                좌우 마진 48px, 거터 16px 기준이며, 각 컬럼 너비는 <code style="font-family:var(--font-mono);font-size:12px;background:var(--gray-100);padding:1px 4px;border-radius:3px;">(1080 − 48×2 − 16×5) ÷ 6 = 150.67px</code> 입니다.
-                세로 영역(Zone)은 K7 브랜드 헤더 → 단계 인디케이터 → 콘텐츠 → 액션 → 폴백 영역 순서로 배치합니다.
+                모든 PWA 화면은 아래 4컬럼 그리드를 기본 뼈대로 사용합니다. 
+                좌우 마진 16pt, 거터 8pt 기준이며, 각 컬럼 너비는 <code style="font-family:var(--font-mono);font-size:12px;background:var(--gray-100);padding:1px 4px;border-radius:3px;">(375 - 16×2 - 8×3) ÷ 4 = 79.25pt</code> 입니다.
             </p>
 
-            <div style="max-width:540px;margin:0 auto;">
+            <div style="max-width:375px;margin:0 auto;">
+                <!-- Margin + Column Visualization -->
                 <div style="display:flex;gap:0;margin-bottom:8px;">
-                    <div style="width:24px;background:rgba(239,68,68,0.08);border:1px dashed rgba(239,68,68,0.3);border-radius:4px;height:56px;display:flex;align-items:center;justify-content:center;">
-                        <span style="font-size:8px;color:var(--red-500);writing-mode:vertical-lr;font-weight:600;">48px</span>
+                    <div style="width:16px;background:rgba(239,68,68,0.08);border:1px dashed rgba(239,68,68,0.3);border-radius:4px;height:56px;display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:8px;color:var(--red-500);writing-mode:vertical-lr;font-weight:600;">16pt</span>
                     </div>
-                    <div style="flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:0 0;">
+                    <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0;">
                         <div class="grid-col-item">Col 1</div>
                         <div class="grid-col-item">Col 2</div>
                         <div class="grid-col-item">Col 3</div>
                         <div class="grid-col-item">Col 4</div>
-                        <div class="grid-col-item">Col 5</div>
-                        <div class="grid-col-item">Col 6</div>
                     </div>
-                    <div style="width:24px;background:rgba(239,68,68,0.08);border:1px dashed rgba(239,68,68,0.3);border-radius:4px;height:56px;display:flex;align-items:center;justify-content:center;">
-                        <span style="font-size:8px;color:var(--red-500);writing-mode:vertical-lr;font-weight:600;">48px</span>
+                    <div style="width:16px;background:rgba(239,68,68,0.08);border:1px dashed rgba(239,68,68,0.3);border-radius:4px;height:56px;display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:8px;color:var(--red-500);writing-mode:vertical-lr;font-weight:600;">16pt</span>
                     </div>
                 </div>
                 <div style="text-align:center;margin-bottom:var(--sp-4);">
-                    <span style="font-size:11px;color:var(--gray-400);font-weight:500;">← 전체 너비: 1080px →</span>
+                    <span style="font-size:11px;color:var(--gray-400);font-weight:500;">← 전체 너비: 375pt →</span>
                 </div>
             </div>
 
@@ -1095,150 +935,49 @@
             <div style="display:flex;flex-wrap:wrap;gap:var(--sp-3);margin-top:var(--sp-4);padding-top:var(--sp-4);border-top:1px solid var(--gray-200);">
                 <span style="font-size:12px;font-weight:600;color:var(--gray-700);margin-right:var(--sp-2);">영역 구분:</span>
                 <span class="comp-zone zone-header">Header Zone</span>
-                <span class="comp-zone zone-status">Step Indicator</span>
                 <span class="comp-zone zone-content">Content Zone</span>
                 <span class="comp-zone zone-action">Action Zone</span>
+                <span class="comp-zone zone-status">Status Zone</span>
                 <span class="comp-zone zone-security">Security Zone</span>
-                <span class="comp-zone zone-footer">Fallback Zone</span>
+                <span class="comp-zone zone-footer">Footer Zone</span>
             </div>
         </section>
 
-        <!-- ========== 수직 영역 정의 ========== -->
+        <!-- ========== Vertical Zones ========== -->
         <section class="info-panel">
-            <h2><span class="icon" style="background:var(--cyan-050);color:var(--cyan-600);">🖥️</span> 키오스크 수직 영역(Vertical Zone) 정의</h2>
+            <h2><span class="icon" style="background:var(--cyan-050);color:var(--cyan-600);">📱</span> PWA 수직 영역(Vertical Zone) 정의</h2>
             <p style="font-size:13px;color:var(--gray-500);margin-bottom:var(--sp-4);">
-                아래 수직 영역 체계를 공통으로 적용합니다. 주요 CTA는 접근성을 고려하여 화면 하단 2/3 영역에 배치합니다.
+                모든 PWA 화면은 아래 수직 영역 체계를 공통으로 적용합니다. 각 영역의 높이는 콘텐츠에 따라 유동적이나, 최소/최대 제약이 존재합니다.
             </p>
-            <div style="max-width:270px;margin:0 auto;">
-                <div style="border:2px solid var(--gray-300);border-radius:8px;overflow:hidden;">
-                    <div style="height:28px;background:var(--k7-green-500);display:flex;align-items:center;justify-content:center;color:white;">
-                        <span style="font-size:9px;font-weight:700;">BRAND HEADER — 80px</span>
+            <div style="max-width:375px;margin:0 auto;">
+                <div style="border:2px solid var(--gray-300);border-radius:28px;overflow:hidden;">
+                    <!-- Safe Area Top -->
+                    <div style="height:44px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;border-bottom:1px dashed var(--gray-300);">
+                        <span style="font-size:10px;color:var(--gray-400);font-weight:500;">Safe Area Top — 44pt</span>
                     </div>
-                    <div style="padding:6px 10px;background:rgba(6,182,212,0.06);border-bottom:1px dashed var(--cyan-600);">
-                        <div style="font-size:9px;color:var(--cyan-700);font-weight:700;">STEP INDICATOR — 64px</div>
-                        <div style="font-size:8px;color:var(--gray-500);margin-top:1px;">단계 진행 표시, 현재 위치 안내</div>
+                    <!-- Header -->
+                    <div style="padding:12px 16px;background:rgba(0,128,98,0.06);border-bottom:1px dashed var(--k7-green-500);">
+                        <div style="font-size:10px;color:var(--k7-green-500);font-weight:700;">HEADER ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">높이: 가변 (min 48pt) · 단계 인디케이터, 제목</div>
                     </div>
-                    <div style="padding:16px 10px;background:rgba(59,130,246,0.04);border-bottom:1px dashed var(--blue-500);min-height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-                        <div style="font-size:9px;color:var(--blue-500);font-weight:700;">CONTENT ZONE — flex:1</div>
-                        <div style="font-size:8px;color:var(--gray-500);margin-top:2px;text-align:center;">가용 공간 전체 차지<br>안내 메시지, 실시간 텍스트, 정보 카드</div>
+                    <!-- Content -->
+                    <div style="padding:16px;background:rgba(59,130,246,0.04);border-bottom:1px dashed var(--blue-500);min-height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                        <div style="font-size:10px;color:var(--blue-500);font-weight:700;">CONTENT ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-500);margin-top:2px;text-align:center;">높이: flex:1 (가용 공간 전체 차지)<br>메인 컨텐츠, 입력 UI, 정보 카드</div>
                     </div>
-                    <div style="padding:8px 10px;background:rgba(244,129,31,0.06);border-bottom:1px dashed var(--k7-orange-500);">
-                        <div style="font-size:9px;color:var(--k7-orange-500);font-weight:700;">ACTION ZONE — min 120px</div>
-                        <div style="font-size:8px;color:var(--gray-500);margin-top:1px;">CTA 버튼 (이전/다음/최종접수 등)</div>
+                    <!-- Action -->
+                    <div style="padding:12px 16px;background:rgba(244,129,31,0.06);border-bottom:1px dashed var(--k7-orange-500);">
+                        <div style="font-size:10px;color:var(--k7-orange-500);font-weight:700;">ACTION ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">높이: 가변 (min 56pt) · CTA 버튼, 보조 액션</div>
                     </div>
-                    <div style="padding:6px 10px;background:rgba(107,114,128,0.06);">
-                        <div style="font-size:9px;color:var(--gray-600);font-weight:700;">FALLBACK ZONE — 56px</div>
-                        <div style="font-size:8px;color:var(--gray-500);margin-top:1px;">"화면으로 입력하기" 폴백 버튼 (상시 노출)</div>
+                    <!-- Footer -->
+                    <div style="padding:8px 16px;background:rgba(107,114,128,0.06);border-bottom:1px dashed var(--gray-400);">
+                        <div style="font-size:10px;color:var(--gray-500);font-weight:700;">FOOTER ZONE</div>
+                        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">높이: 가변 · 보안 배지, 부가 안내</div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================================================
-             SCR-K-001: 서비스 시작 (대기) 화면
-        ============================================================ -->
-        <section id="scr-k-001" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-001</span>
-                <div class="screen-header-text">
-                    <h2>서비스 시작 (대기) 화면 <span class="screen-phase">Phase 1 — 서비스 시작</span> <span class="channel-badge channel-both">공통</span></h2>
-                    <p>사용자가 "택배 보내기"를 선택하기 전 대기 상태. Host App 메인 메뉴에서 SDK Hosted UI 활성화 트리거.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k001')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k001')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k001')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k001')">📏 치수</button>
-            </div>
-            <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k001">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header">
-                                    <span>🏪 세븐일레븐</span>
-                                    <span>🇰🇷 한국어</span>
-                                </div>
-                                <div class="kio-content" style="align-items:center;justify-content:center;text-align:center;">
-                                    <div class="scr-component" data-label="SERVICE-LOGO" data-zone="content" style="margin-bottom:12px;">
-                                        <div style="font-size:28px;">📦</div>
-                                    </div>
-                                    <div class="scr-component" data-label="SERVICE-TITLE" data-zone="content" style="margin-bottom:4px;">
-                                        <div style="font-size:13px;font-weight:700;color:var(--gray-900);">택배 보내기</div>
-                                    </div>
-                                    <div class="scr-component" data-label="SERVICE-DESC" data-zone="content" style="margin-bottom:16px;">
-                                        <div style="font-size:8px;color:var(--gray-500);">터치하여 음성으로 빠르게 접수하세요</div>
-                                    </div>
-                                    <div class="scr-component" data-label="CTA-START" data-zone="action">
-                                        <div class="kio-btn kio-btn-primary" style="padding:10px 28px;font-size:10px;border-radius:8px;">택배 접수 시작</div>
-                                    </div>
-                                    <div class="dim-annotation" style="bottom:60px;right:8px;">W: 984px H: 80px</div>
-                                </div>
-                                <div class="scr-component kio-fallback-bar" data-label="BOTTOM-INFO" data-zone="footer">
-                                    <span>📱 스마트폰으로 더 빠르고 안전하게</span>
-                                    <span></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-001 컴포넌트 스펙</div>
-                    <table class="spec-table">
-                        <thead>
-                            <tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백/간격</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="comp-name">K7 브랜드 헤더</td>
-                                <td><span class="comp-zone zone-header">Header</span></td>
-                                <td><code>top: 0</code> · 전체 너비</td>
-                                <td><code>W: 1080px H: 80px</code></td>
-                                <td><code>px: 48px</code></td>
-                            </tr>
-                            <tr>
-                                <td class="comp-name">서비스 아이콘</td>
-                                <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>화면 수직 중앙 · 수평 중앙</td>
-                                <td><code>96 × 96 px</code></td>
-                                <td><code>mb: 32px</code></td>
-                            </tr>
-                            <tr>
-                                <td class="comp-name">서비스 제목</td>
-                                <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>아이콘 하단 · 수평 중앙</td>
-                                <td><code>W: auto H: auto</code></td>
-                                <td><code>mb: 12px · 40px Bold</code></td>
-                            </tr>
-                            <tr>
-                                <td class="comp-name">안내 텍스트</td>
-                                <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>제목 하단 · 수평 중앙</td>
-                                <td><code>W: auto H: auto</code></td>
-                                <td><code>mb: 48px · 20px Regular</code></td>
-                            </tr>
-                            <tr>
-                                <td class="comp-name">"택배 접수 시작" CTA</td>
-                                <td><span class="comp-zone zone-action">Action</span></td>
-                                <td>안내 텍스트 하단 · 수평 중앙</td>
-                                <td><code>W: 984px H: 80px</code></td>
-                                <td><code>R: 16px · 28px Bold</code></td>
-                            </tr>
-                            <tr>
-                                <td class="comp-name">하단 안내 바</td>
-                                <td><span class="comp-zone zone-footer">Footer</span></td>
-                                <td>화면 최하단 · 전체 너비</td>
-                                <td><code>W: 1080px H: 56px</code></td>
-                                <td><code>px: 48px · 18px Regular</code></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="spec-note">
-                        <strong>설계 노트:</strong> Host App 메인 메뉴에서 "택배 보내기" 선택 시 SDK <code>startSession()</code> 호출. 무인 대기 시 스크린세이버/안내 루프 영상 표시.
+                    <!-- Safe Area Bottom -->
+                    <div style="height:34px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:10px;color:var(--gray-400);font-weight:500;">Safe Area Bottom — 34pt</span>
                     </div>
                 </div>
             </div>
@@ -1246,134 +985,556 @@
 
 
         <!-- ============================================================
-             SCR-K-002: 채널 선택 화면
+             SCR-P-001: PWA 초기 접속 / 권한 요청
         ============================================================ -->
-        <section id="scr-k-002" class="screen-section">
+        <section id="scr-p-001" class="screen-section">
             <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-002</span>
+                <span class="screen-id-badge">SCR-P-001</span>
                 <div class="screen-header-text">
-                    <h2>채널 선택 화면 <span class="screen-phase">Phase 1 — 서비스 시작</span> <span class="channel-badge channel-both">공통</span></h2>
-                    <p>스마트폰 QR 연결 / 마이크 직접 사용 — 3가지 채널 선택. REQ-CH-001, F-001 참조.</p>
+                    <h2>PWA 초기 접속 / 권한 요청 화면 <span class="screen-phase">Phase 2 — 세션 페어링</span></h2>
+                    <p>QR 스캔 후 PWA 로딩 → 마이크 권한 요청 → WebRTC 연결 수립</p>
                 </div>
             </div>
             <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k002')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k002')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k002')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k002')">📏 치수</button>
+                <button class="ctrl-btn" onclick="toggleGrid('p001')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p001')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p001')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p001')">📏 치수</button>
             </div>
             <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k002">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header">
-                                    <span>🏪 세븐일레븐</span>
-                                    <span>📦 택배 접수</span>
+                <!-- Phone Mockup -->
+                <div class="phone-mockup" id="p001">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <!-- Status Bar -->
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
                                 </div>
-                                <div class="kio-content" style="justify-content:center;text-align:center;">
-                                    <div class="scr-component" data-label="PAGE-TITLE" data-zone="content" style="margin-bottom:12px;">
-                                        <div style="font-size:11px;font-weight:700;color:var(--gray-900);">접수 방법을 선택해주세요</div>
+                                <!-- Header: Logo + Title -->
+                                <div class="scr-component" data-label="LOGO-AREA" data-zone="header" style="padding:var(--sp-8) var(--sp-4) var(--sp-4);text-align:center;">
+                                    <div class="ui-icon-circle" style="background:linear-gradient(135deg,var(--k7-green-500),var(--cyan-500));color:white;width:64px;height:64px;font-size:28px;margin-bottom:var(--sp-3);">
+                                        📦
                                     </div>
-                                    <div class="scr-component kio-channel-cards" data-label="CHANNEL-CARDS" data-zone="content">
-                                        <div class="kio-channel-card recommended">
-                                            <div class="icon">📱</div>
-                                            <div class="title">스마트폰 QR</div>
-                                            <div class="desc">안전한 개인정보 입력</div>
-                                            <div class="kio-recommend-badge">추천</div>
+                                    <div style="font-size:17px;font-weight:700;color:var(--gray-900);">세븐일레븐 택배</div>
+                                    <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">음성 AI 접수 서비스</div>
+                                </div>
+                                <!-- Content: Connection Status -->
+                                <div class="scr-component" data-label="CONNECTION-STATUS" data-zone="content" style="padding:var(--sp-5) var(--sp-4);text-align:center;">
+                                    <div class="spinner" style="margin-bottom:var(--sp-3);"></div>
+                                    <div style="font-size:15px;font-weight:600;color:var(--gray-700);">키오스크 연결 중...</div>
+                                    <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">잠시만 기다려주세요</div>
+                                </div>
+                                <div class="ui-divider" style="margin:0 var(--sp-4);"></div>
+                                <!-- Content: Permission Request -->
+                                <div class="scr-component" data-label="PERMISSION-REQUEST" data-zone="action" style="padding:var(--sp-5) var(--sp-4);">
+                                    <div style="display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-4);">
+                                        <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--cyan-050);display:flex;align-items:center;justify-content:center;font-size:20px;">🎤</div>
+                                        <div>
+                                            <div style="font-size:14px;font-weight:600;color:var(--gray-800);">마이크 사용 권한</div>
+                                            <div style="font-size:12px;color:var(--gray-500);">음성 입력을 위해 필요합니다.</div>
                                         </div>
-                                        <div class="kio-channel-card">
-                                            <div class="icon">🎤</div>
-                                            <div class="title">마이크 직접</div>
-                                            <div class="desc">키오스크 음성</div>
-                                        </div>
                                     </div>
-                                    <div class="scr-component" data-label="INFO-TEXT" data-zone="content" style="margin-top:8px;">
-                                        <div style="font-size:7px;color:var(--gray-500);background:var(--blue-050);padding:4px 8px;border-radius:4px;">ℹ️ 스마트폰 연결 시 개인정보를 더 안전하게 입력할 수 있습니다.</div>
+                                    <button class="ui-btn ui-btn-primary" style="border-radius:var(--radius-full);">허용하기</button>
+                                </div>
+                                <!-- Footer: Security Badge -->
+                                <div style="flex:1;"></div>
+                                <div class="scr-component" data-label="SECURITY-BADGE" data-zone="security" style="padding:var(--sp-4);text-align:center;">
+                                    <div class="security-badge" style="justify-content:center;">
+                                        🔒 모든 데이터는 종단간 암호화됩니다.
                                     </div>
                                 </div>
-                                <div class="scr-component kio-footer" data-label="ACTION-BUTTONS" data-zone="action">
-                                    <div class="kio-btn kio-btn-secondary" style="font-size:7px;">← 이전</div>
-                                    <div style="flex:1;"></div>
-                                </div>
-                                <div class="scr-component kio-fallback-bar" data-label="FALLBACK-BAR" data-zone="footer">
-                                    <span>●●○○○</span>
-                                    <span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                </div>
+                                <!-- Dimensions -->
+                                <div class="dim-annotation dim-h" style="top:0;left:-40px;height:44px;">44pt</div>
+                                <div class="dim-annotation dim-w" style="bottom:-18px;left:16px;right:16px;text-align:center;">343pt (가용 너비)</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Spec Panel -->
                 <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-002 컴포넌트 스펙</div>
+                    <div class="spec-panel-header">📋 SCR-P-001 컴포넌트 배치 스펙</div>
                     <table class="spec-table">
                         <thead>
-                            <tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백/간격</th></tr>
+                            <tr>
+                                <th>컴포넌트</th>
+                                <th>영역</th>
+                                <th>위치(Position)</th>
+                                <th>크기(Size)</th>
+                                <th>여백(Spacing)</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="comp-name">K7 브랜드 헤더</td>
+                                <td class="comp-name">Status Bar</td>
                                 <td><span class="comp-zone zone-header">Header</span></td>
-                                <td><code>top: 0</code> · 전체 너비</td>
-                                <td><code>W: 1080px H: 80px</code></td>
-                                <td><code>px: 48px</code></td>
+                                <td><code>top: 0</code></td>
+                                <td><code>W: 100% H: 44pt</code></td>
+                                <td><code>px: 16pt</code></td>
                             </tr>
                             <tr>
-                                <td class="comp-name">페이지 제목</td>
+                                <td class="comp-name">서비스 로고</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td><code>top: 44pt</code> · 수평 중앙</td>
+                                <td><code>64 × 64 pt</code></td>
+                                <td><code>pt: 32pt pb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">서비스명 텍스트</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>로고 하단 · 수평 중앙</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>gap: 4pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">연결 상태 스피너</td>
                                 <td><span class="comp-zone zone-content">Content</span></td>
                                 <td>콘텐츠 영역 상단 · 수평 중앙</td>
+                                <td><code>32 × 32 pt</code></td>
+                                <td><code>pt: 20pt pb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">연결 상태 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>스피너 하단 · 수평 중앙</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>mb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">마이크 권한 카드</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>구분선 하단 · 전체 너비</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>px: 16pt pt: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"허용하기" 버튼</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>권한 카드 내부 하단</td>
+                                <td><code>W: 100% H: min 44pt</code></td>
+                                <td><code>mt: 16pt R: full</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">보안 배지</td>
+                                <td><span class="comp-zone zone-security">Security</span></td>
+                                <td>화면 최하단 · 수평 중앙</td>
                                 <td><code>W: auto H: auto</code></td>
-                                <td><code>mb: 48px · 36px Bold</code></td>
+                                <td><code>pb: 16pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> QR 스캔 후 3초 이내 WebRTC 연결 완료 목표(NFR-PERF-005). 
+                        마이크 권한 거부 시 DTMF/키패드 입력만으로 서비스 진행 가능. 
+                        "허용하기" 버튼은 pill shape(border-radius: full)로 친근한 느낌 유지.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-002: 연결 완료 화면
+        ============================================================ -->
+        <section id="scr-p-002" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-002</span>
+                <div class="screen-header-text">
+                    <h2>연결 완료 화면 <span class="screen-phase">Phase 2 — 페어링 완료</span></h2>
+                    <p>세션 페어링 성공 안내 → E2EE 적용 확인 → 음성 안내 시작 (약 2~3초 표시 후 자동 전환)</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p002')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p002')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p002')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p002')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p002">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen" style="justify-content:center;text-align:center;">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header" style="position:absolute;top:0;left:0;right:0;">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <div style="padding:0 var(--sp-6);">
+                                    <div class="scr-component" data-label="SUCCESS-ICON" data-zone="content" style="margin-bottom:var(--sp-5);">
+                                        <div class="ui-icon-circle" style="background:var(--green-500);color:white;width:72px;height:72px;font-size:32px;">✓</div>
+                                    </div>
+                                    <div class="scr-component" data-label="SUCCESS-TITLE" data-zone="content">
+                                        <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:var(--sp-2);">연결 완료!</div>
+                                    </div>
+                                    <div class="scr-component" data-label="SUCCESS-DESC" data-zone="content">
+                                        <div style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:var(--sp-5);">
+                                            키오스크와 안전하게<br>연결되었습니다.
+                                        </div>
+                                    </div>
+                                    <div class="scr-component" data-label="E2EE-BADGE" data-zone="security" style="margin-bottom:var(--sp-8);">
+                                        <div style="display:inline-flex;align-items:center;gap:6px;background:var(--k7-green-050);padding:8px 16px;border-radius:var(--radius-full);font-size:13px;font-weight:500;color:var(--k7-green-600);">
+                                            🔒 종단간 암호화 적용됨
+                                        </div>
+                                    </div>
+                                    <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content">
+                                        <div style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:var(--sp-3);">
+                                            지금부터 음성으로<br>안내해 드리겠습니다.
+                                        </div>
+                                    </div>
+                                    <div class="scr-component" data-label="AUDIO-GUIDE" data-zone="footer">
+                                        <div style="font-size:12px;color:var(--gray-400);line-height:1.5;">
+                                            ※ 스마트폰 스피커 또는<br>이어폰을 사용해주세요.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-002 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">성공 아이콘</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>수직·수평 중앙 (상단 그룹)</td>
+                                <td><code>72 × 72 pt</code></td>
+                                <td><code>mb: 20pt</code></td>
                             </tr>
                             <tr>
-                                <td class="comp-name">채널 카드 (×3)</td>
+                                <td class="comp-name">"연결 완료!" 제목</td>
                                 <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>제목 하단 · 3컬럼 Grid</td>
-                                <td><code>W: 296px H: 280px (각)</code></td>
-                                <td><code>gap: 24px · R: 16px</code></td>
+                                <td>아이콘 하단 · 수평 중앙</td>
+                                <td><code>20px bold</code></td>
+                                <td><code>mb: 8pt</code></td>
                             </tr>
                             <tr>
-                                <td class="comp-name">카드 아이콘</td>
+                                <td class="comp-name">설명 텍스트</td>
                                 <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>카드 내 상단 · 수평 중앙</td>
-                                <td><code>64 × 64 px</code></td>
-                                <td><code>pt: 32px mb: 16px</code></td>
+                                <td>제목 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>mb: 20pt</code></td>
                             </tr>
                             <tr>
-                                <td class="comp-name">"추천" 배지</td>
+                                <td class="comp-name">E2EE 보안 배지</td>
+                                <td><span class="comp-zone zone-security">Security</span></td>
+                                <td>설명 하단 · 수평 중앙</td>
+                                <td><code>auto × 36pt</code></td>
+                                <td><code>px: 16pt mb: 32pt R: full</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 안내 텍스트</td>
                                 <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>QR 카드 하단</td>
-                                <td><code>W: auto H: 28px</code></td>
-                                <td><code>R: full · 14px Bold</code></td>
+                                <td>배지 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>mb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">오디오 가이드</td>
+                                <td><span class="comp-zone zone-footer">Footer</span></td>
+                                <td>안내 하단 · 수평 중앙</td>
+                                <td><code>12px regular</code></td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 이 화면은 약 2~3초간 표시 후 SCR-P-003으로 자동 전환됩니다. 
+                        E2EE 배지로 보안 신뢰감을 확보(REQ-CH-004)하며, TTS "안녕하세요. 택배 접수를 도와드리겠습니다."가 동시 출력됩니다.
+                        전체 레이아웃은 수직 중앙 정렬(justify-content: center)로 안정감을 줍니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-003: 음성 입력 활성 화면
+        ============================================================ -->
+        <section id="scr-p-003" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-003</span>
+                <div class="screen-header-text">
+                    <h2>음성 입력 활성 화면 <span class="screen-phase">Phase 3 — 정보 수집</span></h2>
+                    <p>음성 인식 파형 표시 · TTS 안내 수신 · 최근 인식 텍스트 확인 · 음소거/종료 제어</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p003')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p003')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p003')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p003')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p003">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <!-- Step + Current Phase -->
+                                <div class="scr-component" data-label="STEP-INDICATOR" data-zone="header" style="padding:var(--sp-2) var(--sp-4);">
+                                    <div class="step-indicator">
+                                        <div class="step-dot active"></div>
+                                        <div class="step-connector"></div>
+                                        <div class="step-dot"></div>
+                                        <div class="step-connector"></div>
+                                        <div class="step-dot"></div>
+                                        <div class="step-connector"></div>
+                                        <div class="step-dot"></div>
+                                    </div>
+                                </div>
+                                <div class="scr-component" data-label="PHASE-TITLE" data-zone="header" style="padding:0 var(--sp-4) var(--sp-3);text-align:center;">
+                                    <div style="font-size:13px;color:var(--gray-400);font-weight:500;">현재 단계</div>
+                                    <div style="font-size:16px;font-weight:700;color:var(--gray-900);">보내는 분 정보</div>
+                                </div>
+                                <div class="ui-divider" style="margin:0 var(--sp-4);"></div>
+                                <!-- Voice Status -->
+                                <div class="scr-component" data-label="VOICE-STATUS" data-zone="status" style="padding:var(--sp-6) var(--sp-4);text-align:center;">
+                                    <div style="font-size:15px;font-weight:600;color:var(--cyan-700);">🎤 듣고 있어요...</div>
+                                </div>
+                                <!-- Waveform -->
+                                <div class="scr-component" data-label="VOICE-WAVEFORM" data-zone="content" style="padding:0 var(--sp-4);">
+                                    <div class="voice-waveform">
+                                        <div class="bar" style="height:16px;"></div>
+                                        <div class="bar" style="height:32px;"></div>
+                                        <div class="bar" style="height:24px;"></div>
+                                        <div class="bar" style="height:40px;"></div>
+                                        <div class="bar" style="height:28px;"></div>
+                                        <div class="bar" style="height:36px;"></div>
+                                        <div class="bar" style="height:20px;"></div>
+                                        <div class="bar" style="height:30px;"></div>
+                                        <div class="bar" style="height:14px;"></div>
+                                    </div>
+                                </div>
+                                <div class="ui-divider" style="margin:0 var(--sp-4);"></div>
+                                <!-- Recent Recognition -->
+                                <div class="scr-component" data-label="RECOGNITION-TEXT" data-zone="content" style="padding:var(--sp-4);">
+                                    <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-bottom:var(--sp-2);">최근 인식:</div>
+                                    <div style="font-size:15px;color:var(--gray-800);font-weight:500;line-height:1.5;background:var(--gray-050);padding:var(--sp-3);border-radius:var(--radius-md);border:1px solid var(--gray-200);">
+                                        "보내는 사람은<br>홍길동이에요"
+                                    </div>
+                                </div>
+                                <!-- Bottom Controls -->
+                                <div style="flex:1;"></div>
+                                <div class="scr-component" data-label="BOTTOM-CONTROLS" data-zone="action" style="padding:var(--sp-3) var(--sp-4) var(--sp-5);">
+                                    <div style="display:flex;gap:var(--sp-3);">
+                                        <button class="ui-btn ui-btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">🔇 음소거</button>
+                                        <button class="ui-btn ui-btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--red-500);border-color:rgba(239,68,68,0.3);">✕ 종료</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-003 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">단계 인디케이터</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>상단 safe area 직하 · 수평 중앙</td>
+                                <td><code>W: 100% H: 32pt</code></td>
+                                <td><code>px: 16pt py: 8pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">현재 단계 제목</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>인디케이터 하단 · 수평 중앙</td>
+                                <td><code>16px bold</code></td>
+                                <td><code>pb: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 상태 텍스트</td>
+                                <td><span class="comp-zone zone-status">Status</span></td>
+                                <td>구분선 하단 · 수평 중앙</td>
+                                <td><code>15px semibold</code></td>
+                                <td><code>py: 24pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음성 파형 애니메이션</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>상태 텍스트 하단 · 수평 중앙</td>
+                                <td><code>W: 200pt H: 48pt</code></td>
+                                <td><code>py: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">최근 인식 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>구분선 하단 · 좌측 정렬</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>p: 16pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">음소거 / 종료 버튼</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>화면 최하단 · 50:50 분할</td>
+                                <td><code>각 W: 50% H: min 44pt</code></td>
+                                <td><code>gap: 12pt px: 16pt pb: 20pt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 음성 파형 바는 gradient(cyan→k7-green)로 AI 청취 상태를 시각화합니다.
+                        TTS 출력 시 "처리 중..." 상태로 전환하여 사용자 인지를 돕습니다.
+                        하단 2버튼은 동일 비율(1:1)로 배치하며, 종료 버튼은 red 톤으로 구분합니다.
+                        단계 인디케이터 dot 크기: 8×8pt, 커넥터: 16×2pt.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================
+             SCR-P-004: 보안 키패드 입력 화면
+        ============================================================ -->
+        <section id="scr-p-004" class="screen-section">
+            <div class="screen-header">
+                <span class="screen-id-badge">SCR-P-004</span>
+                <div class="screen-header-text">
+                    <h2>보안 키패드 입력 화면 <span class="screen-phase">Phase 3 — 민감 정보</span></h2>
+                    <p>연락처 등 민감 정보를 보안 키패드로 입력 · 음성 입력 자동 차단 · E2EE 채널 전송</p>
+                </div>
+            </div>
+            <div class="controls-bar">
+                <button class="ctrl-btn" onclick="toggleGrid('p004')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p004')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p004')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p004')">📏 치수</button>
+            </div>
+            <div class="screen-layout-area">
+                <div class="phone-mockup" id="p004">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
+                                </div>
+                                <!-- Header -->
+                                <div class="scr-component" data-label="PHASE-HEADER" data-zone="header" style="padding:var(--sp-3) var(--sp-4);display:flex;align-items:center;gap:var(--sp-2);">
+                                    <span style="font-size:16px;">🔒</span>
+                                    <div>
+                                        <div style="font-size:13px;color:var(--gray-400);">현재 단계</div>
+                                        <div style="font-size:16px;font-weight:700;color:var(--gray-900);">연락처 입력</div>
+                                    </div>
+                                </div>
+                                <!-- Guide Text -->
+                                <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content" style="padding:var(--sp-2) var(--sp-4);">
+                                    <div style="font-size:14px;color:var(--gray-600);text-align:center;">보안을 위해 키패드로 입력해주세요.</div>
+                                </div>
+                                <!-- Input Display -->
+                                <div class="scr-component" data-label="INPUT-DISPLAY" data-zone="content" style="padding:var(--sp-4);">
+                                    <div style="background:var(--gray-050);border:2px solid var(--k7-green-500);border-radius:var(--radius-md);padding:var(--sp-3) var(--sp-4);text-align:center;font-size:22px;font-weight:600;font-family:var(--font-mono);color:var(--gray-900);letter-spacing:2px;">
+                                        010-1234-5678
+                                    </div>
+                                </div>
+                                <!-- Numpad -->
+                                <div class="scr-component" data-label="NUMPAD" data-zone="content" style="padding:0 var(--sp-6);">
+                                    <div class="numpad-grid">
+                                        <div class="numpad-key">1</div>
+                                        <div class="numpad-key">2</div>
+                                        <div class="numpad-key">3</div>
+                                        <div class="numpad-key">4</div>
+                                        <div class="numpad-key">5</div>
+                                        <div class="numpad-key">6</div>
+                                        <div class="numpad-key">7</div>
+                                        <div class="numpad-key">8</div>
+                                        <div class="numpad-key">9</div>
+                                        <div class="numpad-key empty"></div>
+                                        <div class="numpad-key">0</div>
+                                        <div class="numpad-key" style="font-size:14px;">⌫</div>
+                                    </div>
+                                </div>
+                                <!-- Submit Button -->
+                                <div class="scr-component" data-label="SUBMIT-BTN" data-zone="action" style="padding:var(--sp-4);">
+                                    <button class="ui-btn ui-btn-primary">입력 완료</button>
+                                </div>
+                                <!-- Mic Blocked Notice -->
+                                <div class="scr-component" data-label="MIC-BLOCKED" data-zone="security" style="padding:0 var(--sp-4) var(--sp-4);text-align:center;">
+                                    <div style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--gray-400);">
+                                        🔇 음성 입력이 차단되었습니다.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spec-panel">
+                    <div class="spec-panel-header">📋 SCR-P-004 컴포넌트 배치 스펙</div>
+                    <table class="spec-table">
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="comp-name">보안 헤더</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>상단 · 좌측 정렬</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>px: 16pt py: 12pt</code></td>
                             </tr>
                             <tr>
                                 <td class="comp-name">안내 텍스트</td>
                                 <td><span class="comp-zone zone-content">Content</span></td>
-                                <td>카드 하단 · 전체 너비</td>
-                                <td><code>W: 984px H: auto</code></td>
-                                <td><code>mt: 32px · px: 24px · 18px</code></td>
+                                <td>헤더 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>py: 8pt</code></td>
                             </tr>
                             <tr>
-                                <td class="comp-name">"이전" 버튼</td>
+                                <td class="comp-name">입력값 디스플레이</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>안내 하단 · 수평 중앙</td>
+                                <td><code>W: 343pt H: 52pt</code></td>
+                                <td><code>px: 16pt py: 16pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">숫자 키패드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>디스플레이 하단 · 수평 중앙</td>
+                                <td><code>W: 4col H: auto</code><br>각 키 <code>min 48 × 48pt</code></td>
+                                <td><code>gap: 8pt px: 24pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"입력 완료" 버튼</td>
                                 <td><span class="comp-zone zone-action">Action</span></td>
-                                <td>좌측 하단</td>
-                                <td><code>W: 160px H: 64px</code></td>
-                                <td><code>R: 12px · 24px Medium</code></td>
+                                <td>키패드 하단 · 전체 너비</td>
+                                <td><code>W: 100% H: min 48pt</code></td>
+                                <td><code>p: 16pt R: 12pt</code></td>
                             </tr>
                             <tr>
-                                <td class="comp-name">폴백 바</td>
-                                <td><span class="comp-zone zone-footer">Footer</span></td>
-                                <td>화면 최하단</td>
-                                <td><code>W: 1080px H: 56px</code></td>
-                                <td><code>px: 48px</code></td>
+                                <td class="comp-name">음성 차단 안내</td>
+                                <td><span class="comp-zone zone-security">Security</span></td>
+                                <td>버튼 하단 · 수평 중앙</td>
+                                <td><code>12px regular</code></td>
+                                <td><code>pb: 16pt</code></td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="spec-note">
-                        <strong>설계 노트:</strong> "스마트폰 QR 연결"을 시각적으로 강조(추천 배지, Primary 색상)하여 WebRTC 우선 전략을 UX에서 지원(REQ-CH-002). "화면으로 입력하기" 폴백 버튼 하단 고정 상시 노출(REQ-SDK-002).
+                        <strong>설계 노트:</strong> 키패드는 표준 전화기 레이아웃(3×4 그리드)을 따릅니다(AC-DOM-002-1). 
+                        입력 디스플레이는 <code>border: 2px solid k7-green</code>으로 활성 상태를 강조합니다.
+                        입력값 유효성 검증(11자리 형식)을 실시간 수행하며, 검증 실패 시 border가 red로 변경됩니다.
+                        입력 완료 시 E2EE DataChannel을 통해 키오스크로 전송합니다.
                     </div>
                 </div>
             </div>
@@ -1381,65 +1542,78 @@
 
 
         <!-- ============================================================
-             SCR-K-003: 세션 페어링 화면
+             SCR-P-005: 최종 요약 + 1차 확인 화면
         ============================================================ -->
-        <section id="scr-k-003" class="screen-section">
+        <section id="scr-p-005" class="screen-section">
             <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-003</span>
+                <span class="screen-id-badge">SCR-P-005</span>
                 <div class="screen-header-text">
-                    <h2>세션 페어링 화면 <span class="screen-phase">Phase 2 — 페어링</span> <span class="channel-badge channel-pwa">PWA 전용</span></h2>
-                    <p>QR코드 + OTP 표시. 스마트폰 스캔 → WebRTC 채널 수립. 60초 OTP 타이머 포함. F-002, IF-UI-002 참조.</p>
+                    <h2>최종 요약 + 1차 확인 화면 <span class="screen-phase">Phase 4 — 최종 확인</span></h2>
+                    <p>전체 접수 정보 요약 · 마스킹 없는 전체 정보 표시 · 1차 확인(Pre-confirm) 버튼 → Attestation Token 생성</p>
                 </div>
             </div>
             <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k003')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k003')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k003')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k003')">📏 치수</button>
+                <button class="ctrl-btn" onclick="toggleGrid('p005')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p005')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p005')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p005')">📏 치수</button>
             </div>
             <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k003">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header">
-                                    <span>🏪 세븐일레븐</span>
-                                    <span>📦 택배 접수</span>
+                <div class="phone-mockup" id="p005">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header">
+                                    <span>9:41</span><span>⚡ 📶</span>
                                 </div>
-                                <div class="kio-content" style="align-items:center;text-align:center;">
-                                    <div class="scr-component" data-label="PAGE-TITLE" data-zone="content" style="margin-bottom:8px;margin-top:8px;">
-                                        <div style="font-size:10px;font-weight:700;color:var(--gray-900);">📱 스마트폰으로 QR코드를 스캔하세요</div>
+                                <!-- Header -->
+                                <div class="scr-component" data-label="SCREEN-TITLE" data-zone="header" style="padding:var(--sp-3) var(--sp-4);display:flex;align-items:center;gap:var(--sp-2);">
+                                    <span style="font-size:16px;">📋</span>
+                                    <div style="font-size:17px;font-weight:700;color:var(--gray-900);">접수 정보 확인</div>
+                                </div>
+                                <!-- Scrollable Cards -->
+                                <div class="scr-component" data-label="INFO-CARDS" data-zone="content" style="padding:0 var(--sp-4);flex:1;overflow-y:auto;">
+                                    <!-- Sender Card -->
+                                    <div class="ui-card">
+                                        <div class="ui-card-title">보내는 분</div>
+                                        <div class="ui-card-row"><span class="label">이름</span><span class="value">홍길동</span></div>
+                                        <div class="ui-card-row"><span class="label">연락처</span><span class="value">010-1234-5678</span></div>
                                     </div>
-                                    <div class="scr-component" data-label="QR-CODE" data-zone="content" style="margin-bottom:6px;">
-                                        <div class="kio-qr">📷</div>
+                                    <!-- Recipient Card -->
+                                    <div class="ui-card">
+                                        <div class="ui-card-title">받는 분</div>
+                                        <div class="ui-card-row"><span class="label">이름</span><span class="value">김철수</span></div>
+                                        <div class="ui-card-row"><span class="label">연락처</span><span class="value">010-9876-5432</span></div>
+                                        <div class="ui-card-row"><span class="label">주소</span><span class="value" style="text-align:right;max-width:180px;">서울 강남구 테헤란로 123</span></div>
                                     </div>
-                                    <div class="scr-component" data-label="OTP-DISPLAY" data-zone="security" style="margin-bottom:6px;">
-                                        <div style="display:inline-flex;gap:4px;font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--gray-900);letter-spacing:4px;">4 8 2 7</div>
-                                        <div style="font-size:7px;color:var(--gray-500);margin-top:2px;">60초 이내 입력 · OTP 인증번호</div>
+                                    <!-- Item Card -->
+                                    <div class="ui-card">
+                                        <div class="ui-card-title">물품 정보</div>
+                                        <div class="ui-card-row"><span class="label">품목</span><span class="value">노트북 × 1</span></div>
+                                        <div class="ui-card-row"><span class="label">가액</span><span class="value">500,000원</span></div>
                                     </div>
-                                    <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content" style="margin-bottom:8px;">
-                                        <div style="font-size:7px;color:var(--gray-600);line-height:1.5;">스마트폰 카메라로 QR코드를 비춰주세요<br>또는, 브라우저에서 접속 후 인증번호를 입력하세요</div>
-                                    </div>
-                                    <div class="scr-component" data-label="CONNECTION-STATUS" data-zone="status">
-                                        <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
-                                            <div style="display:flex;gap:2px;">
-                                                <div style="width:5px;height:5px;border-radius:50%;background:var(--k7-green-500);"></div>
-                                                <div style="width:5px;height:5px;border-radius:50%;background:var(--k7-green-500);"></div>
-                                                <div style="width:5px;height:5px;border-radius:50%;background:var(--gray-300);"></div>
-                                            </div>
-                                            <span style="font-size:7px;color:var(--gray-500);">연결 대기 중... [00:47]</span>
-                                        </div>
+                                    <!-- Delivery Card -->
+                                    <div class="ui-card" style="border-color:var(--k7-green-500);background:var(--k7-green-050);">
+                                        <div class="ui-card-title" style="color:var(--k7-green-600);">배송 정보</div>
+                                        <div class="ui-card-row"><span class="label">배송비</span><span class="value" style="color:var(--k7-green-600);font-weight:700;">5,000원</span></div>
+                                        <div class="ui-card-row"><span class="label">도착</span><span class="value">1/22(수)</span></div>
                                     </div>
                                 </div>
-                                <div class="scr-component kio-footer" data-label="ACTION-BUTTONS" data-zone="action">
-                                    <div class="kio-btn kio-btn-secondary" style="font-size:7px;">← 이전</div>
-                                    <div style="flex:1;"></div>
+                                <!-- Divider -->
+                                <div class="ui-divider" style="margin:0;"></div>
+                                <!-- Confirm Button -->
+                                <div class="scr-component" data-label="CONFIRM-BTN" data-zone="action" style="padding:var(--sp-4);">
+                                    <button class="ui-btn" style="background:var(--k7-green-500);color:white;font-size:16px;padding:var(--sp-4);border-radius:var(--radius-lg);">
+                                        ✓ 확인
+                                    </button>
                                 </div>
-                                <div class="scr-component kio-fallback-bar" data-label="FALLBACK-BAR" data-zone="footer">
-                                    <span>●●○○○</span>
-                                    <span class="kio-fallback-link">화면으로 입력하기 →</span>
+                                <!-- Footer Note -->
+                                <div class="scr-component" data-label="FOOTER-NOTE" data-zone="footer" style="padding:0 var(--sp-4) var(--sp-4);text-align:center;">
+                                    <div style="font-size:11px;color:var(--gray-400);line-height:1.5;">
+                                        ※ 확인 버튼을 누르면 키오스크에서<br>최종 접수가 가능합니다.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1447,25 +1621,67 @@
                 </div>
 
                 <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-003 컴포넌트 스펙</div>
+                    <div class="spec-panel-header">📋 SCR-P-005 컴포넌트 배치 스펙</div>
                     <table class="spec-table">
                         <thead>
-                            <tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백/간격</th></tr>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td class="comp-name">K7 브랜드 헤더</td><td><span class="comp-zone zone-header">Header</span></td><td><code>top: 0</code></td><td><code>W: 1080px H: 80px</code></td><td><code>px: 48px</code></td></tr>
-                            <tr><td class="comp-name">안내 제목</td><td><span class="comp-zone zone-content">Content</span></td><td>콘텐츠 상단 · 수평 중앙</td><td><code>W: auto H: auto</code></td><td><code>pt: 48px mb: 40px · 32px Bold</code></td></tr>
-                            <tr><td class="comp-name">QR코드</td><td><span class="comp-zone zone-content">Content</span></td><td>제목 하단 · 수평 중앙</td><td><code>240 × 240 px</code></td><td><code>mb: 24px · R: 16px</code></td></tr>
-                            <tr><td class="comp-name">OTP 코드 표시</td><td><span class="comp-zone zone-security">Security</span></td><td>QR 우측 또는 하단</td><td><code>W: auto H: 56px</code></td><td><code>mb: 16px · 48px Bold Mono</code></td></tr>
-                            <tr><td class="comp-name">OTP 타이머</td><td><span class="comp-zone zone-security">Security</span></td><td>OTP 하단</td><td><code>W: auto H: auto</code></td><td><code>mb: 24px · 18px</code></td></tr>
-                            <tr><td class="comp-name">안내 텍스트</td><td><span class="comp-zone zone-content">Content</span></td><td>OTP 하단 · 수평 중앙</td><td><code>W: 600px H: auto</code></td><td><code>mb: 32px · 20px</code></td></tr>
-                            <tr><td class="comp-name">연결 상태 인디케이터</td><td><span class="comp-zone zone-status">Status</span></td><td>안내 하단 · 수평 중앙</td><td><code>W: auto H: 32px</code></td><td><code>gap: 8px</code></td></tr>
-                            <tr><td class="comp-name">"이전" 버튼</td><td><span class="comp-zone zone-action">Action</span></td><td>좌측 하단</td><td><code>W: 160px H: 64px</code></td><td><code>R: 12px</code></td></tr>
-                            <tr><td class="comp-name">폴백 바</td><td><span class="comp-zone zone-footer">Footer</span></td><td>화면 최하단</td><td><code>W: 1080px H: 56px</code></td><td><code>px: 48px</code></td></tr>
+                            <tr>
+                                <td class="comp-name">화면 제목</td>
+                                <td><span class="comp-zone zone-header">Header</span></td>
+                                <td>상단 · 좌측 정렬</td>
+                                <td><code>17px bold</code></td>
+                                <td><code>px: 16pt py: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">보내는 분 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>제목 하단 · 전체 너비</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>px: 16pt mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">받는 분 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>보내는 분 하단</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">물품 정보 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>받는 분 하단</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">배송 정보 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>물품 정보 하단 (강조 스타일)</td>
+                                <td><code>W: 343pt auto</code></td>
+                                <td><code>mb: 8pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"확인" 버튼 (CTA)</td>
+                                <td><span class="comp-zone zone-action">Action</span></td>
+                                <td>카드 영역 하단 · 전체 너비</td>
+                                <td><code>W: 100% H: 52pt</code></td>
+                                <td><code>p: 16pt R: 16pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">안내 텍스트</td>
+                                <td><span class="comp-zone zone-footer">Footer</span></td>
+                                <td>버튼 하단 · 수평 중앙</td>
+                                <td><code>11px regular</code></td>
+                                <td><code>pb: 16pt</code></td>
+                            </tr>
                         </tbody>
                     </table>
                     <div class="spec-note">
-                        <strong>설계 노트:</strong> QR코드 최소 240px 확보(편의점 조명 대응). OTP 60초 자동 만료 후 갱신(NFR-SEC-003). QR+OTP 영역은 수평 배치 또는 수직 배치 모두 대응 가능.
+                        <strong>설계 노트:</strong> 개인 단말에서는 민감 정보가 마스킹 없이 전체 표시됩니다(키오스크에서는 마스킹 적용). 
+                        카드 영역은 스크롤 가능(overflow-y: auto)하며, 배송 정보 카드는 k7-green 강조 스타일로 비용/일정을 한눈에 인지시킵니다.
+                        "확인" 버튼 터치 시 Attestation Token(데이터 해시 + 타임스탬프 + 디바이스 정보)이 생성되어 E2EE 채널을 통해 키오스크로 전송됩니다(F-016).
                     </div>
                 </div>
             </div>
@@ -1473,760 +1689,116 @@
 
 
         <!-- ============================================================
-             SCR-K-004: 연결 완료 화면
+             SCR-P-006: 접수 완료 안내 화면
         ============================================================ -->
-        <section id="scr-k-004" class="screen-section">
+        <section id="scr-p-006" class="screen-section">
             <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-004</span>
+                <span class="screen-id-badge">SCR-P-006</span>
                 <div class="screen-header-text">
-                    <h2>연결 완료 화면 <span class="screen-phase">Phase 2 — 페어링 완료</span> <span class="channel-badge channel-pwa">PWA</span></h2>
-                    <p>페어링 성공 안내 → E2EE 적용 확인 → 2~3초 표시 후 SCR-K-005로 자동 전환.</p>
+                    <h2>접수 완료 안내 화면 <span class="screen-phase">Phase 5 — 완료</span></h2>
+                    <p>택배 접수 완료 확인 · 운송장 번호 표시 · 키오스크에서 운송장 수령 안내 · 세션 종료</p>
                 </div>
             </div>
             <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k004')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k004')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k004')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k004')">📏 치수</button>
+                <button class="ctrl-btn" onclick="toggleGrid('p006')">📐 그리드</button>
+                <button class="ctrl-btn" onclick="toggleZones('p006')">🎨 영역 표시</button>
+                <button class="ctrl-btn" onclick="toggleLabels('p006')">🏷️ 라벨</button>
+                <button class="ctrl-btn" onclick="toggleDims('p006')">📏 치수</button>
             </div>
             <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k004">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header">
-                                    <span>🏪 세븐일레븐</span>
-                                    <span>📦 택배 접수</span>
+                <div class="phone-mockup" id="p006">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                            <div class="pwa-screen" style="justify-content:center;text-align:center;">
+                                <div class="pwa-statusbar scr-component" data-label="STATUS-BAR" data-zone="header" style="position:absolute;top:0;left:0;right:0;">
+                                    <span>9:41</span><span>⚡ 📶</span>
                                 </div>
-                                <div class="kio-content" style="align-items:center;justify-content:center;text-align:center;">
-                                    <div class="scr-component" data-label="SUCCESS-ICON" data-zone="content" style="margin-bottom:8px;">
-                                        <div style="width:40px;height:40px;border-radius:50%;background:var(--green-500);color:white;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:18px;">✓</div>
+                                <div style="padding:0 var(--sp-6);">
+                                    <!-- Success Icon -->
+                                    <div class="scr-component" data-label="SUCCESS-ICON" data-zone="content" style="margin-bottom:var(--sp-5);">
+                                        <div class="ui-icon-circle" style="background:var(--green-500);color:white;width:72px;height:72px;font-size:32px;">✓</div>
                                     </div>
-                                    <div class="scr-component" data-label="SUCCESS-TITLE" data-zone="content">
-                                        <div style="font-size:13px;font-weight:700;color:var(--gray-900);margin-bottom:4px;">연결되었습니다!</div>
-                                    </div>
-                                    <div class="scr-component" data-label="SUCCESS-DESC" data-zone="content">
-                                        <div style="font-size:8px;color:var(--gray-600);margin-bottom:8px;">스마트폰과 키오스크가 안전하게 연결되었습니다.</div>
-                                    </div>
-                                    <div class="scr-component" data-label="E2EE-BADGE" data-zone="security" style="margin-bottom:8px;">
-                                        <div style="display:inline-flex;align-items:center;gap:3px;background:var(--k7-green-050);padding:4px 10px;border-radius:var(--radius-full);font-size:7px;font-weight:500;color:var(--k7-green-600);">🔒 종단간 암호화 적용</div>
-                                    </div>
-                                    <div class="scr-component" data-label="AUTO-TRANSITION" data-zone="status">
-                                        <div style="font-size:7px;color:var(--gray-400);">음성 안내가 시작됩니다...</div>
-                                    </div>
-                                </div>
-                                <div class="scr-component kio-fallback-bar" data-label="FALLBACK-BAR" data-zone="footer">
-                                    <span>●○○○○ 연결 완료</span>
-                                    <span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-004 컴포넌트 스펙</div>
-                    <table class="spec-table">
-                        <thead><tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백/간격</th></tr></thead>
-                        <tbody>
-                            <tr><td class="comp-name">K7 브랜드 헤더</td><td><span class="comp-zone zone-header">Header</span></td><td><code>top: 0</code></td><td><code>W: 1080px H: 80px</code></td><td><code>px: 48px</code></td></tr>
-                            <tr><td class="comp-name">성공 아이콘 (체크)</td><td><span class="comp-zone zone-content">Content</span></td><td>수직/수평 중앙</td><td><code>120 × 120 px</code></td><td><code>mb: 32px · 원형</code></td></tr>
-                            <tr><td class="comp-name">연결 완료 제목</td><td><span class="comp-zone zone-content">Content</span></td><td>아이콘 하단 · 수평 중앙</td><td><code>W: auto H: auto</code></td><td><code>mb: 16px · 40px Bold</code></td></tr>
-                            <tr><td class="comp-name">안내 텍스트</td><td><span class="comp-zone zone-content">Content</span></td><td>제목 하단 · 수평 중앙</td><td><code>W: 600px H: auto</code></td><td><code>mb: 32px · 24px</code></td></tr>
-                            <tr><td class="comp-name">E2EE 보안 배지</td><td><span class="comp-zone zone-security">Security</span></td><td>안내 하단 · 수평 중앙</td><td><code>W: auto H: 40px</code></td><td><code>R: full · px: 20px</code></td></tr>
-                            <tr><td class="comp-name">자동전환 안내</td><td><span class="comp-zone zone-status">Status</span></td><td>배지 하단 · 수평 중앙</td><td><code>W: auto H: auto</code></td><td><code>mt: 24px · 18px</code></td></tr>
-                            <tr><td class="comp-name">폴백 바</td><td><span class="comp-zone zone-footer">Footer</span></td><td>화면 최하단</td><td><code>W: 1080px H: 56px</code></td><td><code>px: 48px</code></td></tr>
-                        </tbody>
-                    </table>
-                    <div class="spec-note">
-                        <strong>설계 노트:</strong> 2~3초 표시 후 SCR-K-005로 자동 전환. E2EE 적용 상태를 시각적으로 표시하여 보안 신뢰감 확보(REQ-CH-004). 개인 단말에서 동시에 TTS 출력: "안녕하세요. 택배 접수를 도와드리겠습니다."
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-005: 정보 수집 화면 (음성 입력 모드) — 2가지 채널 모드
-        ============================================================ -->
-        <section id="scr-k-005" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-005</span>
-                <div class="screen-header-text">
-                    <h2>정보 수집 화면 (음성 입력 모드) <span class="screen-phase">Phase 3 — 정보 수집</span> <span class="channel-badge channel-pwa">PWA</span> <span class="channel-badge channel-mic">마이크</span></h2>
-                    <p>음성 입력 실시간 피드백 + 정보 카드 표시. PWA 연동 시 개인 단말에서 음성 입력, 마이크 모드 시 키오스크 내장 마이크 사용. F-005, F-007 참조.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k005a');toggleGrid('k005b');">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k005a');toggleZones('k005b');">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k005a');toggleLabels('k005b');">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k005a');toggleDims('k005b');">📏 치수</button>
-            </div>
-            <div class="dual-mockup-area">
-                <!-- PWA Mode -->
-                <div class="dual-mockup-col">
-                    <div class="mode-label mode-label-pwa">📱 [A] PWA 연동 모드 — 개인 단말 음성 입력</div>
-                    <div class="screen-layout-area" style="grid-template-columns:auto;">
-                        <div class="kiosk-mockup" id="k005a">
-                            <div class="kiosk-frame">
-                                <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                                <div class="kiosk-screen">
-                                    <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                                    <div class="kio-screen">
-                                        <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header">
-                                            <span>🏪 세븐일레븐</span>
-                                            <span style="font-size:6px;">📦 택배 접수</span>
-                                        </div>
-                                        <div class="scr-component kio-step-bar" data-label="STEP-INDICATOR" data-zone="status">
-                                            <div class="kio-step-dot active"></div>
-                                            <div class="kio-step-line"></div>
-                                            <div class="kio-step-dot"></div>
-                                            <div class="kio-step-line"></div>
-                                            <div class="kio-step-dot"></div>
-                                            <div class="kio-step-line"></div>
-                                            <div class="kio-step-dot"></div>
-                                        </div>
-                                        <div class="kio-content">
-                                            <div class="scr-component kio-guide" data-label="GUIDE-MSG" data-zone="content">
-                                                🎤 보내는 분의 성함을 말씀해주세요
-                                            </div>
-                                            <div class="scr-component kio-transcript" data-label="REALTIME-TEXT" data-zone="content">
-                                                <div style="font-size:7px;color:var(--gray-400);">실시간 텍스트</div>
-                                                "보내는 사람은 홍길동이에요" ▍
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="INFO-CARD" data-zone="content">
-                                                <div class="kio-card-title">📋 보내는 분 정보</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">홍길동 <span class="check">✓</span></span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value" style="color:var(--gray-400);">(입력 대기)</span></div>
-                                            </div>
-                                            <div class="scr-component" data-label="VOICE-STATUS" data-zone="status" style="text-align:center;padding:4px;">
-                                                <div style="font-size:7px;color:var(--cyan-600);display:flex;align-items:center;justify-content:center;gap:4px;">
-                                                    <span style="font-size:10px;">📱</span> 스마트폰에서 음성 입력 중
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                            <span>●●○○○</span>
-                                            <span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mic Mode -->
-                <div class="dual-mockup-col">
-                    <div class="mode-label mode-label-mic">🎤 [B] 마이크 직접 모드 — 키오스크 마이크 입력</div>
-                    <div class="screen-layout-area" style="grid-template-columns:auto;">
-                        <div class="kiosk-mockup" id="k005b">
-                            <div class="kiosk-frame">
-                                <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                                <div class="kiosk-screen">
-                                    <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                                    <div class="kio-screen">
-                                        <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header">
-                                            <span>🏪 세븐일레븐</span>
-                                            <span style="font-size:6px;">📦 택배 접수</span>
-                                        </div>
-                                        <div class="scr-component kio-step-bar" data-label="STEP-INDICATOR" data-zone="status">
-                                            <div class="kio-step-dot active"></div>
-                                            <div class="kio-step-line"></div>
-                                            <div class="kio-step-dot"></div>
-                                            <div class="kio-step-line"></div>
-                                            <div class="kio-step-dot"></div>
-                                            <div class="kio-step-line"></div>
-                                            <div class="kio-step-dot"></div>
-                                        </div>
-                                        <div class="kio-content">
-                                            <div class="scr-component kio-guide" data-label="GUIDE-MSG" data-zone="content">
-                                                🎤 보내는 분의 성함을 말씀해주세요
-                                            </div>
-                                            <div class="scr-component" data-label="VOICE-ORB" data-zone="content" style="text-align:center;margin-bottom:4px;">
-                                                <div class="kio-voice-orb" style="margin:0 auto;">🎤</div>
-                                                <div class="kio-voice-bars" style="margin-top:4px;">
-                                                    <div class="bar" style="height:6px;"></div>
-                                                    <div class="bar" style="height:14px;"></div>
-                                                    <div class="bar" style="height:10px;"></div>
-                                                    <div class="bar" style="height:18px;"></div>
-                                                    <div class="bar" style="height:12px;"></div>
-                                                    <div class="bar" style="height:16px;"></div>
-                                                    <div class="bar" style="height:8px;"></div>
-                                                </div>
-                                                <div style="font-size:7px;color:var(--cyan-600);margin-top:2px;">듣고 있어요...</div>
-                                            </div>
-                                            <div class="scr-component kio-transcript" data-label="REALTIME-TEXT" data-zone="content">
-                                                <div style="font-size:7px;color:var(--gray-400);">실시간 텍스트</div>
-                                                "보내는 사람은 홍길동이에요" ▍
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="INFO-CARD" data-zone="content">
-                                                <div class="kio-card-title">📋 보내는 분 정보</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">홍길동 <span class="check">✓</span></span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value" style="color:var(--gray-400);">(입력 대기)</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                            <span>●●○○○</span>
-                                            <span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Shared Spec Table -->
-            <div class="spec-panel" style="margin-top:var(--sp-6);">
-                <div class="spec-panel-header">📋 SCR-K-005 컴포넌트 스펙 (PWA / 마이크 공통 + 차이점)</div>
-                <table class="spec-table">
-                    <thead><tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>모드 차이</th></tr></thead>
-                    <tbody>
-                        <tr><td class="comp-name">K7 브랜드 헤더</td><td><span class="comp-zone zone-header">Header</span></td><td><code>top: 0</code></td><td><code>W: 1080px H: 80px</code></td><td>공통</td></tr>
-                        <tr><td class="comp-name">단계 인디케이터</td><td><span class="comp-zone zone-status">Step</span></td><td>헤더 하단 · 전체 너비</td><td><code>W: 1080px H: 64px</code></td><td>공통. 4단계: 보내는분→받는분→물품→확인</td></tr>
-                        <tr><td class="comp-name">안내 메시지</td><td><span class="comp-zone zone-content">Content</span></td><td>콘텐츠 상단 · 전체 너비</td><td><code>W: 984px H: auto</code></td><td>공통. TTS와 동기화. px: 48px</td></tr>
-                        <tr><td class="comp-name">음성 인식 오브/파형</td><td><span class="comp-zone zone-content">Content</span></td><td>안내 하단 · 수평 중앙</td><td><code>120 × 120 px (오브)</code></td><td><span class="channel-badge channel-mic" style="font-size:9px;">마이크만</span> 키오스크 마이크 상태 표시</td></tr>
-                        <tr><td class="comp-name">PWA 음성 상태</td><td><span class="comp-zone zone-status">Status</span></td><td>안내 하단 · 수평 중앙</td><td><code>W: 400px H: 48px</code></td><td><span class="channel-badge channel-pwa" style="font-size:9px;">PWA만</span> "스마트폰에서 음성 입력 중"</td></tr>
-                        <tr><td class="comp-name">실시간 텍스트 영역</td><td><span class="comp-zone zone-content">Content</span></td><td>오브/상태 하단 · 전체 너비</td><td><code>W: 984px H: min 80px</code></td><td>공통. STT 부분 인식 결과 스트리밍(AC-AI-003-1)</td></tr>
-                        <tr><td class="comp-name">정보 카드 영역</td><td><span class="comp-zone zone-content">Content</span></td><td>텍스트 하단 · 전체 너비</td><td><code>W: 984px H: auto</code></td><td>공통. 수집 완료 슬롯 구조화 카드(AC-DOM-001-2)</td></tr>
-                        <tr><td class="comp-name">폴백 바</td><td><span class="comp-zone zone-footer">Footer</span></td><td>화면 최하단</td><td><code>W: 1080px H: 56px</code></td><td>공통. 진행 상태 + "화면으로 입력하기"</td></tr>
-                    </tbody>
-                </table>
-                <div class="spec-note">
-                    <strong>설계 노트:</strong> <strong>[A] PWA 모드</strong>에서는 음성 입력이 개인 단말에서 이뤄지므로 키오스크에 음성 오브 불필요, 대신 "스마트폰에서 입력 중" 상태 표시. <strong>[B] 마이크 모드</strong>에서는 키오스크 내장 마이크로 직접 입력하므로 음성 파형 애니메이션 표시. 민감 정보(연락처) 수집 시 마이크 모드에서는 키오스크 터치 키패드로 전환(SCR-K-006 대체). 정보 카드에서 민감 정보는 항상 마스킹 표시(NFR-SEC-002).
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-006: 민감 정보 대기 화면
-        ============================================================ -->
-        <section id="scr-k-006" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-006</span>
-                <div class="screen-header-text">
-                    <h2>정보 수집 — 민감 정보 대기 <span class="screen-phase">Phase 3 — 정보 수집</span> <span class="channel-badge channel-pwa">PWA</span> <span class="channel-badge channel-mic">마이크→터치</span></h2>
-                    <p>민감 정보(연락처) 수집 시 음성 자동 차단. [A] PWA: 개인 단말 보안 키패드 대기. [B] 마이크: 키오스크 터치 키패드 표시. F-008 참조.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k006a');toggleGrid('k006b');">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k006a');toggleZones('k006b');">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k006a');toggleLabels('k006b');">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k006a');toggleDims('k006b');">📏 치수</button>
-            </div>
-            <div class="dual-mockup-area">
-                <!-- PWA Mode -->
-                <div class="dual-mockup-col">
-                    <div class="mode-label mode-label-pwa">📱 [A] PWA — 스마트폰 보안 키패드 대기</div>
-                    <div class="screen-layout-area" style="grid-template-columns:auto;">
-                        <div class="kiosk-mockup" id="k006a">
-                            <div class="kiosk-frame">
-                                <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                                <div class="kiosk-screen">
-                                    <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                                    <div class="kio-screen">
-                                        <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                        <div class="scr-component kio-step-bar" data-label="STEP" data-zone="status">
-                                            <div class="kio-step-dot active"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div>
-                                        </div>
-                                        <div class="kio-content" style="text-align:center;">
-                                            <div class="scr-component kio-guide" data-label="SECURE-GUIDE" data-zone="security" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.2);">
-                                                🔒 보안을 위해 연락처를 스마트폰에서 입력해주세요
-                                            </div>
-                                            <div class="scr-component" data-label="PHONE-ICON" data-zone="content" style="margin:12px 0;">
-                                                <div style="font-size:20px;">📱</div>
-                                                <div style="font-size:8px;color:var(--gray-600);margin-top:4px;">스마트폰에서 입력 중...</div>
-                                            </div>
-                                            <div class="scr-component kio-progress-dots" data-label="INPUT-PROGRESS" data-zone="content">
-                                                <div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div>
-                                                <div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div>
-                                                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                                            </div>
-                                            <div style="font-size:7px;color:var(--gray-500);margin-bottom:8px;">(6 / 11자리 입력됨)</div>
-                                            <div class="scr-component kio-card" data-label="INFO-CARD" data-zone="content">
-                                                <div class="kio-card-title">📋 보내는 분 정보</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">홍길동 ✓</span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value">입력 중... 🔒</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                            <span>●●○○○</span><span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Mic Mode → Kiosk Numpad -->
-                <div class="dual-mockup-col">
-                    <div class="mode-label mode-label-mic">🎤 [B] 마이크 → 키오스크 터치 키패드 전환</div>
-                    <div class="screen-layout-area" style="grid-template-columns:auto;">
-                        <div class="kiosk-mockup" id="k006b">
-                            <div class="kiosk-frame">
-                                <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                                <div class="kiosk-screen">
-                                    <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                                    <div class="kio-screen">
-                                        <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                        <div class="scr-component kio-step-bar" data-label="STEP" data-zone="status">
-                                            <div class="kio-step-dot active"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div>
-                                        </div>
-                                        <div class="kio-content" style="text-align:center;">
-                                            <div class="scr-component kio-guide" data-label="SECURE-GUIDE" data-zone="security" style="background:rgba(244,129,31,0.08);border-color:rgba(244,129,31,0.2);">
-                                                🔒 연락처를 아래 키패드로 입력해주세요
-                                            </div>
-                                            <div class="scr-component" data-label="INPUT-FIELD" data-zone="content" style="margin:6px auto;">
-                                                <div style="font-size:10px;font-weight:600;font-family:var(--font-mono);letter-spacing:2px;padding:6px;background:var(--gray-050);border:1px solid var(--gray-300);border-radius:6px;width:80%;margin:0 auto;">010 - **** - ____</div>
-                                            </div>
-                                            <div class="scr-component kio-numpad" data-label="NUMPAD" data-zone="content" style="max-width:180px;margin:0 auto;">
-                                                <div class="kio-numpad-key">1</div><div class="kio-numpad-key">2</div><div class="kio-numpad-key">3</div>
-                                                <div class="kio-numpad-key">4</div><div class="kio-numpad-key">5</div><div class="kio-numpad-key">6</div>
-                                                <div class="kio-numpad-key">7</div><div class="kio-numpad-key">8</div><div class="kio-numpad-key">9</div>
-                                                <div class="kio-numpad-key empty"></div><div class="kio-numpad-key">0</div><div class="kio-numpad-key">⌫</div>
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="INFO-CARD" data-zone="content" style="margin-top:4px;">
-                                                <div class="kio-card-title">📋 보내는 분 정보</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">홍길동 ✓</span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value" style="color:var(--k7-orange-500);">입력 중...</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                            <span>●●○○○</span><span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="spec-panel" style="margin-top:var(--sp-6);">
-                <div class="spec-panel-header">📋 SCR-K-006 컴포넌트 스펙 (민감 정보 입력 — 모드별 차이)</div>
-                <table class="spec-table">
-                    <thead><tr><th>컴포넌트</th><th>영역</th><th>크기</th><th>[A] PWA 모드</th><th>[B] 마이크 모드</th></tr></thead>
-                    <tbody>
-                        <tr><td class="comp-name">보안 안내 메시지</td><td><span class="comp-zone zone-security">Security</span></td><td><code>W: 984px H: auto</code></td><td>"스마트폰에서 입력해주세요"</td><td>"키패드로 입력해주세요"</td></tr>
-                        <tr><td class="comp-name">입력 진행률 표시</td><td><span class="comp-zone zone-content">Content</span></td><td><code>W: 400px H: 32px</code></td><td>자릿수 도트(● ○) 진행률</td><td>입력 필드 + 마스킹</td></tr>
-                        <tr><td class="comp-name">키패드/대기 UI</td><td><span class="comp-zone zone-content">Content</span></td><td><code>W: 480px H: auto</code></td><td>"스마트폰에서 입력 중" 아이콘</td><td>터치 숫자 키패드(3×4 Grid, 키 72×72px)</td></tr>
-                        <tr><td class="comp-name">정보 카드</td><td><span class="comp-zone zone-content">Content</span></td><td><code>W: 984px H: auto</code></td><td colspan="2">공통. 연락처 슬롯 "입력 중..." + 🔒 표시</td></tr>
-                    </tbody>
-                </table>
-                <div class="spec-note">
-                    <strong>설계 노트:</strong> 음성 입력 채널 자동 차단(AC-DOM-002-1). 실제 숫자는 키오스크에 표시 금지, 자릿수 진행률만 표시. [B] 마이크 모드의 키패드 키 최소 72×72px(접근성). 키패드 영역은 화면 하단 2/3에 배치.
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-007: 주소 후보 선택 화면
-        ============================================================ -->
-        <section id="scr-k-007" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-007</span>
-                <div class="screen-header-text">
-                    <h2>주소 후보 선택 화면 <span class="screen-phase">Phase 3 — 정보 수집</span> <span class="channel-badge channel-both">공통</span></h2>
-                    <p>음성 발화 주소 정규화 → 신뢰도 순 후보 목록 표시. 터치 또는 음성으로 선택. F-003 참조.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k007')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k007')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k007')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k007')">📏 치수</button>
-            </div>
-            <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k007">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="BRAND-HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                <div class="scr-component kio-step-bar" data-label="STEP" data-zone="status">
-                                    <div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot active"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div><div class="kio-step-line"></div><div class="kio-step-dot"></div>
-                                </div>
-                                <div class="kio-content">
-                                    <div class="scr-component kio-guide" data-label="GUIDE-MSG" data-zone="content">
-                                        📍 받는 분 주소를 확인해주세요<br>
-                                        <span style="font-size:7px;color:var(--gray-500);">"서울시 강남구 테헤란로 123"(으)로 검색</span>
-                                    </div>
-                                    <div class="scr-component" data-label="ADDRESS-LIST" data-zone="content" style="margin-top:6px;">
-                                        <div class="kio-address-item">
-                                            <span>① 서울 강남구 테헤란로 123 (역삼동)</span>
-                                            <span class="confidence">98%</span>
-                                        </div>
-                                        <div class="kio-address-item">
-                                            <span>② 서울 강남구 테헤란로 123길 4</span>
-                                            <span class="confidence">87%</span>
-                                        </div>
-                                        <div class="kio-address-item">
-                                            <span>③ 서울 강남구 테헤란로 1길 23</span>
-                                            <span class="confidence">72%</span>
-                                        </div>
-                                    </div>
-                                    <div class="scr-component" data-label="MANUAL-INPUT" data-zone="action" style="text-align:center;margin-top:6px;">
-                                        <div style="font-size:7px;color:var(--blue-500);font-weight:500;">🔍 직접 입력하기</div>
-                                    </div>
-                                </div>
-                                <div class="scr-component kio-footer" data-label="ACTION" data-zone="action">
-                                    <div class="kio-btn kio-btn-secondary" style="font-size:7px;">🔄 다시 말하기</div>
-                                    <div style="flex:1;"></div>
-                                </div>
-                                <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                    <span>●●●○○</span><span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-007 컴포넌트 스펙</div>
-                    <table class="spec-table">
-                        <thead><tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백/간격</th></tr></thead>
-                        <tbody>
-                            <tr><td class="comp-name">주소 후보 카드 (×3~5)</td><td><span class="comp-zone zone-content">Content</span></td><td>안내 하단 · 수직 리스트</td><td><code>W: 984px H: 80px (각)</code></td><td><code>gap: 16px · R: 12px</code></td></tr>
-                            <tr><td class="comp-name">신뢰도 퍼센트</td><td><span class="comp-zone zone-content">Content</span></td><td>카드 내 우측</td><td><code>W: auto</code></td><td><code>20px Bold · K7 Green</code></td></tr>
-                            <tr><td class="comp-name">"직접 입력하기" 링크</td><td><span class="comp-zone zone-action">Action</span></td><td>리스트 하단 · 수평 중앙</td><td><code>W: auto H: 48px</code></td><td><code>mt: 16px</code></td></tr>
-                            <tr><td class="comp-name">"다시 말하기" 버튼</td><td><span class="comp-zone zone-action">Action</span></td><td>좌측 하단</td><td><code>W: 200px H: 64px</code></td><td><code>R: 12px</code></td></tr>
-                        </tbody>
-                    </table>
-                    <div class="spec-note">
-                        <strong>설계 노트:</strong> 후보 최대 3~5개 표시(AC-AI-001-2). 터치 또는 "첫 번째"와 같은 음성 선택 지원. 직접 입력 선택 시 키보드/키패드 모드 전환.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-008: 최종 확인 화면 (2단계 확인) — 2가지 채널 모드
-        ============================================================ -->
-        <section id="scr-k-008" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-008</span>
-                <div class="screen-header-text">
-                    <h2>최종 확인 화면 <span class="screen-phase">Phase 4 — 최종 확인</span> <span class="channel-badge channel-pwa">PWA</span> <span class="channel-badge channel-mic">마이크</span></h2>
-                    <p>[A] PWA: 2단계 확인(개인단말 1차→키오스크 2차). [B] 마이크: 키오스크 단독 최종 확인. F-006, F-010 참조.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k008a');toggleGrid('k008b');">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k008a');toggleZones('k008b');">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k008a');toggleLabels('k008b');">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k008a');toggleDims('k008b');">📏 치수</button>
-            </div>
-            <div class="dual-mockup-area">
-                <div class="dual-mockup-col">
-                    <div class="mode-label mode-label-pwa">📱 [A] PWA — 2단계 확인 (1차 확인 대기)</div>
-                    <div class="screen-layout-area" style="grid-template-columns:auto;">
-                        <div class="kiosk-mockup" id="k008a">
-                            <div class="kiosk-frame">
-                                <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                                <div class="kiosk-screen">
-                                    <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                                    <div class="kio-screen">
-                                        <div class="scr-component kio-brand-header" data-label="HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                        <div class="scr-component kio-step-bar" data-label="STEP" data-zone="status">
-                                            <div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot active"></div>
-                                        </div>
-                                        <div class="kio-content" style="overflow-y:auto;">
-                                            <div class="scr-component kio-card" data-label="SUMMARY-SENDER" data-zone="content">
-                                                <div class="kio-card-title">보내는 분</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">홍길동</span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value">010-****-5678</span></div>
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="SUMMARY-RECIPIENT" data-zone="content">
-                                                <div class="kio-card-title">받는 분</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">김철수</span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value">010-****-1234</span></div>
-                                                <div class="kio-card-row"><span class="label">주소</span><span class="value" style="font-size:7px;">서울 강남구 테헤란로 123</span></div>
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="SUMMARY-ITEM" data-zone="content">
-                                                <div class="kio-card-title">물품 / 배송</div>
-                                                <div class="kio-card-row"><span class="label">품목</span><span class="value">노트북 ×1</span></div>
-                                                <div class="kio-card-row"><span class="label">가액</span><span class="value">500,000원</span></div>
-                                                <div class="kio-card-row"><span class="label">배송비</span><span class="value" style="font-weight:700;color:var(--k7-green-600);">5,000원</span></div>
-                                            </div>
-                                            <div class="scr-component" data-label="PRE-CONFIRM-WAIT" data-zone="security" style="text-align:center;padding:6px;background:var(--amber-050);border-radius:6px;margin-top:4px;">
-                                                <div style="font-size:8px;font-weight:600;color:var(--amber-500);">📱 스마트폰에서 '확인' 버튼을 먼저 눌러주세요</div>
-                                                <div style="font-size:7px;color:var(--gray-500);">⏳ 1차 확인 대기 중...</div>
-                                            </div>
-                                        </div>
-                                        <div class="scr-component kio-footer" data-label="ACTION" data-zone="action">
-                                            <div class="kio-btn kio-btn-secondary" style="font-size:7px;">← 정보 수정</div>
-                                            <div class="kio-btn kio-btn-disabled" style="font-size:7px;">최종 접수 (대기 중)</div>
-                                        </div>
-                                        <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                            <span>●●●●○</span><span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dual-mockup-col">
-                    <div class="mode-label mode-label-mic">🎤 [B] 마이크 — 키오스크 단독 확인</div>
-                    <div class="screen-layout-area" style="grid-template-columns:auto;">
-                        <div class="kiosk-mockup" id="k008b">
-                            <div class="kiosk-frame">
-                                <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                                <div class="kiosk-screen">
-                                    <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                                    <div class="kio-screen">
-                                        <div class="scr-component kio-brand-header" data-label="HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                        <div class="scr-component kio-step-bar" data-label="STEP" data-zone="status">
-                                            <div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot done"></div><div class="kio-step-line done"></div><div class="kio-step-dot active"></div>
-                                        </div>
-                                        <div class="kio-content" style="overflow-y:auto;">
-                                            <div class="scr-component kio-card" data-label="SUMMARY" data-zone="content">
-                                                <div class="kio-card-title">보내는 분</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">홍길동</span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value">010-****-5678</span></div>
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="SUMMARY" data-zone="content">
-                                                <div class="kio-card-title">받는 분</div>
-                                                <div class="kio-card-row"><span class="label">이름</span><span class="value">김철수</span></div>
-                                                <div class="kio-card-row"><span class="label">연락처</span><span class="value">010-****-1234</span></div>
-                                                <div class="kio-card-row"><span class="label">주소</span><span class="value" style="font-size:7px;">서울 강남구 테헤란로 123</span></div>
-                                            </div>
-                                            <div class="scr-component kio-card" data-label="SUMMARY" data-zone="content">
-                                                <div class="kio-card-title">물품 / 배송</div>
-                                                <div class="kio-card-row"><span class="label">품목</span><span class="value">노트북 ×1</span></div>
-                                                <div class="kio-card-row"><span class="label">배송비</span><span class="value" style="font-weight:700;color:var(--k7-green-600);">5,000원</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="scr-component kio-footer" data-label="ACTION" data-zone="action">
-                                            <div class="kio-btn kio-btn-secondary" style="font-size:7px;">← 정보 수정</div>
-                                            <div class="kio-btn kio-btn-primary" style="font-size:7px;">✅ 최종 접수</div>
-                                        </div>
-                                        <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                            <span>●●●●○</span><span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="spec-panel" style="margin-top:var(--sp-6);">
-                <div class="spec-panel-header">📋 SCR-K-008 컴포넌트 스펙 (최종 확인 — 모드별 차이)</div>
-                <table class="spec-table">
-                    <thead><tr><th>컴포넌트</th><th>영역</th><th>크기</th><th>[A] PWA 모드</th><th>[B] 마이크 모드</th></tr></thead>
-                    <tbody>
-                        <tr><td class="comp-name">요약 정보 카드 (×3)</td><td><span class="comp-zone zone-content">Content</span></td><td><code>W: 984px H: auto</code></td><td colspan="2">공통. 보내는 분 + 받는 분 + 물품/배송. 민감 정보 마스킹.</td></tr>
-                        <tr><td class="comp-name">1차 확인 대기 안내</td><td><span class="comp-zone zone-security">Security</span></td><td><code>W: 984px H: 80px</code></td><td>"스마트폰에서 확인 버튼 눌러주세요"</td><td><em>표시 없음</em></td></tr>
-                        <tr><td class="comp-name">"최종 접수" CTA</td><td><span class="comp-zone zone-action">Action</span></td><td><code>W: flex H: 72px</code></td><td>비활성화 → 1차 확인 후 활성화</td><td>즉시 활성화 (단독 확인)</td></tr>
-                        <tr><td class="comp-name">"정보 수정" 버튼</td><td><span class="comp-zone zone-action">Action</span></td><td><code>W: 200px H: 64px</code></td><td colspan="2">공통. SCR-K-005로 복귀.</td></tr>
-                    </tbody>
-                </table>
-                <div class="spec-note">
-                    <strong>설계 노트:</strong> <strong>[A] PWA</strong>: Pre-confirm Attestation Token 수신 전까지 SDK 하드-가드로 버튼 비활성화(F-006). Host App 오버라이드 불가. <strong>[B] 마이크</strong>: 개인 단말 미연결이므로 2단계 확인 불가, 키오스크 단독 최종 확인으로 대체 [가정].
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-009: 트랜잭션 처리 중 화면
-        ============================================================ -->
-        <section id="scr-k-009" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-009</span>
-                <div class="screen-header-text">
-                    <h2>트랜잭션 처리 중 화면 <span class="screen-phase">Phase 5 — 실행</span> <span class="channel-badge channel-both">공통</span></h2>
-                    <p>운송장 발행 API 호출 중 표시. 터치 인터랙션 차단. 15초 타임아웃 시 SCR-K-011 전환.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k009')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k009')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k009')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k009')">📏 치수</button>
-            </div>
-            <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k009">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                <div class="kio-content" style="align-items:center;justify-content:center;text-align:center;">
-                                    <div class="scr-component" data-label="SPINNER" data-zone="content" style="margin-bottom:12px;">
-                                        <div style="width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--k7-green-500);border-radius:50%;margin:0 auto;"></div>
-                                    </div>
-                                    <div class="scr-component" data-label="PROCESSING-TITLE" data-zone="content">
-                                        <div style="font-size:12px;font-weight:700;color:var(--gray-900);margin-bottom:6px;">접수 처리 중입니다...</div>
-                                    </div>
-                                    <div class="scr-component" data-label="PROCESSING-DESC" data-zone="content">
-                                        <div style="font-size:8px;color:var(--gray-500);">운송장을 발행하고 있습니다. 잠시만 기다려주세요.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-009 컴포넌트 스펙</div>
-                    <table class="spec-table">
-                        <thead><tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백</th></tr></thead>
-                        <tbody>
-                            <tr><td class="comp-name">로딩 스피너</td><td><span class="comp-zone zone-content">Content</span></td><td>수직/수평 중앙</td><td><code>80 × 80 px</code></td><td><code>mb: 32px</code></td></tr>
-                            <tr><td class="comp-name">처리 중 제목</td><td><span class="comp-zone zone-content">Content</span></td><td>스피너 하단 · 수평 중앙</td><td><code>W: auto</code></td><td><code>mb: 16px · 36px Bold</code></td></tr>
-                            <tr><td class="comp-name">안내 텍스트</td><td><span class="comp-zone zone-content">Content</span></td><td>제목 하단 · 수평 중앙</td><td><code>W: 600px</code></td><td><code>24px Regular</code></td></tr>
-                        </tbody>
-                    </table>
-                    <div class="spec-note"><strong>설계 노트:</strong> 터치 인터랙션 전면 차단(중복 실행 방지). API 타임아웃 15초 시 SCR-K-011 전환(IF-INT-002).</div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-010: 접수 완료 화면
-        ============================================================ -->
-        <section id="scr-k-010" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-010</span>
-                <div class="screen-header-text">
-                    <h2>접수 완료 화면 <span class="screen-phase">Phase 5 — 완료</span> <span class="channel-badge channel-both">공통</span></h2>
-                    <p>운송장 번호 표시 + 프린트 출력 명령 + 60초 자동 초기화 타이머. IF-INT-002 참조.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k010')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k010')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k010')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k010')">📏 치수</button>
-            </div>
-            <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k010">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                <div class="kio-content" style="align-items:center;justify-content:center;text-align:center;">
-                                    <div class="scr-component" data-label="SUCCESS-ICON" data-zone="content" style="margin-bottom:8px;">
-                                        <div style="width:40px;height:40px;border-radius:50%;background:var(--green-500);color:white;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:18px;">✓</div>
-                                    </div>
+                                    <!-- Title -->
                                     <div class="scr-component" data-label="COMPLETE-TITLE" data-zone="content">
-                                        <div style="font-size:12px;font-weight:700;color:var(--gray-900);margin-bottom:8px;">택배 접수가 완료되었습니다!</div>
+                                        <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:var(--sp-5);">접수 완료!</div>
                                     </div>
-                                    <div class="scr-component kio-card" data-label="RECEIPT-CARD" data-zone="content" style="text-align:left;background:var(--green-050);border-color:var(--green-500);">
-                                        <div style="font-size:8px;font-weight:600;color:var(--green-600);margin-bottom:4px;">🏷️ 운송장 번호</div>
-                                        <div style="font-size:11px;font-weight:700;font-family:var(--font-mono);color:var(--gray-900);margin-bottom:4px;">1234-5678-9012</div>
-                                        <div class="kio-card-row"><span class="label">보내는 분</span><span class="value">홍길동 → 김철수</span></div>
-                                        <div class="kio-card-row"><span class="label">배송비</span><span class="value">5,000원</span></div>
+                                    <!-- Waybill Number -->
+                                    <div class="scr-component" data-label="WAYBILL-NUMBER" data-zone="content" style="margin-bottom:var(--sp-5);">
+                                        <div style="background:var(--gray-050);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:var(--sp-3) var(--sp-4);">
+                                            <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-bottom:4px;">운송장 번호</div>
+                                            <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:var(--gray-900);letter-spacing:1px;">1234-5678-9012</div>
+                                        </div>
                                     </div>
-                                    <div class="scr-component" data-label="PRINT-GUIDE" data-zone="content" style="margin-top:6px;">
-                                        <div style="font-size:8px;color:var(--gray-600);">📄 운송장이 출력되었습니다. 택배 물품에 부착해주세요.</div>
+                                    <!-- Guide -->
+                                    <div class="scr-component" data-label="GUIDE-TEXT" data-zone="content" style="margin-bottom:var(--sp-8);">
+                                        <div style="font-size:14px;color:var(--gray-600);line-height:1.6;">
+                                            키오스크에서 운송장을<br>수령해주세요.
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="scr-component kio-footer" data-label="ACTION" data-zone="action" style="justify-content:center;">
-                                    <div class="kio-btn kio-btn-primary" style="font-size:8px;max-width:200px;">처음으로 돌아가기</div>
-                                </div>
-                                <div class="scr-component" data-label="AUTO-TIMER" data-zone="footer" style="text-align:center;padding:4px;font-size:7px;color:var(--gray-400);background:var(--gray-025);border-top:1px solid var(--gray-100);">
-                                    ※ 60초 후 자동으로 초기 화면으로 돌아갑니다.
+                                    <div class="ui-divider"></div>
+                                    <!-- Thank You -->
+                                    <div class="scr-component" data-label="THANK-YOU" data-zone="footer" style="margin-top:var(--sp-3);">
+                                        <div style="font-size:14px;color:var(--gray-600);margin-bottom:var(--sp-3);">이용해주셔서 감사합니다.</div>
+                                        <div style="font-size:12px;color:var(--gray-400);">※ 이 페이지를 닫아도 됩니다.</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-010 컴포넌트 스펙</div>
+                    <div class="spec-panel-header">📋 SCR-P-006 컴포넌트 배치 스펙</div>
                     <table class="spec-table">
-                        <thead><tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백</th></tr></thead>
+                        <thead>
+                            <tr><th>컴포넌트</th><th>영역</th><th>위치(Position)</th><th>크기(Size)</th><th>여백(Spacing)</th></tr>
+                        </thead>
                         <tbody>
-                            <tr><td class="comp-name">성공 아이콘</td><td><span class="comp-zone zone-content">Content</span></td><td>수직 중앙 상단 · 수평 중앙</td><td><code>120 × 120 px</code></td><td><code>mb: 32px</code></td></tr>
-                            <tr><td class="comp-name">완료 제목</td><td><span class="comp-zone zone-content">Content</span></td><td>아이콘 하단 · 수평 중앙</td><td><code>W: auto</code></td><td><code>mb: 32px · 40px Bold</code></td></tr>
-                            <tr><td class="comp-name">접수 영수증 카드</td><td><span class="comp-zone zone-content">Content</span></td><td>제목 하단 · 수평 중앙</td><td><code>W: 984px H: auto</code></td><td><code>R: 16px · p: 32px</code></td></tr>
-                            <tr><td class="comp-name">운송장 번호</td><td><span class="comp-zone zone-content">Content</span></td><td>카드 내 상단</td><td><code>W: auto</code></td><td><code>48px Bold Mono</code></td></tr>
-                            <tr><td class="comp-name">출력 안내</td><td><span class="comp-zone zone-content">Content</span></td><td>카드 하단 · 수평 중앙</td><td><code>W: 600px</code></td><td><code>mt: 24px · 20px</code></td></tr>
-                            <tr><td class="comp-name">"처음으로" 버튼</td><td><span class="comp-zone zone-action">Action</span></td><td>하단 · 수평 중앙</td><td><code>W: 480px H: 72px</code></td><td><code>R: 16px</code></td></tr>
-                            <tr><td class="comp-name">자동 초기화 타이머</td><td><span class="comp-zone zone-footer">Footer</span></td><td>최하단 · 수평 중앙</td><td><code>W: 1080px H: 40px</code></td><td><code>18px</code></td></tr>
+                            <tr>
+                                <td class="comp-name">성공 아이콘</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>수직·수평 중앙 (상단 그룹)</td>
+                                <td><code>72 × 72 pt</code></td>
+                                <td><code>mb: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">"접수 완료!" 제목</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>아이콘 하단 · 수평 중앙</td>
+                                <td><code>20px bold</code></td>
+                                <td><code>mb: 20pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">운송장 번호 카드</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>제목 하단 · 수평 중앙</td>
+                                <td><code>W: 100% auto</code></td>
+                                <td><code>px: 16pt mb: 20pt R: 12pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">안내 텍스트</td>
+                                <td><span class="comp-zone zone-content">Content</span></td>
+                                <td>카드 하단 · 수평 중앙</td>
+                                <td><code>14px regular</code></td>
+                                <td><code>mb: 32pt</code></td>
+                            </tr>
+                            <tr>
+                                <td class="comp-name">감사 메시지</td>
+                                <td><span class="comp-zone zone-footer">Footer</span></td>
+                                <td>구분선 하단 · 수평 중앙</td>
+                                <td><code>14px / 12px</code></td>
+                                <td><code>mt: 12pt</code></td>
+                            </tr>
                         </tbody>
                     </table>
-                    <div class="spec-note"><strong>설계 노트:</strong> 운송장 프린터 동시 출력 명령(IF-INT-002). PWA 모드 시 개인 단말에서 TTS: "접수가 완료되었습니다. 운송장을 부착해주세요." 60초 자동 초기화 타이머로 다음 사용자 대비.</div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ============================================================
-             SCR-K-011: 오류/재시도 화면
-        ============================================================ -->
-        <section id="scr-k-011" class="screen-section">
-            <div class="screen-header">
-                <span class="screen-id-badge">SCR-K-011</span>
-                <div class="screen-header-text">
-                    <h2>오류/재시도 화면 <span class="screen-phase">예외</span> <span class="channel-badge channel-both">공통</span></h2>
-                    <p>운송장 발행 API 실패 등 오류 시 표시. 다시 시도 / 접수 취소 / 화면 입력 폴백 옵션 제공. REQ-OPS-001 참조.</p>
-                </div>
-            </div>
-            <div class="controls-bar">
-                <button class="ctrl-btn" onclick="toggleGrid('k011')">📐 그리드</button>
-                <button class="ctrl-btn" onclick="toggleZones('k011')">🎨 영역 표시</button>
-                <button class="ctrl-btn" onclick="toggleLabels('k011')">🏷️ 라벨</button>
-                <button class="ctrl-btn" onclick="toggleDims('k011')">📏 치수</button>
-            </div>
-            <div class="screen-layout-area">
-                <div class="kiosk-mockup" id="k011">
-                    <div class="kiosk-frame">
-                        <div class="kiosk-bezel-top"><div class="cam"></div></div>
-                        <div class="kiosk-screen">
-                            <div class="grid-overlay"><div class="grid-overlay-cols"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-                            <div class="kio-screen">
-                                <div class="scr-component kio-brand-header" data-label="HEADER" data-zone="header"><span>🏪 세븐일레븐</span><span style="font-size:6px;">📦 택배 접수</span></div>
-                                <div class="kio-content" style="align-items:center;justify-content:center;text-align:center;">
-                                    <div class="scr-component" data-label="ERROR-ICON" data-zone="content" style="margin-bottom:8px;">
-                                        <div style="font-size:28px;">⚠️</div>
-                                    </div>
-                                    <div class="scr-component" data-label="ERROR-TITLE" data-zone="content">
-                                        <div style="font-size:12px;font-weight:700;color:var(--gray-900);margin-bottom:4px;">처리 중 문제가 발생했습니다</div>
-                                    </div>
-                                    <div class="scr-component" data-label="ERROR-DESC" data-zone="content">
-                                        <div style="font-size:8px;color:var(--gray-500);margin-bottom:12px;">일시적인 오류입니다. 다시 시도해주세요.</div>
-                                    </div>
-                                </div>
-                                <div class="scr-component kio-footer" data-label="ACTION" data-zone="action" style="justify-content:center;gap:10px;">
-                                    <div class="kio-btn kio-btn-primary" style="font-size:8px;flex:1;">🔄 다시 시도</div>
-                                    <div class="kio-btn kio-btn-danger" style="font-size:8px;flex:1;">✕ 접수 취소</div>
-                                </div>
-                                <div class="scr-component kio-fallback-bar" data-label="FALLBACK" data-zone="footer">
-                                    <span></span><span class="kio-fallback-link">화면으로 입력하기 →</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="spec-note">
+                        <strong>설계 노트:</strong> 운송장 번호는 mono 폰트(JetBrains Mono / Consolas)로 명확히 표시합니다.
+                        이 화면에서 TTS 동시 출력: "접수가 완료되었습니다. 운송장을 부착해주세요."
+                        사용자가 이 페이지를 닫아도 키오스크 측에서 세션은 정상 종료됩니다.
+                        전체 레이아웃은 SCR-P-002와 동일한 수직 중앙 정렬 구조입니다.
                     </div>
-                </div>
-                <div class="spec-panel">
-                    <div class="spec-panel-header">📋 SCR-K-011 컴포넌트 스펙</div>
-                    <table class="spec-table">
-                        <thead><tr><th>컴포넌트</th><th>영역</th><th>위치</th><th>크기</th><th>여백</th></tr></thead>
-                        <tbody>
-                            <tr><td class="comp-name">경고 아이콘</td><td><span class="comp-zone zone-content">Content</span></td><td>수직 중앙 · 수평 중앙</td><td><code>96 × 96 px</code></td><td><code>mb: 32px</code></td></tr>
-                            <tr><td class="comp-name">오류 제목</td><td><span class="comp-zone zone-content">Content</span></td><td>아이콘 하단</td><td><code>W: auto</code></td><td><code>mb: 16px · 36px Bold</code></td></tr>
-                            <tr><td class="comp-name">안내 텍스트</td><td><span class="comp-zone zone-content">Content</span></td><td>제목 하단</td><td><code>W: 600px</code></td><td><code>mb: 48px · 24px</code></td></tr>
-                            <tr><td class="comp-name">"다시 시도" CTA</td><td><span class="comp-zone zone-action">Action</span></td><td>하단 좌측</td><td><code>W: flex H: 72px</code></td><td><code>R: 12px · 24px Bold</code></td></tr>
-                            <tr><td class="comp-name">"접수 취소" 버튼</td><td><span class="comp-zone zone-action">Action</span></td><td>하단 우측</td><td><code>W: flex H: 72px</code></td><td><code>R: 12px · Error 색상</code></td></tr>
-                            <tr><td class="comp-name">폴백 바</td><td><span class="comp-zone zone-footer">Footer</span></td><td>최하단</td><td><code>W: 1080px H: 56px</code></td><td><code>px: 48px</code></td></tr>
-                        </tbody>
-                    </table>
-                    <div class="spec-note"><strong>설계 노트:</strong> "다시 시도"는 최대 3회 허용 후 직원 호출 안내. PWA 모드 시 TTS: "문제가 발생했습니다. 다시 시도합니다." 서비스 연속성 최우선(REQ-SDK-002).</div>
                 </div>
             </div>
         </section>
@@ -2240,7 +1812,7 @@
     <footer style="background:var(--gray-800);color:var(--gray-400);padding:var(--sp-8);text-align:center;font-size:13px;line-height:1.6;">
         <div style="max-width:var(--doc-max-width);margin:0 auto;">
             <div style="font-weight:600;color:var(--gray-200);margin-bottom:var(--sp-2);">태정에스티 · DX R&D Team</div>
-            <div>지능형 음성 AI 기반 무인 택배 접수 서비스 PoC — 키오스크 레이아웃 배치도 v1.0</div>
+            <div>지능형 음성 AI 기반 무인 택배 접수 서비스 PoC — 개인 단말(PWA) 레이아웃 배치도 v1.0</div>
         </div>
     </footer>
 
@@ -2249,6 +1821,7 @@
          SCRIPTS — Toggle Controls
     ============================================================ -->
     <script>
+        // Toggle functions for each screen mockup
         function toggleGrid(id) {
             const el = document.querySelector('#' + id + ' .grid-overlay');
             if (el) el.classList.toggle('show');
