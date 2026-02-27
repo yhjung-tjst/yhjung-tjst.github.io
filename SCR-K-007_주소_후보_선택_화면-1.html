@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-K-007 — 주소 후보 선택 화면</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────
+       Design Tokens (공통 설계 문서 기반)
+       ───────────────────────────────────────────── */
+    :root {
+      /* Primary — K7 Store Green (TBD-UI-002 가정값) */
+      --primary: #008062;
+      --primary-hover: #006B52;
+      --primary-active: #005642;
+      --primary-soft: #E6F5F0;
+      --primary-10: rgba(0, 128, 98, 0.10);
+
+      /* Status */
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #3B82F6;
+
+      /* Backgrounds */
+      --bg-panel: #FFFFFF;
+      --bg-card-footer: #F8FAFC;
+      --bg-info-message: #EFF6FF;
+      --bg-avatar-bubble: #F0F5FF;
+
+      /* Text */
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-inactive: #CBD5E1;
+
+      /* Border */
+      --border-default: #E2E8F0;
+      --border-hover: #CBD5E1;
+      --border-pressed: #94A3B8;
+
+      /* Dim Overlay */
+      --dim-overlay: rgba(0, 0, 0, 0.35);
+
+      /* Shadow Levels */
+      --shadow-0: none;
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.20);
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+
+      /* Font */
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      /* Confidence Colors */
+      --confidence-high: #22C55E;
+      --confidence-mid: #F59E0B;
+      --confidence-low: #64748B;
+
+      /* Annotation Colors */
+      --ann-red: #EF4444;
+      --ann-blue: #3B82F6;
+      --ann-green: #22C55E;
+      --ann-orange: #F59E0B;
+      --ann-purple: #8B5CF6;
+      --ann-cyan: #06B6D4;
+    }
+
+    /* ─────────────────────────────────────────────
+       Reset & Base
+       ───────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: auto;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #FFFFFF;
+    }
+
+    /* ─────────────────────────────────────────────
+       Page Layout
+       ───────────────────────────────────────────── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: #FFFFFF;
+      padding: 32px 24px;
+      gap: 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Screen Info Panel
+       ───────────────────────────────────────────── */
+    .screen-info {
+      width: 768px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .screen-info__card {
+      flex: 1;
+      min-width: 220px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .screen-info__card-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 10px;
+    }
+
+    .screen-info__row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .screen-info__row:last-child {
+      margin-bottom: 0;
+    }
+
+    .screen-info__label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #9CA3AF;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .screen-info__value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .screen-info__badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .screen-info__badge--green {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .screen-info__badge--blue {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    .screen-info__badge--purple {
+      background: #EDE9FE;
+      color: #5B21B6;
+    }
+
+    .screen-info__badge--amber {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    /* ─────────────────────────────────────────────
+       Kiosk Frame — 768×1024
+       ───────────────────────────────────────────── */
+    .kiosk-frame {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ─────────────────────────────────────────────
+       Host App Background
+       ───────────────────────────────────────────── */
+    .host-app {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      background: linear-gradient(180deg, #F0F4F8 0%, #E8ECF0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 1;
+    }
+
+    .host-app__header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .host-app__header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .host-app__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0.5;
+    }
+
+    .host-app__content-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: rgba(0, 128, 98, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__content-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dim Overlay
+       ───────────────────────────────────────────── */
+    .dim-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--dim-overlay);
+      z-index: 10;
+      animation: dimFadeIn 200ms ease-out forwards;
+    }
+
+    @keyframes dimFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       Floating Panel — 560 × 720px
+       ───────────────────────────────────────────── */
+    .floating-panel {
+      position: absolute;
+      width: 560px;
+      height: 720px;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-3);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: panelExpand 300ms ease-out forwards;
+    }
+
+    @keyframes panelExpand {
+      from {
+        opacity: 0;
+        height: 60px;
+        transform: translateY(calc(-50% + 330px));
+        border-radius: 12px;
+      }
+      to {
+        opacity: 1;
+        height: 720px;
+        transform: translateY(-50%);
+        border-radius: var(--radius-xl);
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Header (56px)
+       ───────────────────────────────────────────── */
+    .panel-header {
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .panel-header__title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .panel-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .panel-header__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .panel-header__icon:hover {
+      background: #F1F5F9;
+    }
+
+    .panel-header__security {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+      opacity: 0.8;
+    }
+
+    .panel-header__connection {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      margin: 0 6px;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.15);
+    }
+
+    .panel-header__close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 150ms ease;
+      min-width: 48px;
+      min-height: 48px;
+    }
+
+    .panel-header__close:hover {
+      background: #FEF2F2;
+      color: var(--error);
+    }
+
+    .panel-header__close:active {
+      background: #FEE2E2;
+    }
+
+    .panel-header__close svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Content
+       ───────────────────────────────────────────── */
+    .panel-content {
+      flex: 1;
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─────────────────────────────────────────────
+       Avatar Area — Type B (Compact, 108px)
+       ───────────────────────────────────────────── */
+    .avatar-area {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      height: 108px;
+      min-height: 108px;
+      padding: 6px 0;
+      animation: fadeSlideUp 400ms ease-out 100ms both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-container {
+      width: 80px;
+      min-width: 80px;
+      height: 96px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #E6F5F0 0%, #DBEAFE 50%, #F0F5FF 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-default);
+      animation: avatarBreathe 3s ease-in-out 1s infinite;
+    }
+
+    @keyframes avatarBreathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.98); }
+    }
+
+    .avatar-placeholder__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #22D3EE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      box-shadow: 0 4px 16px rgba(0, 128, 98, 0.2);
+    }
+
+    .avatar-placeholder__icon svg {
+      width: 20px;
+      height: 20px;
+      color: #FFFFFF;
+    }
+
+    .avatar-placeholder__label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.2px;
+    }
+
+    /* Avatar State Overlay */
+    .avatar-state-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      border: 2px solid #FFFFFF;
+    }
+
+    .avatar-state-badge svg {
+      width: 10px;
+      height: 10px;
+      color: #FFFFFF;
+    }
+
+    /* Avatar Speech Bubble */
+    .avatar-bubble {
+      max-width: 400px;
+      background: var(--bg-avatar-bubble);
+      border-radius: var(--radius-lg);
+      border-bottom-left-radius: var(--radius-sm);
+      padding: 10px 14px;
+      position: relative;
+      align-self: center;
+      animation: bubbleAppear 500ms ease-out 300ms both;
+    }
+
+    @keyframes bubbleAppear {
+      from { opacity: 0; transform: translateX(-8px) scale(0.96); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .avatar-bubble::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 18px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 8px solid var(--bg-avatar-bubble);
+    }
+
+    .avatar-bubble__text {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    /* ─────────────────────────────────────────────
+       Step Progress Indicator (40px)
+       ───────────────────────────────────────────── */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      min-height: 40px;
+      gap: 0;
+      margin-top: 12px;
+      animation: fadeSlideUp 400ms ease-out 200ms both;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-item__dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-item__dot--done {
+      background: var(--success);
+      color: #FFFFFF;
+    }
+
+    .step-item__dot--active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(0, 128, 98, 0.15);
+    }
+
+    .step-item__dot--inactive {
+      background: #F1F5F9;
+      border: 1.5px solid var(--text-inactive);
+      color: var(--text-inactive);
+    }
+
+    .step-item__label {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+    }
+
+    .step-item__label--done {
+      color: var(--success);
+    }
+
+    .step-item__label--active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .step-item__label--inactive {
+      color: var(--text-inactive);
+    }
+
+    .step-connector {
+      width: 20px;
+      height: 1.5px;
+      background: var(--text-inactive);
+      margin: 0 6px;
+    }
+
+    .step-connector--done {
+      background: var(--success);
+    }
+
+    /* ─────────────────────────────────────────────
+       Search Info Message
+       ───────────────────────────────────────────── */
+    .search-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-info-message);
+      border-radius: var(--radius-md);
+      margin-top: 8px;
+      animation: fadeSlideUp 400ms ease-out 300ms both;
+    }
+
+    .search-info__icon {
+      font-size: 18px;
+      line-height: 1.2;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .search-info__text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .search-info__query {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .search-info__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    /* ─────────────────────────────────────────────
+       Address Candidates List
+       ───────────────────────────────────────────── */
+    .candidate-list {
+      flex: 1;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      padding-bottom: 4px;
+      animation: fadeSlideUp 400ms ease-out 400ms both;
+    }
+
+    .candidate-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .candidate-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .candidate-list::-webkit-scrollbar-thumb {
+      background: var(--border-hover);
+      border-radius: 2px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Address Candidate Card
+       ───────────────────────────────────────────── */
+    .candidate-card {
+      width: 100%;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background: var(--bg-panel);
+      border: 1px solid var(--border-default);
+      cursor: pointer;
+      transition: all 150ms ease;
+      position: relative;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: var(--shadow-1);
+      flex-shrink: 0;
+    }
+
+    .candidate-card:hover {
+      background: #F0F5FF;
+      border-color: var(--primary);
+      border-width: 2px;
+      padding: 11px 15px;
+    }
+
+    .candidate-card:active {
+      background: #E8F0FE;
+      border-color: var(--primary-active);
+      transform: scale(0.995);
+    }
+
+    .candidate-card--selected {
+      background: var(--primary-10) !important;
+      border: 2px solid var(--primary) !important;
+      padding: 11px 15px;
+    }
+
+    .candidate-card:nth-child(1) { animation: cardSlideIn 350ms ease-out 450ms both; }
+    .candidate-card:nth-child(2) { animation: cardSlideIn 350ms ease-out 550ms both; }
+    .candidate-card:nth-child(3) { animation: cardSlideIn 350ms ease-out 650ms both; }
+
+    @keyframes cardSlideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Candidate Number Badge */
+    .candidate-card__badge {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .candidate-card__badge-num {
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1;
+    }
+
+    /* Address Text */
+    .candidate-card__text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .candidate-card__address {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.35;
+      word-break: keep-all;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .candidate-card__sub {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.2;
+    }
+
+    /* Confidence + Arrow */
+    .candidate-card__right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+
+    .candidate-card__confidence {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .candidate-card__confidence--high { color: var(--confidence-high); }
+    .candidate-card__confidence--mid { color: var(--confidence-mid); }
+    .candidate-card__confidence--low { color: var(--confidence-low); }
+
+    .candidate-card__arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-inactive);
+      transition: transform 150ms ease, color 150ms ease;
+    }
+
+    .candidate-card:hover .candidate-card__arrow {
+      color: var(--primary);
+      transform: translateX(2px);
+    }
+
+    /* ─────────────────────────────────────────────
+       "직접 입력하기" Button
+       ───────────────────────────────────────────── */
+    .btn-manual-input {
+      width: 100%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px dashed var(--text-inactive);
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 150ms ease;
+      margin-top: 12px;
+      flex-shrink: 0;
+      font-family: var(--font-family);
+      -webkit-tap-highlight-color: transparent;
+      animation: fadeSlideUp 400ms ease-out 750ms both;
+    }
+
+    .btn-manual-input:hover {
+      background: var(--bg-card-footer);
+      border-color: var(--border-pressed);
+    }
+
+    .btn-manual-input:active {
+      background: #F1F5F9;
+    }
+
+    .btn-manual-input__icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .btn-manual-input__text {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Footer (52px) — 커스텀
+       ───────────────────────────────────────────── */
+    .panel-footer {
+      height: 52px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 16px;
+      background: var(--bg-card-footer);
+      border-top: 1px solid var(--border-default);
+    }
+
+    .btn-retry {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      min-width: 120px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-retry:hover {
+      background: #F1F5F9;
+      color: var(--text-primary);
+    }
+
+    .btn-retry:active {
+      background: #E2E8F0;
+    }
+
+    .btn-retry svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .progress-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: all 200ms ease;
+    }
+
+    .progress-dot--active {
+      background: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 128, 98, 0.15);
+    }
+
+    .btn-fallback {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      min-width: 160px;
+      height: 36px;
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-fallback:hover {
+      background: var(--bg-panel);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-fallback:active {
+      background: #F1F5F9;
+    }
+
+    .btn-fallback svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dimension Annotations
+       ───────────────────────────────────────────── */
+
+    /* 패널 너비 (560px) */
+    .ann-panel-w {
+      position: absolute;
+      z-index: 25;
+      right: 20px;
+      top: calc(50% - 360px - 22px);
+      width: 560px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-w::before,
+    .ann-panel-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-red);
+    }
+
+    .ann-panel-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-red);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 패널 높이 (720px) */
+    .ann-panel-h {
+      position: absolute;
+      z-index: 25;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-h::before,
+    .ann-panel-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: var(--ann-blue);
+    }
+
+    .ann-panel-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-blue);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* 우측 여백 (20px) */
+    .ann-margin-r {
+      position: absolute;
+      z-index: 25;
+      right: 0;
+      top: calc(30% - 7px);
+      width: 20px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-margin-r::before,
+    .ann-margin-r::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-green);
+    }
+
+    .ann-margin-r__label {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-green);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 헤더 높이 (56px) */
+    .ann-header-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      top: 50%;
+      transform: translateY(calc(-50%));
+      pointer-events: none;
+    }
+
+    .ann-header-h__line {
+      position: absolute;
+      top: -360px;
+      left: 8px;
+      width: 1px;
+      height: 56px;
+      background: var(--ann-orange);
+    }
+
+    .ann-header-h__label {
+      position: absolute;
+      top: -340px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-orange);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 푸터 높이 (52px) */
+    .ann-footer-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      bottom: calc(50% - 360px);
+      pointer-events: none;
+    }
+
+    .ann-footer-h__line {
+      position: absolute;
+      bottom: 0;
+      left: 8px;
+      width: 1px;
+      height: 52px;
+      background: var(--ann-purple);
+    }
+
+    .ann-footer-h__label {
+      position: absolute;
+      bottom: 10px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-purple);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 키오스크 전체 크기 */
+    .ann-kiosk-w {
+      position: absolute;
+      z-index: 25;
+      left: 0;
+      bottom: -22px;
+      width: 768px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-w::before,
+    .ann-kiosk-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      white-space: nowrap;
+    }
+
+    .ann-kiosk-h {
+      position: absolute;
+      z-index: 25;
+      left: -22px;
+      top: 0;
+      height: 1024px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-h::before,
+    .ann-kiosk-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* ─────────────────────────────────────────────
+       Confirmation Dialog
+       ───────────────────────────────────────────── */
+    .dialog-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay.active {
+      display: flex;
+      animation: dimFadeIn 150ms ease-out;
+    }
+
+    .dialog {
+      width: 360px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      animation: dialogAppear 200ms ease-out;
+    }
+
+    @keyframes dialogAppear {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .dialog__icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #FEF3C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .dialog__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .dialog__actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dialog__btn {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .dialog__btn--secondary {
+      background: #F1F5F9;
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .dialog__btn--secondary:hover {
+      background: #E2E8F0;
+    }
+
+    .dialog__btn--primary {
+      background: var(--primary);
+      border: none;
+      color: #FFFFFF;
+    }
+
+    .dialog__btn--primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* ─────────────────────────────────────────────
+       Toast Notification
+       ───────────────────────────────────────────── */
+    .toast {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #1F2937;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 250ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─────────────────────────────────────────────
+       Timeout Warning Banner
+       ───────────────────────────────────────────── */
+    .timeout-banner {
+      display: none;
+      padding: 10px 16px;
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      border-radius: var(--radius-md);
+      margin-top: auto;
+      font-size: 13px;
+      color: #92400E;
+      text-align: center;
+      animation: fadeSlideUp 300ms ease-out;
+    }
+
+    .timeout-banner.active {
+      display: block;
+    }
+
+    /* ─────────────────────────────────────────────
+       Accessibility Focus
+       ───────────────────────────────────────────── */
+    *:focus-visible {
+      outline: 3px solid #22D3EE;
+      outline-offset: 2px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Selected Confirmation Overlay on Card
+       ───────────────────────────────────────────── */
+    .candidate-card__check {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    .candidate-card--selected .candidate-card__check {
+      display: flex;
+    }
+
+    .candidate-card--selected .candidate-card__arrow {
+      display: none;
+    }
+
+    /* ─────────────────────────────────────────────
+       Spec Toggle Button
+       ───────────────────────────────────────────── */
+    .spec-toggle-bar {
+      width: 768px;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -8px;
+    }
+
+    .spec-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      height: 32px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+      letter-spacing: 0.2px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .spec-toggle-btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      color: #374151;
+    }
+
+    .spec-toggle-btn:active {
+      background: #E2E8F0;
+    }
+
+    .spec-toggle-btn.active {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      color: #1D4ED8;
+    }
+
+    .spec-toggle-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       Annotation Hidden State (default)
+       ───────────────────────────────────────────── */
+    .kiosk-frame .ann-panel-w,
+    .kiosk-frame .ann-panel-h,
+    .kiosk-frame .ann-margin-r,
+    .kiosk-frame .ann-header-h,
+    .kiosk-frame .ann-footer-h,
+    .kiosk-frame .ann-kiosk-w,
+    .kiosk-frame .ann-kiosk-h {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+
+    .specs-visible .ann-panel-w,
+    .specs-visible .ann-panel-h,
+    .specs-visible .ann-margin-r,
+    .specs-visible .ann-header-h,
+    .specs-visible .ann-footer-h,
+    .specs-visible .ann-kiosk-w,
+    .specs-visible .ann-kiosk-h {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spec-legend {
+      width: 768px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 18px;
+      margin-top: -24px;
+      transition: opacity 250ms ease, max-height 300ms ease, padding 300ms ease, margin-top 300ms ease;
+    }
+
+    .spec-legend.visible {
+      opacity: 1;
+      max-height: 200px;
+      padding: 14px 18px;
+      margin-top: 0;
+    }
+
+    .spec-legend__title {
+      width: 100%;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+    }
+
+    .spec-legend__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .spec-legend__color {
+      width: 12px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .spec-legend__text {
+      font-size: 11px;
+      font-weight: 500;
+      color: #6B7280;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ═══════════════════════════════════════════
+         Screen Info — 키오스크 외부 상단 상시 노출
+         ═══════════════════════════════════════════ -->
+    <div class="screen-info">
+      <!-- 화면 기본 정보 -->
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">화면 정보</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면 ID</span>
+          <span class="screen-info__value">SCR-K-007</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면명</span>
+          <span class="screen-info__value">주소 후보 선택 화면</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Phase</span>
+          <span class="screen-info__badge screen-info__badge--blue">Phase 3 — 정보 수집 (슬롯 필링)</span>
+        </div>
+      </div>
+      <!-- 패널 / 아바타 -->
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">패널 · 아바타</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">패널 모드</span>
+          <span class="screen-info__badge screen-info__badge--blue">표준 560 × 720px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타</span>
+          <span class="screen-info__value">Type B — 축소 상반신 80×96px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Primary</span>
+          <span class="screen-info__value" style="display:flex;align-items:center;gap:5px;">
+            <span style="width:10px;height:10px;border-radius:3px;background:#008062;display:inline-block;"></span>
+            #008062 <span style="color:#9CA3AF">(K7 Green, TBD-UI-002)</span>
+          </span>
+        </div>
+      </div>
+      <!-- 참조 문서 -->
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">설계 참조</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">PRD</span>
+          <span class="screen-info__badge screen-info__badge--purple">F-003</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">RSD</span>
+          <span class="screen-info__value">REQ-AI-001, IF-UI-003</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">인터페이스</span>
+          <span class="screen-info__badge screen-info__badge--amber">IF-UI-003</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">설계서</span>
+          <span class="screen-info__value">SCR-K-007 v1.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Toggle
+         ═══════════════════════════════════════════ -->
+    <div class="spec-toggle-bar">
+      <button class="spec-toggle-btn" id="specToggleBtn" aria-label="규격 표시 토글" aria-pressed="false">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        규격보기
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Kiosk Frame — 768×1024
+         ═══════════════════════════════════════════ -->
+    <div class="kiosk-frame" id="kioskFrame">
+      <div class="host-app" id="hostApp">
+
+        <!-- Host App 헤더 -->
+        <div class="host-app__header">
+          <div class="host-app__header-logo">
+            <span class="host-app__header-title">세븐일레븐 무인 택배 서비스</span>
+          </div>
+        </div>
+
+        <!-- Host App 콘텐츠 (시뮬레이션) -->
+        <div class="host-app__content">
+          <div class="host-app__content-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+              <path d="M8 6V4.5C8 3.67 8.67 3 9.5 3h5c.83 0 1.5.67 1.5 1.5V6" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="host-app__content-text">
+            Host App 배경 영역<br>
+            <span style="font-size:13px;color:#94A3B8">(기존 C# 키오스크 애플리케이션)</span>
+          </div>
+        </div>
+
+        <!-- Dim Overlay -->
+        <div class="dim-overlay" id="dimOverlay" role="presentation"></div>
+
+        <!-- ═══ Floating Panel 560×720 ═══ -->
+        <div class="floating-panel" id="floatingPanel" role="dialog" aria-label="음성 택배 접수 주소 후보 선택">
+
+          <!-- Header 56px -->
+          <div class="panel-header">
+            <span class="panel-header__title">음성 택배 접수</span>
+            <div class="panel-header__actions">
+              <div class="panel-header__icon" aria-label="보안 상태: 연결됨">
+                <svg class="panel-header__security" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="panel-header__connection" aria-label="연결 상태: 연결됨"></div>
+              <button class="panel-header__close" id="btnClose" aria-label="닫기">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="panel-content">
+
+            <!-- Avatar Type B (Compact 80×96px) -->
+            <div class="avatar-area">
+              <div class="avatar-container">
+                <div class="avatar-placeholder" role="img" aria-label="AI 어시스턴트 아바타, 말하기 상태">
+                  <div class="avatar-placeholder__icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="white" opacity="0.2"/>
+                      <path d="M12 4a4 4 0 100 8 4 4 0 000-8zM12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="white"/>
+                    </svg>
+                  </div>
+                  <span class="avatar-placeholder__label">AI 어시스턴트</span>
+                </div>
+                <!-- Avatar State Badge: AVT-SPEAK -->
+                <div class="avatar-state-badge" aria-label="말하기 상태">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M8 12h.01M12 12h.01M16 12h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="avatar-bubble">
+                <p class="avatar-bubble__text" id="bubbleText">주소 후보 중 올바른 주소를 선택해주세요.</p>
+              </div>
+            </div>
+
+            <!-- Step Progress Indicator (40px) -->
+            <div class="step-indicator" role="navigation" aria-label="접수 진행 단계">
+              <!-- Step 1: 보내는 분 — 완료 -->
+              <div class="step-item">
+                <div class="step-item__dot step-item__dot--done" aria-label="완료">
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8l3.5 3.5L13 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <span class="step-item__label step-item__label--done">보내는 분</span>
+              </div>
+              <div class="step-connector step-connector--done"></div>
+              <!-- Step 2: 받는 분 — 활성 -->
+              <div class="step-item">
+                <div class="step-item__dot step-item__dot--active" aria-label="진행 중">●</div>
+                <span class="step-item__label step-item__label--active">받는 분</span>
+              </div>
+              <div class="step-connector"></div>
+              <!-- Step 3: 물품 정보 — 비활성 -->
+              <div class="step-item">
+                <div class="step-item__dot step-item__dot--inactive">○</div>
+                <span class="step-item__label step-item__label--inactive">물품 정보</span>
+              </div>
+              <div class="step-connector"></div>
+              <!-- Step 4: 최종 확인 — 비활성 -->
+              <div class="step-item">
+                <div class="step-item__dot step-item__dot--inactive">○</div>
+                <span class="step-item__label step-item__label--inactive">최종 확인</span>
+              </div>
+            </div>
+
+            <!-- Search Info Message -->
+            <div class="search-info" role="note">
+              <span class="search-info__icon">📍</span>
+              <div class="search-info__text-wrap">
+                <span class="search-info__query">"서울시 강남구 테헤란로 123"</span>
+                <span class="search-info__desc">(으)로 검색한 결과입니다.</span>
+              </div>
+            </div>
+
+            <!-- Address Candidate List -->
+            <div class="candidate-list" id="candidateList" role="listbox" aria-label="주소 후보 목록">
+
+              <!-- Candidate 1 — 98% (High) -->
+              <div class="candidate-card" role="option" tabindex="0"
+                   aria-label="1번 후보: 서울특별시 강남구 테헤란로 123, 역삼동, 신뢰도 98%"
+                   data-index="1" id="card1">
+                <div class="candidate-card__badge"><span class="candidate-card__badge-num">1</span></div>
+                <div class="candidate-card__text">
+                  <span class="candidate-card__address">서울특별시 강남구 테헤란로 123</span>
+                  <span class="candidate-card__sub">(역삼동)</span>
+                </div>
+                <div class="candidate-card__right">
+                  <span class="candidate-card__confidence candidate-card__confidence--high">98%</span>
+                  <svg class="candidate-card__arrow" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <div class="candidate-card__check">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8l3.5 3.5L13 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Candidate 2 — 87% (Mid) -->
+              <div class="candidate-card" role="option" tabindex="0"
+                   aria-label="2번 후보: 서울특별시 강남구 테헤란로 123길 4, 역삼동, 신뢰도 87%"
+                   data-index="2" id="card2">
+                <div class="candidate-card__badge"><span class="candidate-card__badge-num">2</span></div>
+                <div class="candidate-card__text">
+                  <span class="candidate-card__address">서울특별시 강남구 테헤란로 123길 4</span>
+                  <span class="candidate-card__sub">(역삼동)</span>
+                </div>
+                <div class="candidate-card__right">
+                  <span class="candidate-card__confidence candidate-card__confidence--mid">87%</span>
+                  <svg class="candidate-card__arrow" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <div class="candidate-card__check">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8l3.5 3.5L13 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Candidate 3 — 72% (Mid) -->
+              <div class="candidate-card" role="option" tabindex="0"
+                   aria-label="3번 후보: 서울특별시 강남구 테헤란로 1길 23, 역삼동, 신뢰도 72%"
+                   data-index="3" id="card3">
+                <div class="candidate-card__badge"><span class="candidate-card__badge-num">3</span></div>
+                <div class="candidate-card__text">
+                  <span class="candidate-card__address">서울특별시 강남구 테헤란로 1길 23</span>
+                  <span class="candidate-card__sub">(역삼동)</span>
+                </div>
+                <div class="candidate-card__right">
+                  <span class="candidate-card__confidence candidate-card__confidence--mid">72%</span>
+                  <svg class="candidate-card__arrow" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <div class="candidate-card__check">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8l3.5 3.5L13 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 직접 입력하기 Button -->
+              <button class="btn-manual-input" id="btnManualInput"
+                      aria-label="주소 직접 입력하기">
+                <span class="btn-manual-input__icon">🔍</span>
+                <span class="btn-manual-input__text">직접 입력하기</span>
+              </button>
+
+            </div>
+
+            <!-- Timeout Warning -->
+            <div class="timeout-banner" id="timeoutBanner">⏱️ 잠시 후 초기 화면으로 돌아갑니다.</div>
+          </div>
+
+          <!-- Footer 52px -->
+          <div class="panel-footer">
+            <button class="btn-retry" id="btnRetry" aria-label="다시 말하기, 주소 음성 재입력">
+              <svg viewBox="0 0 14 14" fill="none">
+                <path d="M9 2.5L4.5 7 9 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              다시 말하기
+            </button>
+            <div class="progress-indicator" role="progressbar" aria-label="주소 후보 선택, 3/5 단계" aria-valuenow="3" aria-valuemin="1" aria-valuemax="5">
+              <div class="progress-dot"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-dot progress-dot--active"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-dot"></div>
+            </div>
+            <button class="btn-fallback" id="btnFallback" aria-label="화면으로 입력하기, 기존 터치 UI로 전환">
+              화면으로 입력하기
+              <svg viewBox="0 0 14 14" fill="none">
+                <path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Dimension Annotations ═══ -->
+
+        <!-- 패널 너비 560px -->
+        <div class="ann-panel-w">
+          <span class="ann-panel-w__label">Panel 560px</span>
+        </div>
+
+        <!-- 패널 높이 720px -->
+        <div class="ann-panel-h">
+          <span class="ann-panel-h__label">720px</span>
+        </div>
+
+        <!-- 우측 여백 20px -->
+        <div class="ann-margin-r">
+          <span class="ann-margin-r__label">20px</span>
+        </div>
+
+        <!-- 헤더 높이 56px -->
+        <div class="ann-header-h">
+          <div class="ann-header-h__line"></div>
+          <span class="ann-header-h__label">56px Header</span>
+        </div>
+
+        <!-- 푸터 높이 52px -->
+        <div class="ann-footer-h">
+          <div class="ann-footer-h__line"></div>
+          <span class="ann-footer-h__label">52px Footer</span>
+        </div>
+
+        <!-- 키오스크 전체 너비 768px -->
+        <div class="ann-kiosk-w">
+          <span class="ann-kiosk-w__label">Kiosk 768px</span>
+        </div>
+
+        <!-- 키오스크 전체 높이 1024px -->
+        <div class="ann-kiosk-h">
+          <span class="ann-kiosk-h__label">1024px</span>
+        </div>
+
+        <!-- Confirmation Dialog -->
+        <div class="dialog-overlay" id="dialogOverlay" role="dialog" aria-modal="true" aria-label="서비스 최소화 확인">
+          <div class="dialog">
+            <div class="dialog__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <h2 class="dialog__title">진행을 중단하시겠어요?</h2>
+            <p class="dialog__desc">최소화하면 나중에 다시 이어서 진행할 수 있습니다.</p>
+            <div class="dialog__actions">
+              <button class="dialog__btn dialog__btn--secondary" id="btnMinimize">최소화</button>
+              <button class="dialog__btn dialog__btn--primary" id="btnContinue">계속하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
+            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="toastText"></span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Legend
+         ═══════════════════════════════════════════ -->
+    <div class="spec-legend">
+      <div class="spec-legend__title">규격 범례 (Dimension Legend)</div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#EF4444"></span>
+        <span class="spec-legend__text">패널 너비 (560px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#3B82F6"></span>
+        <span class="spec-legend__text">패널 높이 (720px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#22C55E"></span>
+        <span class="spec-legend__text">우측 여백 (20px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#F59E0B"></span>
+        <span class="spec-legend__text">헤더 (56px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#8B5CF6"></span>
+        <span class="spec-legend__text">푸터 (52px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#9CA3AF"></span>
+        <span class="spec-legend__text">키오스크 영역 (768×1024px)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════ -->
+  <script>
+    (function() {
+      'use strict';
+
+      var dimOverlay = document.getElementById('dimOverlay');
+      var btnClose = document.getElementById('btnClose');
+      var btnRetry = document.getElementById('btnRetry');
+      var btnFallback = document.getElementById('btnFallback');
+      var btnManualInput = document.getElementById('btnManualInput');
+      var dialogOverlay = document.getElementById('dialogOverlay');
+      var btnMinimize = document.getElementById('btnMinimize');
+      var btnContinue = document.getElementById('btnContinue');
+      var timeoutBanner = document.getElementById('timeoutBanner');
+      var toast = document.getElementById('toast');
+      var toastText = document.getElementById('toastText');
+      var bubbleText = document.getElementById('bubbleText');
+      var candidateCards = document.querySelectorAll('.candidate-card');
+      var selectedCard = null;
+
+      // ── Timeout (180s, warning at 120s) ──
+      var timeoutTimer = null;
+      var warningTimer = null;
+
+      function resetTimeout() {
+        clearTimeout(timeoutTimer);
+        clearTimeout(warningTimer);
+        timeoutBanner.classList.remove('active');
+        warningTimer = setTimeout(function() { timeoutBanner.classList.add('active'); }, 120000);
+        timeoutTimer = setTimeout(function() {
+          showToast('세션 타임아웃: 초기 화면으로 돌아갑니다.');
+        }, 180000);
+      }
+
+      document.addEventListener('touchstart', resetTimeout);
+      document.addEventListener('mousedown', resetTimeout);
+      document.addEventListener('keydown', resetTimeout);
+      resetTimeout();
+
+      // ── Candidate Card Selection ──
+      candidateCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+          if (selectedCard === card) return;
+
+          // Remove previous selection
+          if (selectedCard) {
+            selectedCard.classList.remove('candidate-card--selected');
+          }
+
+          // Apply selection
+          selectedCard = card;
+          card.classList.add('candidate-card--selected');
+
+          var idx = card.dataset.index;
+          var addressEl = card.querySelector('.candidate-card__address');
+          var subEl = card.querySelector('.candidate-card__sub');
+          var address = addressEl.textContent;
+          var sub = subEl.textContent;
+
+          // Update bubble
+          bubbleText.textContent = address + ' ' + sub + '(으)로 주소가 확인되었습니다.';
+
+          // Log SDK action
+          console.log('[SDK] AddressSelected(index: ' + idx + ', address: "' + address + ' ' + sub + '")');
+          console.log('[SDK] SlotConfirmed(slot: "recipient_address", value: "' + address + ' ' + sub + '")');
+
+          // Visual feedback → Transition after delay
+          setTimeout(function() {
+            showToast('✓ 주소 확정 → 다음 슬롯 (SCR-K-006 또는 SCR-K-005)');
+          }, 600);
+        });
+
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+
+      // ── "다시 말하기" Button ──
+      btnRetry.addEventListener('click', function() {
+        console.log('[SDK] resetSlot("recipient_address")');
+        console.log('[SDK] Navigate → SCR-K-005 (주소 음성 재수집)');
+        showToast('← SCR-K-005 (주소 음성 재입력 모드) 복귀');
+      });
+
+      // ── "직접 입력하기" Button ──
+      btnManualInput.addEventListener('click', function() {
+        console.log('[SDK] ManualInputMode(slot: "recipient_address")');
+        showToast('🔍 수동 입력 모드 (S3) 전환');
+      });
+
+      // ── Close / Dim → Dialog ──
+      btnClose.addEventListener('click', function() {
+        dialogOverlay.classList.add('active');
+      });
+
+      dimOverlay.addEventListener('click', function() {
+        dialogOverlay.classList.add('active');
+      });
+
+      btnMinimize.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+        console.log('[SDK] PanelModeChanged(standard → compact)');
+        showToast('패널 최소화 → SCR-K-001');
+      });
+
+      btnContinue.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+      });
+
+      // ── Fallback ──
+      btnFallback.addEventListener('click', function() {
+        console.log('[SDK] FallbackRequested(source: "SCR-K-007")');
+        // If address already confirmed, pass it to Host App
+        if (selectedCard) {
+          var addr = selectedCard.querySelector('.candidate-card__address').textContent;
+          console.log('[SDK] getCollectedSlots() → recipient_address: "' + addr + '"');
+        }
+        showToast('→ SCR-F-001 (폴백 전환 안내)');
+      });
+
+      // ── Toast ──
+      function showToast(msg) {
+        toastText.textContent = msg;
+        toast.classList.add('active');
+        setTimeout(function() { toast.classList.remove('active'); }, 2500);
+      }
+    })();
+
+    // ── Spec Toggle ──
+    (function() {
+      'use strict';
+      var specToggleBtn = document.getElementById('specToggleBtn');
+      var kioskFrame = document.getElementById('kioskFrame');
+      var specLegend = document.querySelector('.spec-legend');
+
+      specToggleBtn.addEventListener('click', function() {
+        var isActive = specToggleBtn.classList.toggle('active');
+        specToggleBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+        if (isActive) {
+          kioskFrame.classList.add('specs-visible');
+          specLegend.classList.add('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격숨기기';
+        } else {
+          kioskFrame.classList.remove('specs-visible');
+          specLegend.classList.remove('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격보기';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-K-008 — 최종 확인 화면 (2단계 확인)</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────
+       Design Tokens (공통 설계 문서 기반)
+       ───────────────────────────────────────────── */
+    :root {
+      /* Primary — K7 Store Green (TBD-UI-002 가정값) */
+      --primary: #008062;
+      --primary-hover: #006B52;
+      --primary-active: #005642;
+      --primary-soft: #E6F5F0;
+
+      /* Status */
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #3B82F6;
+
+      /* Backgrounds */
+      --bg-panel: #FFFFFF;
+      --bg-card-footer: #F8FAFC;
+      --bg-info-message: #EFF6FF;
+      --bg-avatar-bubble: #F0F5FF;
+
+      /* Text */
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-inactive: #CBD5E1;
+
+      /* Border */
+      --border-default: #E2E8F0;
+      --border-hover: #CBD5E1;
+      --border-pressed: #94A3B8;
+
+      /* Dim Overlay — 확장 모드: 0.45 */
+      --dim-overlay: rgba(0, 0, 0, 0.45);
+
+      /* Shadow Levels */
+      --shadow-0: none;
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.20);
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+
+      /* Font */
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      /* Annotation Colors */
+      --ann-red: #EF4444;
+      --ann-blue: #3B82F6;
+      --ann-green: #22C55E;
+      --ann-orange: #F59E0B;
+      --ann-purple: #8B5CF6;
+      --ann-cyan: #06B6D4;
+    }
+
+    /* ─────────────────────────────────────────────
+       Reset & Base
+       ───────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: auto;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #FFFFFF;
+    }
+
+    /* ─────────────────────────────────────────────
+       Page Layout
+       ───────────────────────────────────────────── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: #FFFFFF;
+      padding: 32px 24px;
+      gap: 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Screen Info Panel
+       ───────────────────────────────────────────── */
+    .screen-info {
+      width: 768px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .screen-info__card {
+      flex: 1;
+      min-width: 220px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .screen-info__card-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 10px;
+    }
+
+    .screen-info__row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .screen-info__row:last-child { margin-bottom: 0; }
+
+    .screen-info__label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #9CA3AF;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .screen-info__value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .screen-info__badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .screen-info__badge--green { background: #DCFCE7; color: #166534; }
+    .screen-info__badge--blue { background: #DBEAFE; color: #1E40AF; }
+    .screen-info__badge--purple { background: #EDE9FE; color: #5B21B6; }
+    .screen-info__badge--amber { background: #FEF3C7; color: #92400E; }
+
+    /* ─────────────────────────────────────────────
+       Kiosk Frame — 768×1024
+       ───────────────────────────────────────────── */
+    .kiosk-frame {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ─────────────────────────────────────────────
+       Host App Background
+       ───────────────────────────────────────────── */
+    .host-app {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      background: linear-gradient(180deg, #F0F4F8 0%, #E8ECF0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 1;
+    }
+
+    .host-app__header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .host-app__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0.5;
+    }
+
+    .host-app__content-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: rgba(0, 128, 98, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__content-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dim Overlay (Z-Index Layer 2)
+       ───────────────────────────────────────────── */
+    .dim-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--dim-overlay);
+      z-index: 10;
+      animation: dimFadeIn 200ms ease-out forwards;
+    }
+
+    @keyframes dimFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       Floating Panel — 560 × 900px (확장 모드)
+       우측 정렬 (우측 20px), 수직 중앙
+       ───────────────────────────────────────────── */
+    .floating-panel {
+      position: absolute;
+      width: 560px;
+      height: 900px;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-3);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: panelExpand 300ms ease-out forwards;
+    }
+
+    @keyframes panelExpand {
+      from {
+        opacity: 0;
+        height: 720px;
+        transform: translateY(calc(-50% + 90px));
+        border-radius: var(--radius-xl);
+      }
+      to {
+        opacity: 1;
+        height: 900px;
+        transform: translateY(-50%);
+        border-radius: var(--radius-xl);
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Header (56px)
+       ───────────────────────────────────────────── */
+    .panel-header {
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .panel-header__title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      flex: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .panel-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .panel-header__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .panel-header__icon:hover { background: #F1F5F9; }
+
+    .panel-header__security {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+    }
+
+    .panel-header__connection {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      margin: 0 6px;
+    }
+
+    .panel-header__connection--disconnected {
+      background: var(--error);
+    }
+
+    .panel-header__close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 150ms ease;
+      min-width: 48px;
+      min-height: 48px;
+    }
+
+    .panel-header__close:hover { background: #FEF2F2; color: var(--error); }
+    .panel-header__close:active { background: #FEE2E2; }
+    .panel-header__close svg { width: 18px; height: 18px; }
+
+    /* ─────────────────────────────────────────────
+       Step Indicator (40px)
+       ───────────────────────────────────────────── */
+    .step-indicator {
+      height: 40px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      gap: 0;
+      border-bottom: 1px solid var(--border-default);
+      background: var(--bg-panel);
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .step-item__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .step-item__dot--completed { background: var(--success); }
+    .step-item__dot--active { background: var(--primary); box-shadow: 0 0 0 2px rgba(0, 128, 98, 0.15); }
+    .step-item__dot--pending { background: var(--text-inactive); }
+
+    .step-item__label {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .step-item__label--active { font-weight: 700; }
+
+    .step-connector {
+      width: 24px;
+      height: 1px;
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    .step-connector--completed { background: var(--success); }
+    .step-connector--pending { background: var(--text-inactive); }
+
+    /* ─────────────────────────────────────────────
+       Scrollable Summary Content Area
+       ───────────────────────────────────────────── */
+    .panel-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-scroll-area::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .panel-scroll-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .panel-scroll-area::-webkit-scrollbar-thumb {
+      background: var(--text-inactive);
+      border-radius: 2px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Summary Title with Type C Avatar Icon
+       ───────────────────────────────────────────── */
+    .summary-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      animation: fadeSlideUp 400ms ease-out 100ms both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-icon {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #E6F5F0 0%, #DBEAFE 100%);
+      cursor: pointer;
+      position: relative;
+      transition: border-color 300ms ease;
+      /* 터치 영역 확보 */
+      min-width: 48px;
+      min-height: 48px;
+      /* 시각적 크기는 32px, 터치 영역은 48px */
+      padding: 8px;
+    }
+
+    .avatar-icon--confirmed {
+      border-color: var(--success);
+    }
+
+    .avatar-icon__img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .avatar-icon__badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-icon--confirmed .avatar-icon__badge {
+      background: var(--success);
+    }
+
+    .avatar-icon__badge svg {
+      width: 8px;
+      height: 8px;
+      color: #FFFFFF;
+    }
+
+    .summary-title__text {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Information Cards
+       ───────────────────────────────────────────── */
+    .info-card {
+      width: 100%;
+      background: var(--bg-card-footer);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      animation: cardSlideIn 350ms ease-out both;
+    }
+
+    .info-card:nth-child(2) { animation-delay: 150ms; }
+    .info-card:nth-child(3) { animation-delay: 250ms; }
+    .info-card:nth-child(4) { animation-delay: 350ms; }
+    .info-card:nth-child(5) { animation-delay: 450ms; }
+
+    @keyframes cardSlideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-card--highlight {
+      transition: box-shadow 200ms ease, border-color 200ms ease;
+    }
+
+    .info-card--highlight.focused {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 128, 98, 0.1);
+    }
+
+    .info-card__header {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-card__header-icon {
+      font-size: 14px;
+    }
+
+    .info-card__row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .info-card__row:last-child { margin-bottom: 0; }
+
+    .info-card__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .info-card__value {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .info-card__value--bold {
+      font-weight: 600;
+    }
+
+    .info-card__value--masked {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-lock {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       CTA Fixed Area (72px)
+       ───────────────────────────────────────────── */
+    .cta-area {
+      min-height: 132px;
+      padding: 0 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid var(--border-default);
+      background: var(--bg-panel);
+    }
+
+    /* Status Banner */
+    .status-banner {
+      width: 100%;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      margin-top: 10px;
+      transition: background 300ms ease, color 300ms ease;
+    }
+
+    .status-banner--waiting {
+      background: #FFF7ED;
+    }
+
+    .status-banner--confirmed {
+      background: #F0FDF4;
+    }
+
+    .status-banner__icon {
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .status-banner__text {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.3;
+      flex: 1;
+    }
+
+    .status-banner--waiting .status-banner__text {
+      color: #92400E;
+    }
+
+    .status-banner--confirmed .status-banner__text {
+      color: #166534;
+      font-weight: 500;
+    }
+
+    .status-banner__spinner {
+      font-size: 14px;
+      color: #92400E;
+      animation: blinkPulse 1s ease-in-out infinite;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    @keyframes blinkPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-edit {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      min-width: 100px;
+      height: 40px;
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-edit:hover {
+      background: var(--bg-panel);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-edit:active { background: #F1F5F9; }
+
+    .btn-edit svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 24px;
+      min-width: 200px;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      transition: all 300ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-submit--disabled {
+      background: var(--text-inactive);
+      color: #94A3B8;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-submit--active {
+      background: var(--primary);
+      color: #FFFFFF;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 128, 98, 0.25);
+    }
+
+    .btn-submit--active:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(0, 128, 98, 0.3);
+    }
+
+    .btn-submit--active:active {
+      background: var(--primary-active);
+      box-shadow: 0 2px 8px rgba(0, 128, 98, 0.2);
+      transform: scale(0.98);
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Footer (52px)
+       ───────────────────────────────────────────── */
+    .panel-footer {
+      height: 52px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 16px;
+      background: var(--bg-card-footer);
+      border-top: 1px solid var(--border-default);
+    }
+
+    .panel-footer__left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .progress-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: all 200ms ease;
+    }
+
+    .progress-dot--completed { background: var(--success); }
+    .progress-dot--active { background: var(--primary); box-shadow: 0 0 0 2px rgba(0, 128, 98, 0.15); }
+
+    .btn-fallback {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      min-width: 160px;
+      height: 36px;
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-fallback:hover {
+      background: var(--bg-panel);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-fallback:active { background: #F1F5F9; }
+    .btn-fallback svg { width: 14px; height: 14px; }
+
+    /* ─────────────────────────────────────────────
+       State Toggle — 상태 전환 데모 버튼
+       ───────────────────────────────────────────── */
+    .state-toggle-bar {
+      width: 768px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: -8px;
+    }
+
+    .state-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      height: 36px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .state-toggle-btn:hover { background: #F1F5F9; border-color: #CBD5E1; color: #374151; }
+    .state-toggle-btn:active { background: #E2E8F0; }
+
+    .state-toggle-btn.active {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      color: #1D4ED8;
+    }
+
+    .state-toggle-btn--warning.active {
+      background: #FFF7ED;
+      border-color: #FDBA74;
+      color: #92400E;
+    }
+
+    .state-toggle-btn--success.active {
+      background: #F0FDF4;
+      border-color: #86EFAC;
+      color: #166534;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dimension Annotations
+       ───────────────────────────────────────────── */
+
+    /* 패널 너비 (560px) */
+    .ann-panel-w {
+      position: absolute;
+      z-index: 25;
+      right: 20px;
+      top: calc(50% - 450px - 22px);
+      width: 560px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-w::before,
+    .ann-panel-w::after { content: ''; flex: 1; height: 1px; background: var(--ann-red); }
+
+    .ann-panel-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-red);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 패널 높이 (900px) */
+    .ann-panel-h {
+      position: absolute;
+      z-index: 25;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-h::before,
+    .ann-panel-h::after { content: ''; flex: 1; width: 1px; background: var(--ann-blue); }
+
+    .ann-panel-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-blue);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* 우측 여백 (20px) */
+    .ann-margin-r {
+      position: absolute;
+      z-index: 25;
+      right: 0;
+      top: calc(30% - 7px);
+      width: 20px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-margin-r::before,
+    .ann-margin-r::after { content: ''; flex: 1; height: 1px; background: var(--ann-green); }
+
+    .ann-margin-r__label {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-green);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 헤더 높이 (56px) */
+    .ann-header-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      top: 50%;
+      transform: translateY(calc(-50%));
+      pointer-events: none;
+    }
+
+    .ann-header-h__line {
+      position: absolute;
+      top: -450px;
+      left: 8px;
+      width: 1px;
+      height: 56px;
+      background: var(--ann-orange);
+    }
+
+    .ann-header-h__label {
+      position: absolute;
+      top: -430px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-orange);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 푸터 높이 (52px) */
+    .ann-footer-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      bottom: calc(50% - 450px);
+      pointer-events: none;
+    }
+
+    .ann-footer-h__line {
+      position: absolute;
+      bottom: 0;
+      left: 8px;
+      width: 1px;
+      height: 52px;
+      background: var(--ann-purple);
+    }
+
+    .ann-footer-h__label {
+      position: absolute;
+      bottom: 10px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-purple);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 키오스크 전체 크기 */
+    .ann-kiosk-w {
+      position: absolute;
+      z-index: 25;
+      left: 0;
+      bottom: -22px;
+      width: 768px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-w::before,
+    .ann-kiosk-w::after { content: ''; flex: 1; height: 1px; background: #9CA3AF; }
+
+    .ann-kiosk-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      white-space: nowrap;
+    }
+
+    .ann-kiosk-h {
+      position: absolute;
+      z-index: 25;
+      left: -22px;
+      top: 0;
+      height: 1024px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-h::before,
+    .ann-kiosk-h::after { content: ''; flex: 1; width: 1px; background: #9CA3AF; }
+
+    .ann-kiosk-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* Annotation Hidden State (default) */
+    .kiosk-frame .ann-panel-w,
+    .kiosk-frame .ann-panel-h,
+    .kiosk-frame .ann-margin-r,
+    .kiosk-frame .ann-header-h,
+    .kiosk-frame .ann-footer-h,
+    .kiosk-frame .ann-kiosk-w,
+    .kiosk-frame .ann-kiosk-h {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+
+    .specs-visible .ann-panel-w,
+    .specs-visible .ann-panel-h,
+    .specs-visible .ann-margin-r,
+    .specs-visible .ann-header-h,
+    .specs-visible .ann-footer-h,
+    .specs-visible .ann-kiosk-w,
+    .specs-visible .ann-kiosk-h {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ─────────────────────────────────────────────
+       Confirmation Dialog
+       ───────────────────────────────────────────── */
+    .dialog-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay.active { display: flex; animation: dimFadeIn 150ms ease-out; }
+
+    .dialog {
+      width: 360px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      animation: dialogAppear 200ms ease-out;
+    }
+
+    @keyframes dialogAppear {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .dialog__icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #FEF3C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog__title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .dialog__desc { font-size: 14px; font-weight: 400; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px; }
+    .dialog__actions { display: flex; gap: 10px; }
+
+    .dialog__btn {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .dialog__btn--secondary { background: #F1F5F9; border: 1px solid var(--border-default); color: var(--text-primary); }
+    .dialog__btn--secondary:hover { background: #E2E8F0; }
+    .dialog__btn--primary { background: var(--primary); border: none; color: #FFFFFF; }
+    .dialog__btn--primary:hover { background: var(--primary-hover); }
+
+    /* ─────────────────────────────────────────────
+       Toast Notification
+       ───────────────────────────────────────────── */
+    .toast {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #1F2937;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 250ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .toast.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─────────────────────────────────────────────
+       Spec Toggle Button
+       ───────────────────────────────────────────── */
+    .spec-toggle-bar {
+      width: 768px;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -8px;
+    }
+
+    .spec-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      height: 32px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+      letter-spacing: 0.2px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .spec-toggle-btn:hover { background: #F1F5F9; border-color: #CBD5E1; color: #374151; }
+    .spec-toggle-btn:active { background: #E2E8F0; }
+    .spec-toggle-btn.active { background: #EFF6FF; border-color: #93C5FD; color: #1D4ED8; }
+    .spec-toggle-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* Spec Legend */
+    .spec-legend {
+      width: 768px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 18px;
+      margin-top: -24px;
+      transition: opacity 250ms ease, max-height 300ms ease, padding 300ms ease, margin-top 300ms ease;
+    }
+
+    .spec-legend.visible { opacity: 1; max-height: 200px; padding: 14px 18px; margin-top: 0; }
+    .spec-legend__title { width: 100%; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #9CA3AF; margin-bottom: 2px; }
+    .spec-legend__item { display: flex; align-items: center; gap: 6px; }
+    .spec-legend__color { width: 12px; height: 3px; border-radius: 2px; }
+    .spec-legend__text { font-size: 11px; font-weight: 500; color: #6B7280; }
+
+    /* ─────────────────────────────────────────────
+       Accessibility Focus
+       ───────────────────────────────────────────── */
+    *:focus-visible {
+      outline: 3px solid #22D3EE;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ═══════════════════════════════════════════
+         Screen Info — 키오스크 외부 상단 상시 노출
+         ═══════════════════════════════════════════ -->
+    <div class="screen-info">
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">화면 정보</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면 ID</span>
+          <span class="screen-info__value">SCR-K-008</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면명</span>
+          <span class="screen-info__value">최종 확인 화면 (2단계 확인)</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Phase</span>
+          <span class="screen-info__badge screen-info__badge--green">Phase 4 — 최종 확인</span>
+        </div>
+      </div>
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">패널 · 아바타</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">패널 모드</span>
+          <span class="screen-info__badge screen-info__badge--blue">확장 560 × 900px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타</span>
+          <span class="screen-info__value">Type C — 아이콘 전용 32×32px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Primary</span>
+          <span class="screen-info__value" style="display:flex;align-items:center;gap:5px;">
+            <span style="width:10px;height:10px;border-radius:3px;background:#008062;display:inline-block;"></span>
+            #008062 <span style="color:#9CA3AF">(K7 Green, TBD-UI-002)</span>
+          </span>
+        </div>
+      </div>
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">설계 참조</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">PRD</span>
+          <span class="screen-info__badge screen-info__badge--purple">F-006, F-010</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">RSD</span>
+          <span class="screen-info__value">IF-UI-004</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">개인 단말</span>
+          <span class="screen-info__badge screen-info__badge--amber">SCR-P-005</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">설계서</span>
+          <span class="screen-info__value">SCR-K-008 v1.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         State Toggle + Spec Toggle
+         ═══════════════════════════════════════════ -->
+    <div class="state-toggle-bar">
+      <button class="state-toggle-btn state-toggle-btn--warning active" id="btnStateA" aria-label="상태 A: 1차 확인 대기">
+        ⏳ 상태 A: 1차 확인 대기
+      </button>
+      <button class="state-toggle-btn state-toggle-btn--success" id="btnStateB" aria-label="상태 B: 최종 접수 활성화">
+        ✅ 상태 B: 최종 접수 활성화
+      </button>
+    </div>
+
+    <div class="spec-toggle-bar">
+      <button class="spec-toggle-btn" id="specToggleBtn" aria-label="규격 표시 토글" aria-pressed="false">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        규격보기
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Kiosk Frame — 768×1024
+         ═══════════════════════════════════════════ -->
+    <div class="kiosk-frame" id="kioskFrame">
+      <div class="host-app">
+
+        <!-- Host App 헤더 -->
+        <div class="host-app__header">
+          <span class="host-app__header-title">세븐일레븐 무인 택배 서비스</span>
+        </div>
+
+        <!-- Host App 콘텐츠 (시뮬레이션) -->
+        <div class="host-app__content">
+          <div class="host-app__content-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+              <path d="M8 6V4.5C8 3.67 8.67 3 9.5 3h5c.83 0 1.5.67 1.5 1.5V6" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="host-app__content-text">
+            Host App 배경 영역<br>
+            <span style="font-size:13px;color:#94A3B8">(기존 C# 키오스크 애플리케이션)</span>
+          </div>
+        </div>
+
+        <!-- Dim Overlay — 확장 모드: rgba(0,0,0,0.45) -->
+        <div class="dim-overlay" id="dimOverlay" role="presentation"></div>
+
+        <!-- ═══ Floating Panel 560×900 (확장 모드) ═══ -->
+        <div class="floating-panel" id="floatingPanel" role="dialog" aria-label="음성 택배 접수 최종 확인">
+
+          <!-- Header 56px -->
+          <div class="panel-header">
+            <span class="panel-header__title">음성 택배 접수</span>
+            <div class="panel-header__actions">
+              <div class="panel-header__icon" aria-label="보안 상태: E2EE 활성">
+                <svg class="panel-header__security" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="panel-header__connection" id="connectionDot" aria-label="연결 상태: 연결됨"></div>
+              <button class="panel-header__close" id="btnClose" aria-label="닫기">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step Indicator 40px -->
+          <div class="step-indicator" role="navigation" aria-label="택배 접수 진행 단계">
+            <div class="step-item">
+              <div class="step-item__dot step-item__dot--completed" aria-label="완료"></div>
+              <span class="step-item__label">보내는 분</span>
+            </div>
+            <div class="step-connector step-connector--completed"></div>
+            <div class="step-item">
+              <div class="step-item__dot step-item__dot--completed" aria-label="완료"></div>
+              <span class="step-item__label">받는 분</span>
+            </div>
+            <div class="step-connector step-connector--completed"></div>
+            <div class="step-item">
+              <div class="step-item__dot step-item__dot--completed" aria-label="완료"></div>
+              <span class="step-item__label">물품</span>
+            </div>
+            <div class="step-connector step-connector--completed"></div>
+            <div class="step-item">
+              <div class="step-item__dot step-item__dot--active" aria-label="현재 단계"></div>
+              <span class="step-item__label step-item__label--active">확인</span>
+            </div>
+          </div>
+
+          <!-- Scrollable Summary Content Area -->
+          <div class="panel-scroll-area" id="scrollArea">
+
+            <!-- Summary Title + Type C Avatar -->
+            <div class="summary-title">
+              <div class="avatar-icon" id="avatarIcon" role="button" tabindex="0"
+                   aria-label="AI 어시스턴트, 터치하면 안내 음성 재생">
+                <svg class="avatar-icon__img" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 4a4 4 0 100 8 4 4 0 000-8zM12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="#008062"/>
+                </svg>
+                <div class="avatar-icon__badge">
+                  <svg viewBox="0 0 12 12" fill="none">
+                    <path d="M2.5 6.5L5 9l4.5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <span class="summary-title__text">📋 택배 접수 요약</span>
+            </div>
+
+            <!-- 보내는 분 정보 카드 -->
+            <div class="info-card info-card--highlight" id="cardSender"
+                 aria-label="보내는 분 정보">
+              <div class="info-card__header">
+                <span class="info-card__header-icon">👤</span>
+                보내는 분
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">이름</span>
+                <span class="info-card__value" aria-label="이름: 홍길동">홍길동</span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">연락처</span>
+                <span class="info-card__value info-card__value--masked" aria-label="연락처: 마스킹됨">
+                  010-****-5678
+                  <svg class="icon-lock" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- 받는 분 정보 카드 -->
+            <div class="info-card info-card--highlight" id="cardRecipient"
+                 aria-label="받는 분 정보">
+              <div class="info-card__header">
+                <span class="info-card__header-icon">📍</span>
+                받는 분
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">이름</span>
+                <span class="info-card__value" aria-label="이름: 김철수">김철수</span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">연락처</span>
+                <span class="info-card__value info-card__value--masked" aria-label="연락처: 마스킹됨">
+                  010-****-1234
+                  <svg class="icon-lock" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">주소</span>
+                <span class="info-card__value" aria-label="주소: 서울 강남구 테헤란로 123">
+                  서울 강남구<br>테헤란로 123
+                </span>
+              </div>
+            </div>
+
+            <!-- 물품 정보 카드 -->
+            <div class="info-card info-card--highlight" id="cardItem"
+                 aria-label="물품 정보">
+              <div class="info-card__header">
+                <span class="info-card__header-icon">📦</span>
+                물품 정보
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">품목</span>
+                <span class="info-card__value" aria-label="품목: 노트북 (가전제품) × 1">노트북 (가전제품) × 1</span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">물품 가액</span>
+                <span class="info-card__value" aria-label="물품 가액: 500,000원">500,000원</span>
+              </div>
+            </div>
+
+            <!-- 배송 정보 카드 -->
+            <!-- <div class="info-card info-card--highlight" id="cardDelivery"
+                 aria-label="배송 정보">
+              <div class="info-card__header">
+                <span class="info-card__header-icon">🚚</span>
+                배송 정보
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">예상 배송비</span>
+                <span class="info-card__value info-card__value--bold" aria-label="예상 배송비: 5,000원">5,000원</span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">예상 도착일</span>
+                <span class="info-card__value" aria-label="예상 도착일: 2026년 1월 22일 (수)">2026년 1월 22일 (수)</span>
+              </div>
+            </div> -->
+
+          </div>
+
+          <!-- CTA Fixed Area -->
+          <div class="cta-area" id="ctaArea">
+
+            <!-- 상태 A: 1차 확인 대기 중 -->
+            <div class="status-banner status-banner--waiting" id="bannerWaiting" aria-live="polite">
+              <span class="status-banner__icon">📱</span>
+              <span class="status-banner__text">스마트폰에서 '확인' 버튼을 먼저 눌러주세요.</span>
+              <span class="status-banner__spinner">⏳ 대기 중...</span>
+            </div>
+
+            <!-- 상태 B: 1차 확인 완료 (초기 숨김) -->
+            <div class="status-banner status-banner--confirmed" id="bannerConfirmed" style="display:none;" aria-live="polite">
+              <span class="status-banner__icon">✅</span>
+              <span class="status-banner__text">스마트폰 확인 완료! 아래 '최종 접수' 버튼을 눌러주세요.</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button class="btn-edit" id="btnEdit" aria-label="정보 수정, 이전 단계로 돌아가기">
+                <svg viewBox="0 0 14 14" fill="none">
+                  <path d="M9 2.5L4.5 7 9 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                정보 수정
+              </button>
+              <button class="btn-submit btn-submit--disabled" id="btnSubmit" aria-label="최종 접수, 현재 비활성화" aria-disabled="true">
+                최종 접수
+              </button>
+            </div>
+          </div>
+
+          <!-- Footer 52px -->
+          <div class="panel-footer">
+            <div class="panel-footer__left">
+              <div class="progress-indicator" role="progressbar" aria-label="최종 확인, 4/5 단계" aria-valuenow="4" aria-valuemin="1" aria-valuemax="5">
+                <div class="progress-dot progress-dot--completed"></div>
+                <div class="progress-dot progress-dot--completed"></div>
+                <div class="progress-dot progress-dot--completed"></div>
+                <div class="progress-dot progress-dot--active"></div>
+                <div class="progress-dot"></div>
+              </div>
+            </div>
+            <button class="btn-fallback" id="btnFallback" aria-label="화면으로 입력하기, 기존 터치 UI로 전환">
+              화면으로 입력하기
+              <svg viewBox="0 0 14 14" fill="none">
+                <path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Dimension Annotations ═══ -->
+        <div class="ann-panel-w"><span class="ann-panel-w__label">Panel 560px</span></div>
+        <div class="ann-panel-h"><span class="ann-panel-h__label">900px (확장)</span></div>
+        <div class="ann-margin-r"><span class="ann-margin-r__label">20px</span></div>
+        <div class="ann-header-h">
+          <div class="ann-header-h__line"></div>
+          <span class="ann-header-h__label">56px Header</span>
+        </div>
+        <div class="ann-footer-h">
+          <div class="ann-footer-h__line"></div>
+          <span class="ann-footer-h__label">52px Footer</span>
+        </div>
+        <div class="ann-kiosk-w"><span class="ann-kiosk-w__label">Kiosk 768px</span></div>
+        <div class="ann-kiosk-h"><span class="ann-kiosk-h__label">1024px</span></div>
+
+        <!-- Confirmation Dialog -->
+        <div class="dialog-overlay" id="dialogOverlay" role="dialog" aria-modal="true" aria-label="서비스 최소화 확인">
+          <div class="dialog">
+            <div class="dialog__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <h2 class="dialog__title">진행을 중단하시겠어요?</h2>
+            <p class="dialog__desc">최소화하면 나중에 다시 이어서 진행할 수 있습니다.</p>
+            <div class="dialog__actions">
+              <button class="dialog__btn dialog__btn--secondary" id="btnMinimize">최소화</button>
+              <button class="dialog__btn dialog__btn--primary" id="btnContinue">계속하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
+            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="toastText"></span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Legend
+         ═══════════════════════════════════════════ -->
+    <div class="spec-legend">
+      <div class="spec-legend__title">규격 범례 (Dimension Legend)</div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#EF4444"></span>
+        <span class="spec-legend__text">패널 너비 (560px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#3B82F6"></span>
+        <span class="spec-legend__text">패널 높이 (900px, 확장 모드)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#22C55E"></span>
+        <span class="spec-legend__text">우측 여백 (20px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#F59E0B"></span>
+        <span class="spec-legend__text">헤더 (56px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#8B5CF6"></span>
+        <span class="spec-legend__text">푸터 (52px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#9CA3AF"></span>
+        <span class="spec-legend__text">키오스크 영역 (768×1024px)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════ -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ── DOM References ──
+      var dimOverlay = document.getElementById('dimOverlay');
+      var btnClose = document.getElementById('btnClose');
+      var btnEdit = document.getElementById('btnEdit');
+      var btnSubmit = document.getElementById('btnSubmit');
+      var btnFallback = document.getElementById('btnFallback');
+      var dialogOverlay = document.getElementById('dialogOverlay');
+      var btnMinimize = document.getElementById('btnMinimize');
+      var btnContinue = document.getElementById('btnContinue');
+      var avatarIcon = document.getElementById('avatarIcon');
+      var bannerWaiting = document.getElementById('bannerWaiting');
+      var bannerConfirmed = document.getElementById('bannerConfirmed');
+      var btnStateA = document.getElementById('btnStateA');
+      var btnStateB = document.getElementById('btnStateB');
+      var toast = document.getElementById('toast');
+      var toastText = document.getElementById('toastText');
+
+      var isConfirmed = false;
+
+      // ── State Toggle (데모용) ──
+      function switchToStateA() {
+        isConfirmed = false;
+        btnStateA.classList.add('active');
+        btnStateB.classList.remove('active');
+
+        bannerWaiting.style.display = 'flex';
+        bannerConfirmed.style.display = 'none';
+
+        btnSubmit.className = 'btn-submit btn-submit--disabled';
+        btnSubmit.setAttribute('aria-disabled', 'true');
+        btnSubmit.setAttribute('aria-label', '최종 접수, 현재 비활성화');
+
+        avatarIcon.classList.remove('avatar-icon--confirmed');
+
+        showToast('상태 A: 1차 확인 대기 중');
+      }
+
+      function switchToStateB() {
+        isConfirmed = true;
+        btnStateB.classList.add('active');
+        btnStateA.classList.remove('active');
+
+        bannerWaiting.style.display = 'none';
+        bannerConfirmed.style.display = 'flex';
+
+        btnSubmit.className = 'btn-submit btn-submit--active';
+        btnSubmit.removeAttribute('aria-disabled');
+        btnSubmit.setAttribute('aria-label', '최종 접수');
+
+        avatarIcon.classList.add('avatar-icon--confirmed');
+
+        showToast('상태 B: ✅ Pre-confirm 수신 → 최종 접수 활성화');
+      }
+
+      btnStateA.addEventListener('click', switchToStateA);
+      btnStateB.addEventListener('click', switchToStateB);
+
+      // ── Card Highlight Animation (진입 시 순차 포커스) ──
+      var cards = document.querySelectorAll('.info-card--highlight');
+      var highlightDelay = 800;
+      cards.forEach(function(card, idx) {
+        setTimeout(function() {
+          card.classList.add('focused');
+          setTimeout(function() { card.classList.remove('focused'); }, 200);
+        }, highlightDelay + idx * 300);
+      });
+
+      // ── Close / Dim → Dialog ──
+      btnClose.addEventListener('click', function() { dialogOverlay.classList.add('active'); });
+      dimOverlay.addEventListener('click', function() { dialogOverlay.classList.add('active'); });
+
+      btnMinimize.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+        console.log('[SDK] PanelModeChanged(expanded → compact)');
+        showToast('패널 최소화 → SCR-K-001 (컴팩트 모드)');
+      });
+
+      btnContinue.addEventListener('click', function() { dialogOverlay.classList.remove('active'); });
+
+      // ── 정보 수정 버튼 ──
+      btnEdit.addEventListener('click', function() {
+        console.log('[SDK] NavigateBack(target: "SCR-K-005", mode: "standard")');
+        showToast('← SCR-K-005 (정보 수집) 복귀 · 데이터 유지');
+      });
+
+      // ── 최종 접수 버튼 (SDK 하드-가드: isConfirmed 체크) ──
+      btnSubmit.addEventListener('click', function() {
+        if (!isConfirmed) {
+          console.log('[SDK] HardGuard: Final-confirm blocked — Pre-confirm not received');
+          return;
+        }
+        console.log('[SDK] FinalConfirm()');
+        showToast('→ SCR-K-009 (트랜잭션 처리 중) 전환');
+      });
+
+      // ── 폴백 버튼 ──
+      btnFallback.addEventListener('click', function() {
+        console.log('[SDK] FallbackRequested(source: "SCR-K-008", slotData: {all 7 slots})');
+        showToast('→ SCR-F-001 (폴백 전환 안내) · 전체 슬롯 데이터 전달');
+      });
+
+      // ── 아바타 아이콘 터치 → TTS 재생 ──
+      avatarIcon.addEventListener('click', function() {
+        console.log('[SDK] AvatarTapped() → TTS replay on personal device');
+        showToast('📢 개인 단말 TTS: "모든 정보를 확인해주세요."');
+      });
+      avatarIcon.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); avatarIcon.click(); }
+      });
+
+      // ── Toast ──
+      function showToast(msg) {
+        toastText.textContent = msg;
+        toast.classList.add('active');
+        setTimeout(function() { toast.classList.remove('active'); }, 2500);
+      }
+    })();
+
+    // ── Spec Toggle ──
+    (function() {
+      'use strict';
+      var specToggleBtn = document.getElementById('specToggleBtn');
+      var kioskFrame = document.getElementById('kioskFrame');
+      var specLegend = document.querySelector('.spec-legend');
+
+      specToggleBtn.addEventListener('click', function() {
+        var isActive = specToggleBtn.classList.toggle('active');
+        specToggleBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+        if (isActive) {
+          kioskFrame.classList.add('specs-visible');
+          specLegend.classList.add('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격숨기기';
+        } else {
+          kioskFrame.classList.remove('specs-visible');
+          specLegend.classList.remove('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격보기';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

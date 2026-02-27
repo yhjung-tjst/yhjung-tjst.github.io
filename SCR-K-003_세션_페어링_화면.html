@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-K-003 — 세션 페어링 화면</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────
+       Design Tokens (공통 설계 문서 기반)
+       ───────────────────────────────────────────── */
+    :root {
+      /* Primary — K7 Store Green (TBD-UI-002 가정값) */
+      --primary: #008062;
+      --primary-hover: #006B52;
+      --primary-active: #005642;
+      --primary-soft: #E6F5F0;
+
+      /* Status */
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #3B82F6;
+
+      /* Backgrounds */
+      --bg-panel: #FFFFFF;
+      --bg-card-footer: #F8FAFC;
+      --bg-info-message: #EFF6FF;
+      --bg-avatar-bubble: #F0F5FF;
+
+      /* Text */
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-inactive: #CBD5E1;
+
+      /* Border */
+      --border-default: #E2E8F0;
+      --border-hover: #CBD5E1;
+      --border-pressed: #94A3B8;
+
+      /* Dim Overlay */
+      --dim-overlay: rgba(0, 0, 0, 0.35);
+
+      /* Shadow Levels */
+      --shadow-0: none;
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.20);
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+
+      /* Font */
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      /* Annotation Colors */
+      --ann-red: #EF4444;
+      --ann-blue: #3B82F6;
+      --ann-green: #22C55E;
+      --ann-orange: #F59E0B;
+      --ann-purple: #8B5CF6;
+      --ann-cyan: #06B6D4;
+    }
+
+    /* ─────────────────────────────────────────────
+       Reset & Base
+       ───────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: auto;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #FFFFFF;
+    }
+
+    /* ─────────────────────────────────────────────
+       Page Layout
+       ───────────────────────────────────────────── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: #FFFFFF;
+      padding: 32px 24px;
+      gap: 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Screen Info Panel
+       ───────────────────────────────────────────── */
+    .screen-info {
+      width: 768px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .screen-info__card {
+      flex: 1;
+      min-width: 220px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .screen-info__card-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 10px;
+    }
+
+    .screen-info__row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .screen-info__row:last-child { margin-bottom: 0; }
+
+    .screen-info__label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #9CA3AF;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .screen-info__value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .screen-info__badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .screen-info__badge--green { background: #DCFCE7; color: #166534; }
+    .screen-info__badge--blue { background: #DBEAFE; color: #1E40AF; }
+    .screen-info__badge--purple { background: #EDE9FE; color: #5B21B6; }
+    .screen-info__badge--amber { background: #FEF3C7; color: #92400E; }
+
+    /* ─────────────────────────────────────────────
+       Kiosk Frame — 768×1024
+       ───────────────────────────────────────────── */
+    .kiosk-frame {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ─────────────────────────────────────────────
+       Host App Background
+       ───────────────────────────────────────────── */
+    .host-app {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      background: linear-gradient(180deg, #F0F4F8 0%, #E8ECF0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 1;
+    }
+
+    .host-app__header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .host-app__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0.5;
+    }
+
+    .host-app__content-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: rgba(0, 128, 98, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__content-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dim Overlay
+       ───────────────────────────────────────────── */
+    .dim-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--dim-overlay);
+      z-index: 10;
+      animation: dimFadeIn 200ms ease-out forwards;
+    }
+
+    @keyframes dimFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       Floating Panel — 560 × 720px
+       ───────────────────────────────────────────── */
+    .floating-panel {
+      position: absolute;
+      width: 560px;
+      height: 720px;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-3);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: panelExpand 300ms ease-out forwards;
+    }
+
+    @keyframes panelExpand {
+      from {
+        opacity: 0;
+        height: 60px;
+        transform: translateY(calc(-50% + 330px));
+        border-radius: 12px;
+      }
+      to {
+        opacity: 1;
+        height: 720px;
+        transform: translateY(-50%);
+        border-radius: var(--radius-xl);
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Header (56px)
+       ───────────────────────────────────────────── */
+    .panel-header {
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .panel-header__title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .panel-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .panel-header__security {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      opacity: 0.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-header__connection {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--warning);
+      margin: 0 6px;
+      transition: background 300ms ease;
+    }
+
+    .panel-header__connection--connected { background: var(--success); }
+    .panel-header__connection--connecting { background: var(--warning); animation: connectionPulse 1.2s ease-in-out infinite; }
+    .panel-header__connection--disconnected { background: var(--text-inactive); }
+
+    @keyframes connectionPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .panel-header__close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 150ms ease;
+      min-width: 48px;
+      min-height: 48px;
+    }
+
+    .panel-header__close:hover { background: #FEF2F2; color: var(--error); }
+    .panel-header__close:active { background: #FEE2E2; }
+    .panel-header__close svg { width: 18px; height: 18px; }
+
+    /* ─────────────────────────────────────────────
+       Panel Content
+       ───────────────────────────────────────────── */
+    .panel-content {
+      flex: 1;
+      padding: 6px 20px 12px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* ─────────────────────────────────────────────
+       Avatar Area — Type B (108px total)
+       80×96px compact avatar + bubble
+       ───────────────────────────────────────────── */
+    .avatar-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      min-height: 108px;
+      animation: fadeSlideUp 400ms ease-out 100ms both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-container {
+      width: 80px;
+      min-width: 80px;
+      height: 96px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #E6F5F0 0%, #DBEAFE 50%, #F0F5FF 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-default);
+      animation: avatarBreathe 3s ease-in-out 1s infinite;
+    }
+
+    @keyframes avatarBreathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.98); }
+    }
+
+    .avatar-placeholder__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #22D3EE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      box-shadow: 0 3px 12px rgba(0, 128, 98, 0.2);
+    }
+
+    .avatar-placeholder__icon svg {
+      width: 20px;
+      height: 20px;
+      color: #FFFFFF;
+    }
+
+    .avatar-placeholder__label {
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.2px;
+    }
+
+    /* Avatar Speech Bubble */
+    .avatar-bubble {
+      max-width: 400px;
+      background: var(--bg-avatar-bubble);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      position: relative;
+      align-self: center;
+      animation: bubbleAppear 500ms ease-out 300ms both;
+      transition: all 300ms ease;
+    }
+
+    @keyframes bubbleAppear {
+      from { opacity: 0; transform: translateX(-8px) scale(0.96); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .avatar-bubble::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 18px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 8px solid var(--bg-avatar-bubble);
+    }
+
+    .avatar-bubble__text {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    /* ─────────────────────────────────────────────
+       QR Code Area
+       ───────────────────────────────────────────── */
+    .qr-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeSlideUp 400ms ease-out 200ms both;
+    }
+
+    .qr-container {
+      width: 212px;
+      height: 212px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      margin-bottom: 12px;
+      position: relative;
+      box-shadow: var(--shadow-1);
+    }
+
+    .qr-code {
+      width: 180px;
+      height: 180px;
+      position: relative;
+    }
+
+    /* QR Code SVG simulation */
+    .qr-code svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─────────────────────────────────────────────
+       OTP Area
+       ───────────────────────────────────────────── */
+    .otp-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      animation: fadeSlideUp 400ms ease-out 300ms both;
+    }
+
+    .otp-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .otp-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .otp-digits {
+      display: flex;
+      gap: 12px;
+    }
+
+    .otp-digit {
+      width: 40px;
+      height: 44px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: #FFFFFF;
+      transition: all 200ms ease;
+    }
+
+    .otp-digit--refreshing {
+      animation: otpRefresh 300ms ease-out;
+    }
+
+    @keyframes otpRefresh {
+      0% { opacity: 0; transform: translateY(-4px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .timer-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      transition: color 300ms ease;
+    }
+
+    .timer-text--urgent {
+      color: var(--warning);
+      font-weight: 500;
+    }
+
+    .timer-refresh {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+
+    .timer-refresh:hover {
+      color: var(--primary);
+      transform: rotate(90deg);
+    }
+
+    /* ─────────────────────────────────────────────
+       Divider — "또는 전화로 연결"
+       ───────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 0;
+      animation: fadeSlideUp 400ms ease-out 400ms both;
+    }
+
+    .divider__line {
+      flex: 1;
+      height: 0;
+      border-top: 1px dashed var(--border-default);
+    }
+
+    .divider__text {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      background: var(--bg-panel);
+      padding: 0 4px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Phone Number Input
+       ───────────────────────────────────────────── */
+    .phone-input-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: fadeSlideUp 400ms ease-out 250ms both;
+    }
+
+    .phone-field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 300px;
+      max-width: 100%;
+    }
+
+    .phone-prefix {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .phone-hyphen {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-inactive);
+    }
+
+    .phone-input {
+      flex: 1;
+      height: 44px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      background: var(--bg-card-footer);
+      padding: 0 12px;
+      font-family: var(--font-family);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: 2px;
+      text-align: center;
+      outline: none;
+      transition: all 150ms ease;
+      -webkit-appearance: none;
+    }
+
+    .phone-input:focus {
+      border-color: var(--primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(0, 128, 98, 0.1);
+    }
+
+    .phone-input--warning {
+      border-color: var(--warning);
+    }
+
+    .phone-warning {
+      font-size: 13px;
+      color: var(--warning);
+      display: none;
+    }
+
+    .phone-warning.visible { display: block; }
+
+    /* ─────────────────────────────────────────────
+       Numeric Keypad
+       ───────────────────────────────────────────── */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 88px);
+      gap: 6px;
+      justify-content: center;
+      animation: fadeSlideUp 400ms ease-out 350ms both;
+    }
+
+    .keypad__key {
+      width: 88px;
+      height: 48px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      background: #FFFFFF;
+      font-family: var(--font-family);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 48px;
+      min-width: 48px;
+    }
+
+    .keypad__key:hover {
+      background: var(--bg-card-footer);
+      border-color: var(--border-hover);
+    }
+
+    .keypad__key:active {
+      background: var(--border-default);
+      transform: scale(0.96);
+    }
+
+    .keypad__key--empty {
+      border-color: transparent;
+      background: transparent;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .keypad__key--delete {
+      color: var(--text-secondary);
+    }
+
+    .keypad__key--delete svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Call / Action Buttons
+       ───────────────────────────────────────────── */
+    .btn-call {
+      min-width: 200px;
+      height: 44px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-call--primary {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-call--primary:hover { background: var(--primary-hover); }
+    .btn-call--primary:active { background: var(--primary-active); }
+
+    .btn-call--secondary {
+      min-width: 160px;
+      height: 40px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-default);
+    }
+
+    .btn-call--secondary:hover {
+      background: var(--bg-card-footer);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-call--disabled {
+      background: var(--text-inactive);
+      color: var(--border-pressed);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-call--loading {
+      pointer-events: none;
+      position: relative;
+    }
+
+    .btn-call--loading::after {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: btnSpin 0.8s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes btnSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ─────────────────────────────────────────────
+       Connection Status Indicator
+       ───────────────────────────────────────────── */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      margin: 8px 0;
+      animation: fadeSlideUp 400ms ease-out 500ms both;
+    }
+
+    .status-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: background 300ms ease;
+    }
+
+    .status-dot--active {
+      background: var(--primary);
+    }
+
+    .status-dot--success {
+      background: var(--success);
+    }
+
+    .status-dot--error {
+      background: var(--error);
+    }
+
+    .status-dot--animating {
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    .status-dot--animating:nth-child(2) { animation-delay: 0.2s; }
+    .status-dot--animating:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Footer (52px)
+       ───────────────────────────────────────────── */
+    .panel-footer {
+      height: 52px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 16px;
+      background: var(--bg-card-footer);
+      border-top: 1px solid var(--border-default);
+    }
+
+    .panel-footer__left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-prev {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      min-width: 72px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-prev:hover { background: #F1F5F9; color: var(--text-primary); }
+    .btn-prev:active { background: #E2E8F0; }
+    .btn-prev svg { width: 14px; height: 14px; }
+
+    .progress-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: all 200ms ease;
+    }
+
+    .progress-dot--completed {
+      background: var(--primary);
+    }
+
+    .progress-dot--active {
+      background: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 128, 98, 0.15);
+    }
+
+    .btn-fallback {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      min-width: 160px;
+      height: 36px;
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-fallback:hover {
+      background: var(--bg-panel);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-fallback:active { background: #F1F5F9; }
+    .btn-fallback svg { width: 14px; height: 14px; }
+
+    /* ─────────────────────────────────────────────
+       Mode Views — QR / Phone
+       ───────────────────────────────────────────── */
+    .mode-view { display: none; flex-direction: column; align-items: center; flex: 1; }
+    .mode-view--active { display: flex; }
+
+    /* ─────────────────────────────────────────────
+       PSTN OTP area (shown after call)
+       ───────────────────────────────────────────── */
+    .pstn-otp-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .pstn-otp-hint {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* ─────────────────────────────────────────────
+       Dimension Annotations
+       ───────────────────────────────────────────── */
+    .ann-panel-w {
+      position: absolute;
+      z-index: 25;
+      right: 20px;
+      top: calc(50% - 360px - 22px);
+      width: 560px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-w::before,
+    .ann-panel-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-red);
+    }
+
+    .ann-panel-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-red);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      white-space: nowrap;
+    }
+
+    .ann-panel-h {
+      position: absolute;
+      z-index: 25;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-h::before,
+    .ann-panel-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: var(--ann-blue);
+    }
+
+    .ann-panel-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-blue);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    .ann-margin-r {
+      position: absolute;
+      z-index: 25;
+      right: 0;
+      top: calc(30% - 7px);
+      width: 20px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-margin-r::before,
+    .ann-margin-r::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-green);
+    }
+
+    .ann-margin-r__label {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-green);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      white-space: nowrap;
+    }
+
+    .ann-header-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      top: 50%;
+      transform: translateY(calc(-50%));
+      pointer-events: none;
+    }
+
+    .ann-header-h__line {
+      position: absolute;
+      top: -360px;
+      left: 8px;
+      width: 1px;
+      height: 56px;
+      background: var(--ann-orange);
+    }
+
+    .ann-header-h__label {
+      position: absolute;
+      top: -340px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-orange);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    .ann-footer-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      bottom: calc(50% - 360px);
+      pointer-events: none;
+    }
+
+    .ann-footer-h__line {
+      position: absolute;
+      bottom: 0;
+      left: 8px;
+      width: 1px;
+      height: 52px;
+      background: var(--ann-purple);
+    }
+
+    .ann-footer-h__label {
+      position: absolute;
+      bottom: 10px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-purple);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    .ann-kiosk-w {
+      position: absolute;
+      z-index: 25;
+      left: 0;
+      bottom: -22px;
+      width: 768px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-w::before,
+    .ann-kiosk-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      white-space: nowrap;
+    }
+
+    .ann-kiosk-h {
+      position: absolute;
+      z-index: 25;
+      left: -22px;
+      top: 0;
+      height: 1024px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-h::before,
+    .ann-kiosk-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* Avatar height annotation */
+    .ann-avatar-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 42px);
+      top: calc(50% - 360px + 56px);
+      pointer-events: none;
+    }
+
+    .ann-avatar-h__line {
+      width: 1px;
+      height: 108px;
+      background: var(--ann-cyan);
+    }
+
+    .ann-avatar-h__label {
+      position: absolute;
+      top: 30px;
+      left: -12px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-cyan);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* ─────────────────────────────────────────────
+       Annotation Hidden State
+       ───────────────────────────────────────────── */
+    .kiosk-frame .ann-panel-w,
+    .kiosk-frame .ann-panel-h,
+    .kiosk-frame .ann-margin-r,
+    .kiosk-frame .ann-header-h,
+    .kiosk-frame .ann-footer-h,
+    .kiosk-frame .ann-kiosk-w,
+    .kiosk-frame .ann-kiosk-h,
+    .kiosk-frame .ann-avatar-h {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+
+    .specs-visible .ann-panel-w,
+    .specs-visible .ann-panel-h,
+    .specs-visible .ann-margin-r,
+    .specs-visible .ann-header-h,
+    .specs-visible .ann-footer-h,
+    .specs-visible .ann-kiosk-w,
+    .specs-visible .ann-kiosk-h,
+    .specs-visible .ann-avatar-h {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ─────────────────────────────────────────────
+       Confirmation Dialog
+       ───────────────────────────────────────────── */
+    .dialog-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay.active {
+      display: flex;
+      animation: dimFadeIn 150ms ease-out;
+    }
+
+    .dialog {
+      width: 360px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      animation: dialogAppear 200ms ease-out;
+    }
+
+    @keyframes dialogAppear {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .dialog__icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #FEF3C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .dialog__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .dialog__actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dialog__btn {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .dialog__btn--secondary {
+      background: #F1F5F9;
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .dialog__btn--secondary:hover { background: #E2E8F0; }
+
+    .dialog__btn--primary {
+      background: var(--primary);
+      border: none;
+      color: #FFFFFF;
+    }
+
+    .dialog__btn--primary:hover { background: var(--primary-hover); }
+
+    /* ─────────────────────────────────────────────
+       Toast
+       ───────────────────────────────────────────── */
+    .toast {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #1F2937;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 250ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─────────────────────────────────────────────
+       Timeout Warning Banner
+       ───────────────────────────────────────────── */
+    .timeout-banner {
+      display: none;
+      padding: 10px 16px;
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      border-radius: var(--radius-md);
+      margin-top: auto;
+      font-size: 13px;
+      color: #92400E;
+      text-align: center;
+      animation: fadeSlideUp 300ms ease-out;
+    }
+
+    .timeout-banner.active { display: block; }
+
+    /* ─────────────────────────────────────────────
+       Accessibility Focus
+       ───────────────────────────────────────────── */
+    *:focus-visible {
+      outline: 3px solid #22D3EE;
+      outline-offset: 2px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Spec Toggle
+       ───────────────────────────────────────────── */
+    .spec-toggle-bar {
+      width: 768px;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -8px;
+    }
+
+    .spec-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      height: 32px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+      letter-spacing: 0.2px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .spec-toggle-btn:hover { background: #F1F5F9; border-color: #CBD5E1; color: #374151; }
+    .spec-toggle-btn:active { background: #E2E8F0; }
+    .spec-toggle-btn.active { background: #EFF6FF; border-color: #93C5FD; color: #1D4ED8; }
+    .spec-toggle-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* Spec Legend */
+    .spec-legend {
+      width: 768px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 18px;
+      margin-top: -24px;
+      transition: opacity 250ms ease, max-height 300ms ease, padding 300ms ease, margin-top 300ms ease;
+    }
+
+    .spec-legend.visible {
+      opacity: 1;
+      max-height: 200px;
+      padding: 14px 18px;
+      margin-top: 0;
+    }
+
+    .spec-legend__title {
+      width: 100%;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+    }
+
+    .spec-legend__item { display: flex; align-items: center; gap: 6px; }
+    .spec-legend__color { width: 12px; height: 3px; border-radius: 2px; }
+    .spec-legend__text { font-size: 11px; font-weight: 500; color: #6B7280; }
+
+    /* ─────────────────────────────────────────────
+       Mode Switch Tabs (external to panel for demo)
+       ───────────────────────────────────────────── */
+    .mode-switch {
+      width: 768px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .mode-switch__label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-right: 8px;
+    }
+
+    .mode-switch__btn {
+      padding: 6px 16px;
+      height: 32px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .mode-switch__btn:hover { background: #F1F5F9; border-color: #CBD5E1; }
+    .mode-switch__btn--active {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ═══════════════════════════════════════════
+         Screen Info — 키오스크 외부 상단
+         ═══════════════════════════════════════════ -->
+    <div class="screen-info">
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">화면 정보</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면 ID</span>
+          <span class="screen-info__value">SCR-K-003</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면명</span>
+          <span class="screen-info__value">세션 페어링 화면</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Phase</span>
+          <span class="screen-info__badge screen-info__badge--green">Phase 2 — 세션 페어링</span>
+        </div>
+      </div>
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">패널 · 아바타</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">패널 모드</span>
+          <span class="screen-info__badge screen-info__badge--blue">표준 560 × 720px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타</span>
+          <span class="screen-info__value">Type B — 축소 80×96px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Primary</span>
+          <span class="screen-info__value" style="display:flex;align-items:center;gap:5px;">
+            <span style="width:10px;height:10px;border-radius:3px;background:#008062;display:inline-block;"></span>
+            #008062 <span style="color:#9CA3AF">(K7 Green, TBD-UI-002)</span>
+          </span>
+        </div>
+      </div>
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">설계 참조</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">PRD</span>
+          <span class="screen-info__badge screen-info__badge--purple">F-002</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">RSD</span>
+          <span class="screen-info__value">REQ-CH-003</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">인터페이스</span>
+          <span class="screen-info__badge screen-info__badge--amber">IF-UI-002</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">설계서</span>
+          <span class="screen-info__value">SCR-K-003 v1.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode Switch + Spec Toggle -->
+    <div class="mode-switch">
+      <span class="mode-switch__label">채널 모드</span>
+      <button class="mode-switch__btn mode-switch__btn--active" id="modeQR" data-mode="webrtc">QR 페어링 (WebRTC)</button>
+      <button class="mode-switch__btn" id="modePSTN" data-mode="pstn">전화 페어링 (PSTN)</button>
+      <span style="flex:1"></span>
+      <button class="spec-toggle-btn" id="specToggleBtn" aria-label="규격 표시 토글" aria-pressed="false">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        규격보기
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Kiosk Frame — 768×1024
+         ═══════════════════════════════════════════ -->
+    <div class="kiosk-frame" id="kioskFrame">
+      <div class="host-app">
+
+        <!-- Host App 헤더 -->
+        <div class="host-app__header">
+          <span class="host-app__header-title">세븐일레븐 무인 택배 서비스</span>
+        </div>
+
+        <!-- Host App 콘텐츠 -->
+        <div class="host-app__content">
+          <div class="host-app__content-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+              <path d="M8 6V4.5C8 3.67 8.67 3 9.5 3h5c.83 0 1.5.67 1.5 1.5V6" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="host-app__content-text">
+            Host App 배경 영역<br>
+            <span style="font-size:13px;color:#94A3B8">(기존 C# 키오스크 애플리케이션)</span>
+          </div>
+        </div>
+
+        <!-- Dim Overlay -->
+        <div class="dim-overlay" id="dimOverlay" role="presentation"></div>
+
+        <!-- ═══ Floating Panel 560×720 ═══ -->
+        <div class="floating-panel" id="floatingPanel" role="dialog" aria-label="음성 택배 접수 세션 페어링">
+
+          <!-- Header 56px -->
+          <div class="panel-header">
+            <span class="panel-header__title">음성 택배 접수</span>
+            <div class="panel-header__actions">
+              <div class="panel-header__security" aria-label="보안 상태: 대기">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="panel-header__connection panel-header__connection--connecting" id="headerConnection" aria-label="연결 상태: 연결 중"></div>
+              <button class="panel-header__close" id="btnClose" aria-label="닫기">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="panel-content">
+
+            <!-- Avatar Type B (80×96px compact) -->
+            <div class="avatar-area">
+              <div class="avatar-container">
+                <div class="avatar-placeholder" role="img" aria-label="AI 어시스턴트 아바타">
+                  <div class="avatar-placeholder__icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="white" opacity="0.2"/>
+                      <path d="M12 4a4 4 0 100 8 4 4 0 000-8zM12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="white"/>
+                    </svg>
+                  </div>
+                  <span class="avatar-placeholder__label">AI 어시스턴트</span>
+                </div>
+              </div>
+              <div class="avatar-bubble" id="avatarBubble">
+                <p class="avatar-bubble__text" id="bubbleText">스마트폰으로 아래 QR코드를 스캔해주세요.</p>
+              </div>
+            </div>
+
+            <!-- ═══ QR Mode View ═══ -->
+            <div class="mode-view mode-view--active" id="viewQR">
+
+              <!-- QR Code -->
+              <div class="qr-section">
+                <div class="qr-container" id="qrContainer">
+                  <div class="qr-code">
+                    <!-- QR Code SVG placeholder -->
+                    <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <!-- Position Detection Patterns -->
+                      <rect x="4" y="4" width="44" height="44" rx="4" fill="#1E293B"/>
+                      <rect x="8" y="8" width="36" height="36" rx="2" fill="white"/>
+                      <rect x="14" y="14" width="24" height="24" rx="2" fill="#1E293B"/>
+                      <rect x="132" y="4" width="44" height="44" rx="4" fill="#1E293B"/>
+                      <rect x="136" y="8" width="36" height="36" rx="2" fill="white"/>
+                      <rect x="142" y="14" width="24" height="24" rx="2" fill="#1E293B"/>
+                      <rect x="4" y="132" width="44" height="44" rx="4" fill="#1E293B"/>
+                      <rect x="8" y="136" width="36" height="36" rx="2" fill="white"/>
+                      <rect x="14" y="142" width="24" height="24" rx="2" fill="#1E293B"/>
+                      <!-- Data modules simulation -->
+                      <rect x="56" y="8" width="8" height="8" fill="#1E293B"/>
+                      <rect x="72" y="8" width="8" height="8" fill="#1E293B"/>
+                      <rect x="88" y="8" width="8" height="8" fill="#1E293B"/>
+                      <rect x="104" y="8" width="8" height="8" fill="#1E293B"/>
+                      <rect x="56" y="24" width="8" height="8" fill="#1E293B"/>
+                      <rect x="80" y="24" width="8" height="8" fill="#1E293B"/>
+                      <rect x="104" y="24" width="8" height="8" fill="#1E293B"/>
+                      <rect x="120" y="24" width="8" height="8" fill="#1E293B"/>
+                      <rect x="64" y="40" width="8" height="8" fill="#1E293B"/>
+                      <rect x="88" y="40" width="8" height="8" fill="#1E293B"/>
+                      <rect x="112" y="40" width="8" height="8" fill="#1E293B"/>
+                      <!-- Center rows -->
+                      <rect x="8" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="24" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="40" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="64" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="88" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="112" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="136" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="160" y="56" width="8" height="8" fill="#1E293B"/>
+                      <rect x="8" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="32" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="56" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="80" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="104" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="128" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="152" y="72" width="8" height="8" fill="#1E293B"/>
+                      <rect x="16" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="40" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="64" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="96" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="120" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="144" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="168" y="88" width="8" height="8" fill="#1E293B"/>
+                      <rect x="8" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="24" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="48" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="72" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="88" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="112" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="136" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="160" y="104" width="8" height="8" fill="#1E293B"/>
+                      <rect x="16" y="120" width="8" height="8" fill="#1E293B"/>
+                      <rect x="32" y="120" width="8" height="8" fill="#1E293B"/>
+                      <rect x="56" y="120" width="8" height="8" fill="#1E293B"/>
+                      <rect x="80" y="120" width="8" height="8" fill="#1E293B"/>
+                      <rect x="104" y="120" width="8" height="8" fill="#1E293B"/>
+                      <!-- Bottom area -->
+                      <rect x="56" y="136" width="8" height="8" fill="#1E293B"/>
+                      <rect x="72" y="136" width="8" height="8" fill="#1E293B"/>
+                      <rect x="96" y="136" width="8" height="8" fill="#1E293B"/>
+                      <rect x="120" y="136" width="8" height="8" fill="#1E293B"/>
+                      <rect x="144" y="136" width="8" height="8" fill="#1E293B"/>
+                      <rect x="160" y="136" width="8" height="8" fill="#1E293B"/>
+                      <rect x="64" y="152" width="8" height="8" fill="#1E293B"/>
+                      <rect x="88" y="152" width="8" height="8" fill="#1E293B"/>
+                      <rect x="112" y="152" width="8" height="8" fill="#1E293B"/>
+                      <rect x="136" y="152" width="8" height="8" fill="#1E293B"/>
+                      <rect x="152" y="152" width="8" height="8" fill="#1E293B"/>
+                      <rect x="56" y="168" width="8" height="8" fill="#1E293B"/>
+                      <rect x="80" y="168" width="8" height="8" fill="#1E293B"/>
+                      <rect x="104" y="168" width="8" height="8" fill="#1E293B"/>
+                      <rect x="128" y="168" width="8" height="8" fill="#1E293B"/>
+                      <rect x="160" y="168" width="8" height="8" fill="#1E293B"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OTP Display -->
+              <div class="otp-area">
+                <div class="otp-row">
+                  <span class="otp-label">인증번호:</span>
+                  <div class="otp-digits" id="otpDigits">
+                    <div class="otp-digit" id="otpD1">4</div>
+                    <div class="otp-digit" id="otpD2">8</div>
+                    <div class="otp-digit" id="otpD3">2</div>
+                    <div class="otp-digit" id="otpD4">7</div>
+                  </div>
+                </div>
+                <div class="timer-row">
+                  <span class="timer-text" id="timerText">남은 시간: <span id="timerValue">00:47</span></span>
+                  <svg class="timer-refresh" id="timerRefresh" viewBox="0 0 24 24" fill="none" aria-label="인증번호 갱신">
+                    <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Divider -->
+              <!-- <div class="divider">
+                <div class="divider__line"></div>
+                <span class="divider__text">또는 전화로 연결</span>
+                <div class="divider__line"></div>
+              </div> -->
+
+              <!-- Phone input (collapsed in QR mode) -->
+              <!-- <div class="phone-input-area">
+                <div class="phone-field">
+                  <span class="phone-prefix">010</span>
+                  <span class="phone-hyphen">-</span>
+                  <input type="text" class="phone-input" id="phoneMiddle" maxlength="4" placeholder="····" readonly aria-label="전화번호 중간 4자리">
+                  <span class="phone-hyphen">-</span>
+                  <input type="text" class="phone-input" id="phoneLast" maxlength="4" placeholder="····" readonly aria-label="전화번호 끝 4자리">
+                </div>
+                <span class="phone-warning" id="phoneWarning">올바른 휴대폰 번호를 입력해주세요.</span>
+              </div> -->
+
+              <!-- Keypad -->
+              <!-- <div class="keypad" id="keypad" style="margin-top:8px;">
+                <button class="keypad__key" data-key="1">1</button>
+                <button class="keypad__key" data-key="2">2</button>
+                <button class="keypad__key" data-key="3">3</button>
+                <button class="keypad__key" data-key="4">4</button>
+                <button class="keypad__key" data-key="5">5</button>
+                <button class="keypad__key" data-key="6">6</button>
+                <button class="keypad__key" data-key="7">7</button>
+                <button class="keypad__key" data-key="8">8</button>
+                <button class="keypad__key" data-key="9">9</button>
+                <button class="keypad__key keypad__key--empty" data-key=""></button>
+                <button class="keypad__key" data-key="0">0</button>
+                <button class="keypad__key keypad__key--delete" data-key="del" aria-label="삭제">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M18 9l-6 6M12 9l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div> -->
+
+              <!-- Call Button (Secondary in QR mode) -->
+              <!-- <button class="btn-call btn-call--secondary btn-call--disabled" id="btnCallQR" style="margin-top:10px;" aria-label="전화 발신 요청">
+                전화 발신 요청
+              </button> -->
+
+              <!-- Connection Status -->
+              <div class="connection-status" id="connStatusQR">
+                <div class="status-dots">
+                  <div class="status-dot status-dot--active status-dot--animating"></div>
+                  <div class="status-dot status-dot--active status-dot--animating"></div>
+                  <div class="status-dot"></div>
+                  <div class="status-dot"></div>
+                  <div class="status-dot"></div>
+                </div>
+                <span class="status-text" id="statusTextQR">연결 대기 중...</span>
+              </div>
+            </div>
+
+            <!-- ═══ Phone Mode View ═══ -->
+            <div class="mode-view" id="viewPhone">
+
+              <!-- Phone input (primary in PSTN mode) -->
+              <div class="phone-input-area" style="margin-top:4px;">
+                <div class="phone-field">
+                  <span class="phone-prefix">010</span>
+                  <span class="phone-hyphen">-</span>
+                  <input type="text" class="phone-input" id="phoneMiddle2" maxlength="4" placeholder="····" readonly aria-label="전화번호 중간 4자리">
+                  <span class="phone-hyphen">-</span>
+                  <input type="text" class="phone-input" id="phoneLast2" maxlength="4" placeholder="····" readonly aria-label="전화번호 끝 4자리">
+                </div>
+                <span class="phone-warning" id="phoneWarning2">올바른 휴대폰 번호를 입력해주세요.</span>
+              </div>
+
+              <!-- Keypad -->
+              <div class="keypad" id="keypad2" style="margin-top:12px;">
+                <button class="keypad__key" data-key="1">1</button>
+                <button class="keypad__key" data-key="2">2</button>
+                <button class="keypad__key" data-key="3">3</button>
+                <button class="keypad__key" data-key="4">4</button>
+                <button class="keypad__key" data-key="5">5</button>
+                <button class="keypad__key" data-key="6">6</button>
+                <button class="keypad__key" data-key="7">7</button>
+                <button class="keypad__key" data-key="8">8</button>
+                <button class="keypad__key" data-key="9">9</button>
+                <button class="keypad__key keypad__key--empty" data-key=""></button>
+                <button class="keypad__key" data-key="0">0</button>
+                <button class="keypad__key keypad__key--delete" data-key="del" aria-label="삭제">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M18 9l-6 6M12 9l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Call Button (Primary in PSTN mode) -->
+              <button class="btn-call btn-call--primary btn-call--disabled" id="btnCallPSTN" style="margin-top:12px;" aria-label="전화 발신 요청">
+                전화 발신 요청
+              </button>
+
+              <!-- PSTN OTP area (shown after call placed) -->
+              <div class="pstn-otp-area" id="pstnOtpArea" style="display:none;">
+                <div class="otp-row">
+                  <span class="otp-label">인증번호:</span>
+                  <div class="otp-digits">
+                    <div class="otp-digit" id="pstnOtpD1">4</div>
+                    <div class="otp-digit" id="pstnOtpD2">8</div>
+                    <div class="otp-digit" id="pstnOtpD3">2</div>
+                    <div class="otp-digit" id="pstnOtpD4">7</div>
+                  </div>
+                </div>
+                <span class="pstn-otp-hint">(전화 수신 후 입력)</span>
+              </div>
+
+              <!-- Connection Status -->
+              <div class="connection-status" id="connStatusPhone">
+                <div class="status-dots" id="statusDotsPhone">
+                  <div class="status-dot status-dot--active"></div>
+                  <div class="status-dot status-dot--active"></div>
+                  <div class="status-dot"></div>
+                  <div class="status-dot"></div>
+                  <div class="status-dot"></div>
+                </div>
+                <span class="status-text" id="statusTextPhone">발신 대기 중...</span>
+              </div>
+            </div>
+
+            <!-- Timeout Warning -->
+            <div class="timeout-banner" id="timeoutBanner">⏱️ 잠시 후 초기 화면으로 돌아갑니다.</div>
+          </div>
+
+          <!-- Footer 52px -->
+          <div class="panel-footer">
+            <div class="panel-footer__left">
+              <button class="btn-prev" id="btnPrev" aria-label="이전 화면으로 돌아가기">
+                <svg viewBox="0 0 14 14" fill="none">
+                  <path d="M9 2.5L4.5 7 9 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                이전
+              </button>
+              <div class="progress-indicator" role="progressbar" aria-label="세션 페어링, 2/5 단계" aria-valuenow="2" aria-valuemin="1" aria-valuemax="5">
+                <div class="progress-dot progress-dot--completed"></div>
+                <div class="progress-dot progress-dot--active"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+              </div>
+            </div>
+            <button class="btn-fallback" id="btnFallback" aria-label="화면으로 입력하기, 기존 터치 UI로 전환">
+              화면으로 입력하기
+              <svg viewBox="0 0 14 14" fill="none">
+                <path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Dimension Annotations ═══ -->
+        <div class="ann-panel-w"><span class="ann-panel-w__label">Panel 560px</span></div>
+        <div class="ann-panel-h"><span class="ann-panel-h__label">720px</span></div>
+        <div class="ann-margin-r"><span class="ann-margin-r__label">20px</span></div>
+        <div class="ann-header-h"><div class="ann-header-h__line"></div><span class="ann-header-h__label">56px Header</span></div>
+        <div class="ann-footer-h"><div class="ann-footer-h__line"></div><span class="ann-footer-h__label">52px Footer</span></div>
+        <div class="ann-kiosk-w"><span class="ann-kiosk-w__label">Kiosk 768px</span></div>
+        <div class="ann-kiosk-h"><span class="ann-kiosk-h__label">1024px</span></div>
+        <div class="ann-avatar-h"><div class="ann-avatar-h__line"></div><span class="ann-avatar-h__label">108px Avatar B</span></div>
+
+        <!-- Close Dialog -->
+        <div class="dialog-overlay" id="closeDialog" role="dialog" aria-modal="true" aria-label="서비스 종료 확인">
+          <div class="dialog">
+            <div class="dialog__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <h2 class="dialog__title">서비스를 종료할까요?</h2>
+            <p class="dialog__desc">종료하면 현재 진행 중인 세션이 해제됩니다.</p>
+            <div class="dialog__actions">
+              <button class="dialog__btn dialog__btn--secondary" id="closeCancel">취소</button>
+              <button class="dialog__btn dialog__btn--primary" id="closeConfirm" style="background:var(--error);">종료</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fallback Dialog -->
+        <div class="dialog-overlay" id="fallbackDialog" role="dialog" aria-modal="true" aria-label="화면 전환 확인">
+          <div class="dialog">
+            <div class="dialog__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <h2 class="dialog__title">음성 서비스를 종료하고 화면 입력으로 전환할까요?</h2>
+            <p class="dialog__desc">현재 세션이 해제되고 기존 화면 입력 방식으로 전환됩니다.</p>
+            <div class="dialog__actions">
+              <button class="dialog__btn dialog__btn--secondary" id="fallbackCancel">취소</button>
+              <button class="dialog__btn dialog__btn--primary" id="fallbackConfirm">전환하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
+            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="toastText"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Spec Legend ═══ -->
+    <div class="spec-legend">
+      <div class="spec-legend__title">규격 범례 (Dimension Legend)</div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#EF4444"></span><span class="spec-legend__text">패널 너비 (560px)</span></div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#3B82F6"></span><span class="spec-legend__text">패널 높이 (720px)</span></div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#22C55E"></span><span class="spec-legend__text">우측 여백 (20px)</span></div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#F59E0B"></span><span class="spec-legend__text">헤더 (56px)</span></div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#8B5CF6"></span><span class="spec-legend__text">푸터 (52px)</span></div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#06B6D4"></span><span class="spec-legend__text">아바타 Type B (108px)</span></div>
+      <div class="spec-legend__item"><span class="spec-legend__color" style="background:#9CA3AF"></span><span class="spec-legend__text">키오스크 영역 (768×1024px)</span></div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════ -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ── Element References ──
+      var dimOverlay = document.getElementById('dimOverlay');
+      var btnClose = document.getElementById('btnClose');
+      var btnPrev = document.getElementById('btnPrev');
+      var btnFallback = document.getElementById('btnFallback');
+      var closeDialog = document.getElementById('closeDialog');
+      var closeCancel = document.getElementById('closeCancel');
+      var closeConfirm = document.getElementById('closeConfirm');
+      var fallbackDialog = document.getElementById('fallbackDialog');
+      var fallbackCancel = document.getElementById('fallbackCancel');
+      var fallbackConfirm = document.getElementById('fallbackConfirm');
+      var timeoutBanner = document.getElementById('timeoutBanner');
+      var toast = document.getElementById('toast');
+      var toastText = document.getElementById('toastText');
+      var bubbleText = document.getElementById('bubbleText');
+      var headerConnection = document.getElementById('headerConnection');
+
+      // Mode views
+      var viewQR = document.getElementById('viewQR');
+      var viewPhone = document.getElementById('viewPhone');
+      var modeQRBtn = document.getElementById('modeQR');
+      var modePSTNBtn = document.getElementById('modePSTN');
+
+      // QR mode elements
+      var phoneMiddle = document.getElementById('phoneMiddle');
+      var phoneLast = document.getElementById('phoneLast');
+      var phoneWarning = document.getElementById('phoneWarning');
+      var keypad = document.getElementById('keypad');
+      var btnCallQR = document.getElementById('btnCallQR');
+      var timerValue = document.getElementById('timerValue');
+      var timerText = document.getElementById('timerText');
+
+      // Phone mode elements
+      var phoneMiddle2 = document.getElementById('phoneMiddle2');
+      var phoneLast2 = document.getElementById('phoneLast2');
+      var phoneWarning2 = document.getElementById('phoneWarning2');
+      var keypad2 = document.getElementById('keypad2');
+      var btnCallPSTN = document.getElementById('btnCallPSTN');
+      var pstnOtpArea = document.getElementById('pstnOtpArea');
+
+      var currentMode = 'webrtc'; // 'webrtc' or 'pstn'
+      var phoneDigits = '';
+      var phoneDigits2 = '';
+
+      // ── OTP Timer ──
+      var otpSeconds = 47;
+      var otpTimer = null;
+
+      function startOtpTimer() {
+        clearInterval(otpTimer);
+        otpTimer = setInterval(function() {
+          otpSeconds--;
+          if (otpSeconds < 0) {
+            refreshOtp();
+            return;
+          }
+          var min = String(Math.floor(otpSeconds / 60)).padStart(2, '0');
+          var sec = String(otpSeconds % 60).padStart(2, '0');
+          timerValue.textContent = min + ':' + sec;
+
+          if (otpSeconds <= 10) {
+            timerText.classList.add('timer-text--urgent');
+          } else {
+            timerText.classList.remove('timer-text--urgent');
+          }
+        }, 1000);
+      }
+
+      function refreshOtp() {
+        otpSeconds = 60;
+        var digits = [
+          Math.floor(Math.random() * 10),
+          Math.floor(Math.random() * 10),
+          Math.floor(Math.random() * 10),
+          Math.floor(Math.random() * 10)
+        ];
+        var els = ['otpD1','otpD2','otpD3','otpD4'];
+        els.forEach(function(id, i) {
+          var el = document.getElementById(id);
+          el.textContent = digits[i];
+          el.classList.add('otp-digit--refreshing');
+          setTimeout(function() { el.classList.remove('otp-digit--refreshing'); }, 300);
+        });
+        // Also update PSTN OTP
+        var pEls = ['pstnOtpD1','pstnOtpD2','pstnOtpD3','pstnOtpD4'];
+        pEls.forEach(function(id, i) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = digits[i];
+        });
+        timerValue.textContent = '01:00';
+        timerText.classList.remove('timer-text--urgent');
+        setBubbleText('인증번호가 갱신되었어요. 새 번호를 확인해주세요.');
+        setTimeout(function() {
+          if (currentMode === 'webrtc') setBubbleText('스마트폰으로 아래 QR코드를 스캔해주세요.');
+        }, 3000);
+        startOtpTimer();
+      }
+
+      startOtpTimer();
+
+      document.getElementById('timerRefresh').addEventListener('click', refreshOtp);
+
+      // ── Mode Switch ──
+      function switchMode(mode) {
+        currentMode = mode;
+        if (mode === 'webrtc') {
+          viewQR.classList.add('mode-view--active');
+          viewPhone.classList.remove('mode-view--active');
+          modeQRBtn.classList.add('mode-switch__btn--active');
+          modePSTNBtn.classList.remove('mode-switch__btn--active');
+          setBubbleText('스마트폰으로 아래 QR코드를 스캔해주세요.');
+        } else {
+          viewQR.classList.remove('mode-view--active');
+          viewPhone.classList.add('mode-view--active');
+          modeQRBtn.classList.remove('mode-switch__btn--active');
+          modePSTNBtn.classList.add('mode-switch__btn--active');
+          setBubbleText('전화번호를 입력해주세요.');
+          phoneDigits2 = '';
+          updatePhoneDisplay2();
+        }
+      }
+
+      modeQRBtn.addEventListener('click', function() { switchMode('webrtc'); });
+      modePSTNBtn.addEventListener('click', function() { switchMode('pstn'); });
+
+      // ── Bubble Text ──
+      function setBubbleText(text) {
+        bubbleText.style.opacity = '0';
+        setTimeout(function() {
+          bubbleText.textContent = text;
+          bubbleText.style.opacity = '1';
+        }, 150);
+      }
+
+      // ── Phone Input (QR mode keypad) ──
+      function updatePhoneDisplay() {
+        var mid = phoneDigits.substring(0, 4);
+        var last = phoneDigits.substring(4, 8);
+        phoneMiddle.value = mid;
+        phoneLast.value = last;
+
+        if (phoneDigits.length === 8) {
+          btnCallQR.classList.remove('btn-call--disabled');
+          btnCallQR.classList.add('btn-call--secondary');
+          phoneWarning.classList.remove('visible');
+        } else {
+          btnCallQR.classList.add('btn-call--disabled');
+          btnCallQR.classList.remove('btn-call--secondary');
+        }
+      }
+
+      function updatePhoneDisplay2() {
+        var mid = phoneDigits2.substring(0, 4);
+        var last = phoneDigits2.substring(4, 8);
+        phoneMiddle2.value = mid;
+        phoneLast2.value = last;
+
+        if (phoneDigits2.length === 8) {
+          btnCallPSTN.classList.remove('btn-call--disabled');
+          phoneWarning2.classList.remove('visible');
+        } else {
+          btnCallPSTN.classList.add('btn-call--disabled');
+        }
+      }
+
+      keypad.addEventListener('click', function(e) {
+        var btn = e.target.closest('.keypad__key');
+        if (!btn) return;
+        var key = btn.dataset.key;
+        if (key === 'del') {
+          phoneDigits = phoneDigits.slice(0, -1);
+        } else if (key && phoneDigits.length < 8) {
+          phoneDigits += key;
+        }
+        updatePhoneDisplay();
+        resetTimeout();
+      });
+
+      keypad2.addEventListener('click', function(e) {
+        var btn = e.target.closest('.keypad__key');
+        if (!btn) return;
+        var key = btn.dataset.key;
+        if (key === 'del') {
+          phoneDigits2 = phoneDigits2.slice(0, -1);
+        } else if (key && phoneDigits2.length < 8) {
+          phoneDigits2 += key;
+        }
+        updatePhoneDisplay2();
+        resetTimeout();
+      });
+
+      // ── Call Buttons ──
+      btnCallQR.addEventListener('click', function() {
+        if (phoneDigits.length < 8) return;
+        console.log('[SDK] PhoneCallRequested(number: "010' + phoneDigits + '", mode: "qr_fallback")');
+        setBubbleText('잠시 후 전화가 갈 거예요.');
+        btnCallQR.textContent = '발신 중...';
+        btnCallQR.classList.add('btn-call--loading');
+        showToast('→ 전화 발신 요청 (010-' + phoneDigits.substring(0,4) + '-' + phoneDigits.substring(4) + ')');
+      });
+
+      btnCallPSTN.addEventListener('click', function() {
+        if (phoneDigits2.length < 8) return;
+        console.log('[SDK] PhoneCallRequested(number: "010' + phoneDigits2 + '", mode: "pstn")');
+        setBubbleText('잠시 후 전화가 갈 거예요.');
+        btnCallPSTN.textContent = '발신 중...';
+        btnCallPSTN.classList.add('btn-call--loading');
+        pstnOtpArea.style.display = 'flex';
+        document.getElementById('statusTextPhone').textContent = '수신 확인 중...';
+        var dots = document.getElementById('statusDotsPhone').children;
+        dots[2].classList.add('status-dot--active', 'status-dot--animating');
+        showToast('→ 전화 발신 요청 (010-' + phoneDigits2.substring(0,4) + '-' + phoneDigits2.substring(4) + ')');
+      });
+
+      // ── Timeout ──
+      var timeoutTimer = null;
+      var warningTimer = null;
+
+      function resetTimeout() {
+        clearTimeout(timeoutTimer);
+        clearTimeout(warningTimer);
+        timeoutBanner.classList.remove('active');
+        warningTimer = setTimeout(function() { timeoutBanner.classList.add('active'); }, 120000);
+        timeoutTimer = setTimeout(function() { showToast('세션 타임아웃: 초기 화면으로 돌아갑니다.'); }, 180000);
+      }
+
+      document.addEventListener('touchstart', resetTimeout);
+      document.addEventListener('mousedown', resetTimeout);
+      document.addEventListener('keydown', resetTimeout);
+      resetTimeout();
+
+      // ── Close → Dialog ──
+      btnClose.addEventListener('click', function() { closeDialog.classList.add('active'); });
+      closeCancel.addEventListener('click', function() { closeDialog.classList.remove('active'); });
+      closeConfirm.addEventListener('click', function() {
+        closeDialog.classList.remove('active');
+        console.log('[SDK] SessionTerminated(source: "SCR-K-003")');
+        showToast('서비스 종료 → SCR-K-001 (홈) 복귀');
+      });
+
+      // ── Dim → Close Dialog ──
+      dimOverlay.addEventListener('click', function() { closeDialog.classList.add('active'); });
+
+      // ── Previous ──
+      btnPrev.addEventListener('click', function() {
+        console.log('[SDK] SessionRevoked + NavigateBack(to: "SCR-K-002")');
+        showToast('← SCR-K-002 (채널 선택) 복귀 · 세션/OTP 파기');
+      });
+
+      // ── Fallback ──
+      btnFallback.addEventListener('click', function() { fallbackDialog.classList.add('active'); });
+      fallbackCancel.addEventListener('click', function() { fallbackDialog.classList.remove('active'); });
+      fallbackConfirm.addEventListener('click', function() {
+        fallbackDialog.classList.remove('active');
+        console.log('[SDK] FallbackRequested(source: "SCR-K-003")');
+        showToast('→ SCR-F-001 (기존 Host App 터치 UI) 전환');
+      });
+
+      // ── Toast ──
+      function showToast(msg) {
+        toastText.textContent = msg;
+        toast.classList.add('active');
+        setTimeout(function() { toast.classList.remove('active'); }, 2800);
+      }
+    })();
+
+    // ── Spec Toggle ──
+    (function() {
+      'use strict';
+      var specToggleBtn = document.getElementById('specToggleBtn');
+      var kioskFrame = document.getElementById('kioskFrame');
+      var specLegend = document.querySelector('.spec-legend');
+
+      specToggleBtn.addEventListener('click', function() {
+        var isActive = specToggleBtn.classList.toggle('active');
+        specToggleBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+        if (isActive) {
+          kioskFrame.classList.add('specs-visible');
+          specLegend.classList.add('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격숨기기';
+        } else {
+          kioskFrame.classList.remove('specs-visible');
+          specLegend.classList.remove('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격보기';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

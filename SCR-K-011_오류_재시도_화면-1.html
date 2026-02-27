@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-K-011 — 오류/재시도 화면</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────
+       Design Tokens (공통 설계 문서 기반)
+       ───────────────────────────────────────────── */
+    :root {
+      /* Primary — K7 Store Green (TBD-UI-002 가정값) */
+      --primary: #008062;
+      --primary-hover: #006B52;
+      --primary-active: #005642;
+      --primary-soft: #E6F5F0;
+
+      /* Status */
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --error-light: #FEE2E2;
+      --error-border: #FCA5A5;
+      --info: #3B82F6;
+
+      /* Backgrounds */
+      --bg-panel: #FFFFFF;
+      --bg-card-footer: #F8FAFC;
+      --bg-info-message: #EFF6FF;
+      --bg-avatar-bubble: #F0F5FF;
+
+      /* Text */
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-inactive: #CBD5E1;
+
+      /* Border */
+      --border-default: #E2E8F0;
+      --border-hover: #CBD5E1;
+      --border-pressed: #94A3B8;
+
+      /* Dim Overlay */
+      --dim-overlay: rgba(0, 0, 0, 0.35);
+
+      /* Shadow Levels */
+      --shadow-0: none;
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.20);
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      /* Font */
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      /* Annotation Colors */
+      --ann-red: #EF4444;
+      --ann-blue: #3B82F6;
+      --ann-green: #22C55E;
+      --ann-orange: #F59E0B;
+      --ann-purple: #8B5CF6;
+      --ann-cyan: #06B6D4;
+    }
+
+    /* ─────────────────────────────────────────────
+       Reset & Base
+       ───────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: auto;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #FFFFFF;
+    }
+
+    /* ─────────────────────────────────────────────
+       Page Layout
+       ───────────────────────────────────────────── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: #FFFFFF;
+      padding: 32px 24px;
+      gap: 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Screen Info Panel
+       ───────────────────────────────────────────── */
+    .screen-info {
+      width: 768px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .screen-info__card {
+      flex: 1;
+      min-width: 220px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .screen-info__card-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 10px;
+    }
+
+    .screen-info__row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .screen-info__row:last-child {
+      margin-bottom: 0;
+    }
+
+    .screen-info__label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #9CA3AF;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .screen-info__value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .screen-info__badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .screen-info__badge--green {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .screen-info__badge--blue {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    .screen-info__badge--purple {
+      background: #EDE9FE;
+      color: #5B21B6;
+    }
+
+    .screen-info__badge--amber {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .screen-info__badge--red {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    /* ─────────────────────────────────────────────
+       Kiosk Frame — 768×1024
+       ───────────────────────────────────────────── */
+    .kiosk-frame {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ─────────────────────────────────────────────
+       Host App Background
+       ───────────────────────────────────────────── */
+    .host-app {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      background: linear-gradient(180deg, #F0F4F8 0%, #E8ECF0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 1;
+    }
+
+    .host-app__header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .host-app__header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .host-app__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0.5;
+    }
+
+    .host-app__content-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: rgba(0, 128, 98, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__content-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dim Overlay (Z-Index Layer 2)
+       ───────────────────────────────────────────── */
+    .dim-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--dim-overlay);
+      z-index: 10;
+      animation: dimFadeIn 200ms ease-out forwards;
+    }
+
+    @keyframes dimFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       Floating Panel (Z-Index Layer 3)
+       560 × 720px 표준 모드, 우측 20px, 수직 중앙
+       ───────────────────────────────────────────── */
+    .floating-panel {
+      position: absolute;
+      width: 560px;
+      height: 720px;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-3);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: panelShrink 250ms ease-out forwards;
+    }
+
+    @keyframes panelShrink {
+      from {
+        opacity: 0.9;
+        height: 900px;
+        transform: translateY(calc(-50%));
+      }
+      to {
+        opacity: 1;
+        height: 720px;
+        transform: translateY(-50%);
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Header (56px)
+       ───────────────────────────────────────────── */
+    .panel-header {
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .panel-header__title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .panel-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .panel-header__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: default;
+    }
+
+    .panel-header__security {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+    }
+
+    .panel-header__connection {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      margin: 0 6px;
+      position: relative;
+    }
+
+    .panel-header__connection--error {
+      background: var(--error);
+    }
+
+    .panel-header__close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 150ms ease;
+      min-width: 48px;
+      min-height: 48px;
+    }
+
+    .panel-header__close:hover {
+      background: #FEF2F2;
+      color: var(--error);
+    }
+
+    .panel-header__close:active {
+      background: #FEE2E2;
+    }
+
+    .panel-header__close svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Content (612px = 720 - 56 header - 52 footer)
+       ───────────────────────────────────────────── */
+    .panel-content {
+      flex: 1;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    /* ─────────────────────────────────────────────
+       Avatar Area (Type A — 160px)
+       AVT-ERROR 상태: brightness(0.95), 호흡 효과 없음
+       ───────────────────────────────────────────── */
+    .avatar-area {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      min-height: 160px;
+      animation: fadeSlideUp 400ms ease-out 100ms both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-container {
+      width: 120px;
+      min-width: 120px;
+      height: 140px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #E6F5F0 0%, #DBEAFE 50%, #F0F5FF 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-default);
+      /* AVT-ERROR 상태: brightness(0.95), 호흡 효과 비활성화 */
+      filter: brightness(0.95);
+    }
+
+    .avatar-placeholder__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #22D3EE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 16px rgba(0, 128, 98, 0.2);
+    }
+
+    .avatar-placeholder__icon svg {
+      width: 28px;
+      height: 28px;
+      color: #FFFFFF;
+    }
+
+    .avatar-placeholder__label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.2px;
+    }
+
+    /* Avatar Speech Bubble */
+    .avatar-bubble {
+      max-width: 380px;
+      background: var(--bg-avatar-bubble);
+      border-radius: 12px 12px 12px 4px;
+      padding: 12px 16px;
+      position: relative;
+      align-self: center;
+      cursor: pointer;
+      animation: bubbleAppear 200ms ease-out 200ms both;
+    }
+
+    @keyframes bubbleAppear {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .avatar-bubble::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 20px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 8px solid var(--bg-avatar-bubble);
+    }
+
+    .avatar-bubble__text {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    /* ─────────────────────────────────────────────
+       Divider
+       ───────────────────────────────────────────── */
+    .content-divider {
+      width: 528px;
+      height: 1px;
+      background: var(--border-default);
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       Error Info Section
+       ───────────────────────────────────────────── */
+    .error-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 24px;
+      animation: fadeSlideUp 400ms ease-out 300ms both;
+    }
+
+    .error-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      color: var(--error);
+    }
+
+    .error-icon svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .error-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .error-desc {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* ─────────────────────────────────────────────
+       Action Buttons
+       ───────────────────────────────────────────── */
+    .action-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 32px;
+      gap: 8px;
+      animation: fadeSlideUp 400ms ease-out 400ms both;
+    }
+
+    .btn-primary-cta {
+      width: 520px;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-lg);
+      background: var(--primary);
+      color: #FFFFFF;
+      font-family: var(--font-family);
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-primary-cta:hover {
+      background: var(--primary-hover);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-primary-cta:active {
+      background: var(--primary-active);
+      transform: scale(0.99);
+    }
+
+    .btn-primary-cta:disabled {
+      background: var(--text-inactive);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary-cta:disabled:hover {
+      background: var(--text-inactive);
+      box-shadow: none;
+    }
+
+    .btn-primary-cta svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-secondary {
+      width: 520px;
+      height: 40px;
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius-md);
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-footer);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:active {
+      background: #F1F5F9;
+    }
+
+    .btn-secondary svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .retry-counter {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-top: 16px;
+      text-align: center;
+      letter-spacing: 0.1px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Footer (52px)
+       ───────────────────────────────────────────── */
+    .panel-footer {
+      height: 52px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 16px;
+      background: var(--bg-card-footer);
+      border-top: 1px solid var(--border-default);
+    }
+
+    .panel-footer__left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .progress-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transition: all 200ms ease;
+    }
+
+    .progress-dot--done {
+      background: var(--success);
+    }
+
+    .progress-dot--pending {
+      background: var(--text-inactive);
+    }
+
+    .btn-fallback {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      min-width: 160px;
+      height: 36px;
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-fallback:hover {
+      background: var(--bg-panel);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-fallback:active {
+      background: #F1F5F9;
+    }
+
+    .btn-fallback svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Cancel Confirmation Dialog
+       ───────────────────────────────────────────── */
+    .dialog-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.30);
+      z-index: 30;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay.active {
+      display: flex;
+      animation: dimFadeIn 150ms ease-out;
+    }
+
+    .dialog {
+      width: 440px;
+      background: var(--bg-panel);
+      border-radius: 12px;
+      padding: 28px 24px 20px;
+      box-shadow: var(--shadow-2);
+      text-align: center;
+      animation: dialogAppear 200ms ease-out;
+    }
+
+    @keyframes dialogAppear {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .dialog__icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: var(--error-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .dialog__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .dialog__actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .dialog__btn {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .dialog__btn--danger {
+      background: #FFFFFF;
+      border: 1px solid var(--error-border);
+      color: var(--error);
+    }
+
+    .dialog__btn--danger:hover {
+      background: var(--error-light);
+    }
+
+    .dialog__btn--danger:active {
+      background: #FECACA;
+    }
+
+    .dialog__btn--primary {
+      background: var(--primary);
+      border: none;
+      color: #FFFFFF;
+    }
+
+    .dialog__btn--primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .dialog__btn--primary:active {
+      background: var(--primary-active);
+    }
+
+    /* ─────────────────────────────────────────────
+       Toast Notification
+       ───────────────────────────────────────────── */
+    .toast {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #1F2937;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 250ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─────────────────────────────────────────────
+       Timeout Warning Banner
+       ───────────────────────────────────────────── */
+    .timeout-banner {
+      display: none;
+      padding: 10px 16px;
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      border-radius: var(--radius-md);
+      margin-top: auto;
+      font-size: 13px;
+      color: #92400E;
+      text-align: center;
+      animation: fadeSlideUp 300ms ease-out;
+    }
+
+    .timeout-banner.active {
+      display: block;
+    }
+
+    /* ─────────────────────────────────────────────
+       Accessibility Focus
+       ───────────────────────────────────────────── */
+    *:focus-visible {
+      outline: 3px solid #22D3EE;
+      outline-offset: 2px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dimension Annotations
+       ───────────────────────────────────────────── */
+
+    /* 패널 너비 (560px) */
+    .ann-panel-w {
+      position: absolute;
+      z-index: 25;
+      right: 20px;
+      top: calc(50% - 360px - 22px);
+      width: 560px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-w::before,
+    .ann-panel-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-red);
+    }
+
+    .ann-panel-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-red);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 패널 높이 (720px) */
+    .ann-panel-h {
+      position: absolute;
+      z-index: 25;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-h::before,
+    .ann-panel-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: var(--ann-blue);
+    }
+
+    .ann-panel-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-blue);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* 우측 여백 (20px) */
+    .ann-margin-r {
+      position: absolute;
+      z-index: 25;
+      right: 0;
+      top: calc(30% - 7px);
+      width: 20px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-margin-r::before,
+    .ann-margin-r::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-green);
+    }
+
+    .ann-margin-r__label {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-green);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 헤더 높이 (56px) */
+    .ann-header-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      top: 50%;
+      transform: translateY(calc(-50%));
+      pointer-events: none;
+    }
+
+    .ann-header-h__line {
+      position: absolute;
+      top: -360px;
+      left: 8px;
+      width: 1px;
+      height: 56px;
+      background: var(--ann-orange);
+    }
+
+    .ann-header-h__label {
+      position: absolute;
+      top: -340px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-orange);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 푸터 높이 (52px) */
+    .ann-footer-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      bottom: calc(50% - 360px);
+      pointer-events: none;
+    }
+
+    .ann-footer-h__line {
+      position: absolute;
+      bottom: 0;
+      left: 8px;
+      width: 1px;
+      height: 52px;
+      background: var(--ann-purple);
+    }
+
+    .ann-footer-h__label {
+      position: absolute;
+      bottom: 10px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-purple);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 키오스크 전체 크기 */
+    .ann-kiosk-w {
+      position: absolute;
+      z-index: 25;
+      left: 0;
+      bottom: -22px;
+      width: 768px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-w::before,
+    .ann-kiosk-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      white-space: nowrap;
+    }
+
+    .ann-kiosk-h {
+      position: absolute;
+      z-index: 25;
+      left: -22px;
+      top: 0;
+      height: 1024px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-h::before,
+    .ann-kiosk-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* ─────────────────────────────────────────────
+       Annotation Hidden State (default)
+       ───────────────────────────────────────────── */
+    .kiosk-frame .ann-panel-w,
+    .kiosk-frame .ann-panel-h,
+    .kiosk-frame .ann-margin-r,
+    .kiosk-frame .ann-header-h,
+    .kiosk-frame .ann-footer-h,
+    .kiosk-frame .ann-kiosk-w,
+    .kiosk-frame .ann-kiosk-h {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+
+    .specs-visible .ann-panel-w,
+    .specs-visible .ann-panel-h,
+    .specs-visible .ann-margin-r,
+    .specs-visible .ann-header-h,
+    .specs-visible .ann-footer-h,
+    .specs-visible .ann-kiosk-w,
+    .specs-visible .ann-kiosk-h {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ─────────────────────────────────────────────
+       Spec Toggle Button
+       ───────────────────────────────────────────── */
+    .spec-toggle-bar {
+      width: 768px;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -8px;
+    }
+
+    .spec-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      height: 32px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+      letter-spacing: 0.2px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .spec-toggle-btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      color: #374151;
+    }
+
+    .spec-toggle-btn:active {
+      background: #E2E8F0;
+    }
+
+    .spec-toggle-btn.active {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      color: #1D4ED8;
+    }
+
+    .spec-toggle-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       Spec Legend
+       ───────────────────────────────────────────── */
+    .spec-legend {
+      width: 768px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 18px;
+      margin-top: -24px;
+      transition: opacity 250ms ease, max-height 300ms ease, padding 300ms ease, margin-top 300ms ease;
+    }
+
+    .spec-legend.visible {
+      opacity: 1;
+      max-height: 200px;
+      padding: 14px 18px;
+      margin-top: 0;
+    }
+
+    .spec-legend__title {
+      width: 100%;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+    }
+
+    .spec-legend__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .spec-legend__color {
+      width: 12px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .spec-legend__text {
+      font-size: 11px;
+      font-weight: 500;
+      color: #6B7280;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ═══════════════════════════════════════════
+         Screen Info — 키오스크 외부 상단 상시 노출
+         ═══════════════════════════════════════════ -->
+    <div class="screen-info">
+      <!-- 화면 기본 정보 -->
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">화면 정보</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면 ID</span>
+          <span class="screen-info__value">SCR-K-011</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면명</span>
+          <span class="screen-info__value">오류/재시도 화면</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Phase</span>
+          <span class="screen-info__badge screen-info__badge--red">예외 (Exception)</span>
+        </div>
+      </div>
+      <!-- 패널 / 아바타 -->
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">패널 · 아바타</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">패널 모드</span>
+          <span class="screen-info__badge screen-info__badge--blue">표준 560 × 720px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타</span>
+          <span class="screen-info__value">Type A — 상반신 120×140px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타 상태</span>
+          <span class="screen-info__value" style="display:flex;align-items:center;gap:5px;">
+            AVT-ERROR <span style="color:#9CA3AF">(brightness 0.95)</span>
+          </span>
+        </div>
+      </div>
+      <!-- 참조 문서 -->
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">설계 참조</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">PRD/RSD</span>
+          <span class="screen-info__badge screen-info__badge--purple">F-011</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">요구사항</span>
+          <span class="screen-info__value">REQ-DOM-004, REQ-OPS-001</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">원칙</span>
+          <span class="screen-info__value">①연속성 ④단순성 ⑦계층분리</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">설계서</span>
+          <span class="screen-info__value">SCR-K-011 v1.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Toggle
+         ═══════════════════════════════════════════ -->
+    <div class="spec-toggle-bar">
+      <button class="spec-toggle-btn" id="specToggleBtn" aria-label="규격 표시 토글" aria-pressed="false">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        규격보기
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Kiosk Frame — 768×1024
+         ═══════════════════════════════════════════ -->
+    <div class="kiosk-frame" id="kioskFrame">
+      <div class="host-app" id="hostApp">
+
+        <!-- Host App 헤더 -->
+        <div class="host-app__header">
+          <div class="host-app__header-logo">
+            <span class="host-app__header-title">세븐일레븐 무인 택배 서비스</span>
+          </div>
+        </div>
+
+        <!-- Host App 콘텐츠 (시뮬레이션) -->
+        <div class="host-app__content">
+          <div class="host-app__content-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+              <path d="M8 6V4.5C8 3.67 8.67 3 9.5 3h5c.83 0 1.5.67 1.5 1.5V6" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="host-app__content-text">
+            Host App 배경 영역<br>
+            <span style="font-size:13px;color:#94A3B8">(기존 C# 키오스크 애플리케이션)</span>
+          </div>
+        </div>
+
+        <!-- Dim Overlay -->
+        <div class="dim-overlay" id="dimOverlay" role="presentation"></div>
+
+        <!-- ═══ Floating Panel 560×720 (표준 모드) ═══ -->
+        <div class="floating-panel" id="floatingPanel" role="dialog" aria-label="음성 택배 접수 오류/재시도" aria-live="assertive">
+
+          <!-- Header 56px -->
+          <div class="panel-header">
+            <span class="panel-header__title">음성 택배 접수</span>
+            <div class="panel-header__actions">
+              <div class="panel-header__icon" aria-label="보안 상태: E2EE 활성">
+                <svg class="panel-header__security" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="panel-header__connection" id="connIndicator" aria-label="연결 상태: 연결됨"></div>
+              <button class="panel-header__close" id="btnClose" aria-label="닫기, 컴팩트 모드로 축소">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Content (612px) -->
+          <div class="panel-content">
+
+            <!-- Avatar Type A — AVT-ERROR -->
+            <div class="avatar-area" id="avatarArea">
+              <div class="avatar-container" id="avatarTouch" role="button" aria-label="AI 어시스턴트, 터치하여 안내 메시지 듣기" tabindex="0">
+                <div class="avatar-placeholder" role="img" aria-label="AI 어시스턴트 아바타, 오류 상태">
+                  <div class="avatar-placeholder__icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="white" opacity="0.2"/>
+                      <path d="M12 4a4 4 0 100 8 4 4 0 000-8zM12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="white"/>
+                    </svg>
+                  </div>
+                  <span class="avatar-placeholder__label">AI 어시스턴트</span>
+                </div>
+              </div>
+              <div class="avatar-bubble" id="avatarBubble" role="button" tabindex="0" aria-label="터치하여 안내 메시지 듣기">
+                <p class="avatar-bubble__text" id="bubbleText">죄송합니다. 일시적인 문제가 발생했습니다. 다시 시도해주시겠어요?</p>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="content-divider" role="separator"></div>
+
+            <!-- Error Info -->
+            <div class="error-section">
+              <div class="error-icon" aria-label="오류">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <path d="M24 4L2 44h44L24 4z" stroke="#EF4444" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+                  <path d="M24 18v12" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="24" cy="35" r="1.5" fill="#EF4444"/>
+                </svg>
+              </div>
+              <h1 class="error-title">접수 처리 중 문제가 발생했습니다.</h1>
+              <p class="error-desc">일시적인 오류입니다.<br>잠시 후 다시 시도해주세요.</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-section">
+              <button class="btn-primary-cta" id="btnRetry" aria-label="다시 시도하기">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10a6 6 0 0110.5-4M16 10a6 6 0 01-10.5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M14 2v4h4M6 18v-4H2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                다시 시도하기
+              </button>
+              <button class="btn-secondary" id="btnCancel" aria-label="접수 취소하기">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                접수 취소하기
+              </button>
+              <div class="retry-counter" id="retryCounter" aria-live="polite">재시도 남은 횟수: <span id="retryRemaining">3</span>/3</div>
+            </div>
+
+            <!-- Timeout Warning -->
+            <div class="timeout-banner" id="timeoutBanner">⏱️ 잠시 후 초기 화면으로 돌아갑니다.</div>
+          </div>
+
+          <!-- Footer 52px -->
+          <div class="panel-footer">
+            <div class="panel-footer__left">
+              <div class="progress-indicator" role="progressbar" aria-label="진행 상태, 5단계 중 4단계 완료" aria-valuenow="4" aria-valuemin="1" aria-valuemax="5">
+                <div class="progress-dot progress-dot--done"></div>
+                <div class="progress-dot progress-dot--done"></div>
+                <div class="progress-dot progress-dot--done"></div>
+                <div class="progress-dot progress-dot--done"></div>
+                <div class="progress-dot progress-dot--pending"></div>
+              </div>
+            </div>
+            <button class="btn-fallback" id="btnFallback" aria-label="화면으로 입력하기, 기존 터치 UI로 전환">
+              화면으로 입력하기
+              <svg viewBox="0 0 14 14" fill="none">
+                <path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Cancel Confirmation Dialog ═══ -->
+        <div class="dialog-overlay" id="dialogOverlay" role="dialog" aria-modal="true" aria-label="접수 취소 확인">
+          <div class="dialog">
+            <div class="dialog__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="10" stroke="#EF4444" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <h2 class="dialog__title">접수를 취소하시겠습니까?</h2>
+            <p class="dialog__desc">취소하시면 입력하신 정보가 모두 삭제됩니다.</p>
+            <div class="dialog__actions">
+              <!-- 위험 액션: 상단 배치, Secondary 스타일 (빨간색 텍스트) -->
+              <button class="dialog__btn dialog__btn--danger" id="btnConfirmCancel">네, 취소합니다</button>
+              <!-- 기본 권장 액션: 하단 배치, Primary 스타일 -->
+              <button class="dialog__btn dialog__btn--primary" id="btnContinueTry">계속 시도합니다</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ Dimension Annotations ═══ -->
+
+        <!-- 패널 너비 560px -->
+        <div class="ann-panel-w">
+          <span class="ann-panel-w__label">Panel 560px</span>
+        </div>
+
+        <!-- 패널 높이 720px -->
+        <div class="ann-panel-h">
+          <span class="ann-panel-h__label">720px</span>
+        </div>
+
+        <!-- 우측 여백 20px -->
+        <div class="ann-margin-r">
+          <span class="ann-margin-r__label">20px</span>
+        </div>
+
+        <!-- 헤더 높이 56px -->
+        <div class="ann-header-h">
+          <div class="ann-header-h__line"></div>
+          <span class="ann-header-h__label">56px Header</span>
+        </div>
+
+        <!-- 푸터 높이 52px -->
+        <div class="ann-footer-h">
+          <div class="ann-footer-h__line"></div>
+          <span class="ann-footer-h__label">52px Footer</span>
+        </div>
+
+        <!-- 키오스크 전체 너비 768px -->
+        <div class="ann-kiosk-w">
+          <span class="ann-kiosk-w__label">Kiosk 768px</span>
+        </div>
+
+        <!-- 키오스크 전체 높이 1024px -->
+        <div class="ann-kiosk-h">
+          <span class="ann-kiosk-h__label">1024px</span>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
+            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="toastText"></span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Legend
+         ═══════════════════════════════════════════ -->
+    <div class="spec-legend">
+      <div class="spec-legend__title">규격 범례 (Dimension Legend)</div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#EF4444"></span>
+        <span class="spec-legend__text">패널 너비 (560px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#3B82F6"></span>
+        <span class="spec-legend__text">패널 높이 (720px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#22C55E"></span>
+        <span class="spec-legend__text">우측 여백 (20px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#F59E0B"></span>
+        <span class="spec-legend__text">헤더 (56px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#8B5CF6"></span>
+        <span class="spec-legend__text">푸터 (52px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#9CA3AF"></span>
+        <span class="spec-legend__text">키오스크 영역 (768×1024px)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════ -->
+  <script>
+    (function() {
+      'use strict';
+
+      /* ── DOM 참조 ── */
+      var dimOverlay = document.getElementById('dimOverlay');
+      var btnClose = document.getElementById('btnClose');
+      var btnRetry = document.getElementById('btnRetry');
+      var btnCancel = document.getElementById('btnCancel');
+      var btnFallback = document.getElementById('btnFallback');
+      var dialogOverlay = document.getElementById('dialogOverlay');
+      var btnConfirmCancel = document.getElementById('btnConfirmCancel');
+      var btnContinueTry = document.getElementById('btnContinueTry');
+      var timeoutBanner = document.getElementById('timeoutBanner');
+      var toast = document.getElementById('toast');
+      var toastText = document.getElementById('toastText');
+      var retryRemaining = document.getElementById('retryRemaining');
+      var bubbleText = document.getElementById('bubbleText');
+      var avatarTouch = document.getElementById('avatarTouch');
+      var avatarBubble = document.getElementById('avatarBubble');
+      var connIndicator = document.getElementById('connIndicator');
+
+      /* ── State ── */
+      var maxRetries = 3;
+      var retryCount = 0; /* 사용된 재시도 횟수 */
+
+      function getRemainingRetries() {
+        return maxRetries - retryCount;
+      }
+
+      function updateRetryUI() {
+        var remaining = getRemainingRetries();
+        retryRemaining.textContent = remaining;
+
+        if (remaining <= 0) {
+          btnRetry.disabled = true;
+          bubbleText.textContent = '여러 번 시도했지만 계속 문제가 발생하고 있습니다. 화면 입력으로 전환해드릴게요.';
+          showToast('최대 재시도 횟수 초과 → 5초 후 SCR-F-001 (폴백 전환)');
+          /* 5초 후 자동 폴백 전환 */
+          setTimeout(function() {
+            showToast('→ SCR-F-001 (폴백 전환 안내)');
+          }, 5000);
+        }
+      }
+
+      /* ── Timeout (180s, warning at 120s) ── */
+      var timeoutTimer = null;
+      var warningTimer = null;
+
+      function resetTimeout() {
+        clearTimeout(timeoutTimer);
+        clearTimeout(warningTimer);
+        timeoutBanner.classList.remove('active');
+        warningTimer = setTimeout(function() { timeoutBanner.classList.add('active'); }, 120000);
+        timeoutTimer = setTimeout(function() {
+          showToast('세션 타임아웃: 초기 화면으로 돌아갑니다.');
+        }, 180000);
+      }
+
+      document.addEventListener('touchstart', resetTimeout);
+      document.addEventListener('mousedown', resetTimeout);
+      document.addEventListener('keydown', resetTimeout);
+      resetTimeout();
+
+      /* ── "다시 시도하기" 버튼 ── */
+      btnRetry.addEventListener('click', function() {
+        if (btnRetry.disabled) return;
+
+        retryCount++;
+        updateRetryUI();
+
+        if (getRemainingRetries() >= 0 && !btnRetry.disabled) {
+          console.log('[SDK] RetryTransaction(attempt: ' + retryCount + '/' + maxRetries + ')');
+          console.log('[SDK] PanelModeChanged(standard → expanded, 720px → 900px)');
+          showToast('→ SCR-K-009 (처리 중) 재시도 #' + retryCount);
+
+          /* 시뮬레이션: 1초 후 재시도 실패하여 오류 화면 재진입 */
+          setTimeout(function() {
+            if (getRemainingRetries() > 0) {
+              bubbleText.textContent = '다시 문제가 발생했습니다. 다시 시도 버튼을 눌러주시거나, 화면으로 입력하기를 선택해주세요.';
+              showToast('← SCR-K-011 (오류) 재진입, 잔여: ' + getRemainingRetries() + '/' + maxRetries);
+            }
+            updateRetryUI();
+          }, 1500);
+        }
+      });
+
+      /* ── "접수 취소하기" 버튼 → 확인 다이얼로그 ── */
+      btnCancel.addEventListener('click', function() {
+        dialogOverlay.classList.add('active');
+      });
+
+      /* ── 다이얼로그: "네, 취소합니다" ── */
+      btnConfirmCancel.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+        console.log('[SDK] endSession() — 수집 데이터 폐기');
+        console.log('[SDK] PanelModeChanged(standard → compact, 300ms ease-in)');
+        showToast('접수 취소 → SCR-K-001 (대기 화면), 세션 종료');
+      });
+
+      /* ── 다이얼로그: "계속 시도합니다" ── */
+      btnContinueTry.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+      });
+
+      /* ── 닫기 버튼 → 컴팩트 모드 ── */
+      btnClose.addEventListener('click', function() {
+        console.log('[SDK] PanelModeChanged(standard → compact), 세션 유지');
+        showToast('패널 최소화 → 컴팩트 모드 (세션 유지)');
+      });
+
+      /* ── Dim Overlay 터치 → 닫기 ── */
+      dimOverlay.addEventListener('click', function() {
+        console.log('[SDK] PanelModeChanged(standard → compact), 세션 유지');
+        showToast('패널 최소화 → 컴팩트 모드 (세션 유지)');
+      });
+
+      /* ── 폴백 버튼 ── */
+      btnFallback.addEventListener('click', function() {
+        console.log('[SDK] FallbackRequested(source: "SCR-K-011")');
+        console.log('[SDK] onFallbackInitiated(slotData: {sender, recipient, item})');
+        showToast('→ SCR-F-001 (폴백 전환 안내), 수집 데이터 Host App 전달');
+      });
+
+      /* ── 아바타/버블 터치 → TTS 재생 시뮬레이션 ── */
+      function handleAvatarTouch() {
+        showToast('🔊 TTS: "' + bubbleText.textContent.substring(0, 30) + '..."');
+      }
+
+      avatarTouch.addEventListener('click', handleAvatarTouch);
+      avatarTouch.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleAvatarTouch(); } });
+      avatarBubble.addEventListener('click', handleAvatarTouch);
+      avatarBubble.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleAvatarTouch(); } });
+
+      /* ── Toast Helper ── */
+      function showToast(msg) {
+        toastText.textContent = msg;
+        toast.classList.add('active');
+        setTimeout(function() { toast.classList.remove('active'); }, 2500);
+      }
+    })();
+
+    /* ── Spec Toggle ── */
+    (function() {
+      'use strict';
+      var specToggleBtn = document.getElementById('specToggleBtn');
+      var kioskFrame = document.getElementById('kioskFrame');
+      var specLegend = document.querySelector('.spec-legend');
+
+      specToggleBtn.addEventListener('click', function() {
+        var isActive = specToggleBtn.classList.toggle('active');
+        specToggleBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+        if (isActive) {
+          kioskFrame.classList.add('specs-visible');
+          specLegend.classList.add('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격숨기기';
+        } else {
+          kioskFrame.classList.remove('specs-visible');
+          specLegend.classList.remove('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격보기';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
