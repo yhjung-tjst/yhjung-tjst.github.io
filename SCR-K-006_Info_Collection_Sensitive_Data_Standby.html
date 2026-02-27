@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-K-006 — 정보 수집 화면 (민감 정보 대기)</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────
+       Design Tokens (공통 설계 문서 기반)
+       ───────────────────────────────────────────── */
+    :root {
+      /* Primary — K7 Store Green (TBD-UI-002 가정값) */
+      --primary: #008062;
+      --primary-hover: #006B52;
+      --primary-active: #005642;
+      --primary-soft: #E6F5F0;
+
+      /* Status */
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #3B82F6;
+
+      /* Backgrounds */
+      --bg-panel: #FFFFFF;
+      --bg-card-footer: #F8FAFC;
+      --bg-info-message: #EFF6FF;
+      --bg-info-message-secure: #FFF7ED;
+      --bg-avatar-bubble: #F0F5FF;
+      --bg-progress-area: #F8FAFC;
+      --bg-progress-complete: #F0FDF4;
+
+      /* Text */
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-inactive: #CBD5E1;
+
+      /* Border */
+      --border-default: #E2E8F0;
+      --border-hover: #CBD5E1;
+      --border-pressed: #94A3B8;
+
+      /* Dim Overlay */
+      --dim-overlay: rgba(0, 0, 0, 0.35);
+
+      /* Shadow Levels */
+      --shadow-0: none;
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.20);
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+
+      /* Font */
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      /* Annotation Colors */
+      --ann-red: #EF4444;
+      --ann-blue: #3B82F6;
+      --ann-green: #22C55E;
+      --ann-orange: #F59E0B;
+      --ann-purple: #8B5CF6;
+      --ann-cyan: #06B6D4;
+    }
+
+    /* ─────────────────────────────────────────────
+       Reset & Base
+       ───────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: auto;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #FFFFFF;
+    }
+
+    /* ─────────────────────────────────────────────
+       Page Layout
+       ───────────────────────────────────────────── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: #FFFFFF;
+      padding: 32px 24px;
+      gap: 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Screen Info Panel
+       ───────────────────────────────────────────── */
+    .screen-info {
+      width: 768px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .screen-info__card {
+      flex: 1;
+      min-width: 220px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .screen-info__card-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 10px;
+    }
+
+    .screen-info__row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .screen-info__row:last-child {
+      margin-bottom: 0;
+    }
+
+    .screen-info__label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #9CA3AF;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .screen-info__value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .screen-info__badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .screen-info__badge--green {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .screen-info__badge--blue {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    .screen-info__badge--purple {
+      background: #EDE9FE;
+      color: #5B21B6;
+    }
+
+    .screen-info__badge--amber {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    /* ─────────────────────────────────────────────
+       Kiosk Frame — 768×1024
+       ───────────────────────────────────────────── */
+    .kiosk-frame {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ─────────────────────────────────────────────
+       Host App Background
+       ───────────────────────────────────────────── */
+    .host-app {
+      position: relative;
+      width: 768px;
+      height: 1024px;
+      background: linear-gradient(180deg, #F0F4F8 0%, #E8ECF0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 1;
+    }
+
+    .host-app__header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .host-app__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0.5;
+    }
+
+    .host-app__content-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: rgba(0, 128, 98, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .host-app__content-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dim Overlay (Z-Index Layer 2)
+       ───────────────────────────────────────────── */
+    .dim-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--dim-overlay);
+      z-index: 10;
+      animation: dimFadeIn 200ms ease-out forwards;
+    }
+
+    @keyframes dimFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       Floating Panel (Z-Index Layer 3)
+       560 × 720px, 우측 정렬 (우측 20px), 수직 중앙
+       ───────────────────────────────────────────── */
+    .floating-panel {
+      position: absolute;
+      width: 560px;
+      height: 720px;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-3);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: panelAppear 300ms ease-out forwards;
+    }
+
+    @keyframes panelAppear {
+      from {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Header (56px)
+       ───────────────────────────────────────────── */
+    .panel-header {
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .panel-header__title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .panel-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .panel-header__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .panel-header__icon:hover {
+      background: #F1F5F9;
+    }
+
+    .panel-header__security {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+    }
+
+    .panel-header__connection {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      margin: 0 6px;
+    }
+
+    .panel-header__close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 150ms ease;
+      min-width: 48px;
+      min-height: 48px;
+    }
+
+    .panel-header__close:hover {
+      background: #FEF2F2;
+      color: var(--error);
+    }
+
+    .panel-header__close:active {
+      background: #FEE2E2;
+    }
+
+    .panel-header__close svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Content
+       ───────────────────────────────────────────── */
+    .panel-content {
+      flex: 1;
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      gap: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       Avatar Area — Type B (108px: 아바타 96px + 상하 패딩 6px)
+       ───────────────────────────────────────────── */
+    .avatar-area {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      height: 108px;
+      min-height: 108px;
+      padding: 6px 0;
+      animation: fadeSlideUp 400ms ease-out 100ms both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-container {
+      width: 80px;
+      min-width: 80px;
+      height: 96px;
+      border-radius: var(--radius-lg);
+      overflow: visible;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #E6F5F0 0%, #DBEAFE 50%, #F0F5FF 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--warning);
+      position: relative;
+      animation: avatarBreathe 3s ease-in-out 1s infinite;
+    }
+
+    @keyframes avatarBreathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.98); }
+    }
+
+    .avatar-placeholder__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #22D3EE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      box-shadow: 0 4px 16px rgba(0, 128, 98, 0.2);
+    }
+
+    .avatar-placeholder__icon svg {
+      width: 20px;
+      height: 20px;
+      color: #FFFFFF;
+    }
+
+    .avatar-placeholder__label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.2px;
+    }
+
+    /* 포인팅 화살표 오버레이 (AVT-GUIDE) */
+    .avatar-guide-overlay {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 24px;
+      height: 24px;
+      background: var(--warning);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+      animation: pointPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pointPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Avatar Speech Bubble */
+    .avatar-bubble {
+      max-width: 420px;
+      background: var(--bg-avatar-bubble);
+      border-radius: var(--radius-lg);
+      border-bottom-left-radius: var(--radius-sm);
+      padding: 12px 16px;
+      position: relative;
+      align-self: center;
+      animation: bubbleAppear 500ms ease-out 300ms both;
+    }
+
+    @keyframes bubbleAppear {
+      from { opacity: 0; transform: translateX(-8px) scale(0.96); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .avatar-bubble::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 20px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 8px solid var(--bg-avatar-bubble);
+    }
+
+    .avatar-bubble__text {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .avatar-bubble__tts {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-left: 4px;
+      vertical-align: middle;
+      color: var(--text-secondary);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 150ms ease;
+    }
+
+    .avatar-bubble__tts:hover {
+      opacity: 1;
+    }
+
+    /* Bubble fade transition for state changes */
+    .avatar-bubble--fade {
+      animation: bubbleFade 200ms ease-out;
+    }
+
+    @keyframes bubbleFade {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    /* ─────────────────────────────────────────────
+       Step Progress Indicator (40px)
+       ───────────────────────────────────────────── */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      min-height: 40px;
+      margin-top: 12px;
+      gap: 0;
+      animation: fadeSlideUp 400ms ease-out 200ms both;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .step-dot-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: all 200ms ease;
+    }
+
+    .step-dot--active {
+      background: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 128, 98, 0.15);
+    }
+
+    .step-dot--complete {
+      background: var(--success);
+      position: relative;
+    }
+
+    .step-label {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .step-label--active {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .step-label--complete {
+      color: var(--success);
+    }
+
+    .step-connector {
+      width: 32px;
+      height: 1px;
+      background: var(--text-inactive);
+      margin: 0 6px;
+      margin-bottom: 18px;
+    }
+
+    .step-connector--complete {
+      background: var(--success);
+    }
+
+    /* ─────────────────────────────────────────────
+       Guidance Message Area (40~52px)
+       ───────────────────────────────────────────── */
+    .guidance-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-info-message-secure);
+      border-radius: var(--radius-md);
+      margin-top: 8px;
+      min-height: 40px;
+      animation: fadeSlideUp 400ms ease-out 300ms both;
+      transition: all 200ms ease;
+    }
+
+    .guidance-message--error {
+      background: #FFFBEB;
+      border: 1px solid var(--warning);
+    }
+
+    .guidance-message--success {
+      background: var(--bg-progress-complete);
+      border: 1px solid var(--success);
+    }
+
+    .guidance-message__icon {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .guidance-message__text {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       Input Progress Area (120~160px)
+       ───────────────────────────────────────────── */
+    .progress-area {
+      margin-top: 8px;
+      padding: 16px 20px;
+      background: var(--bg-progress-area);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      min-height: 120px;
+      animation: fadeSlideUp 400ms ease-out 400ms both;
+      transition: all 300ms ease;
+    }
+
+    .progress-area--complete {
+      background: var(--bg-progress-complete);
+      border-color: var(--success);
+    }
+
+    .progress-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-status__icon {
+      font-size: 20px;
+    }
+
+    .progress-status__text {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      transition: color 200ms ease;
+    }
+
+    .progress-status__text--complete {
+      color: var(--success);
+    }
+
+    /* Dot Indicator */
+    .dot-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: all 150ms ease-out;
+    }
+
+    .dot--filled {
+      background: var(--primary);
+      animation: dotFill 150ms ease-out;
+    }
+
+    .dot--complete {
+      background: var(--success);
+    }
+
+    @keyframes dotFill {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .progress-sub-text {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      transition: color 200ms ease;
+    }
+
+    .progress-sub-text--complete {
+      color: var(--success);
+    }
+
+    /* ─────────────────────────────────────────────
+       Information Card Area
+       ───────────────────────────────────────────── */
+    .info-card {
+      margin-top: 8px;
+      padding: 12px 16px;
+      background: var(--bg-card-footer);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      animation: fadeSlideUp 400ms ease-out 500ms both;
+    }
+
+    .info-card__header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .info-card__header-icon {
+      font-size: 16px;
+    }
+
+    .info-card__header-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .info-card__row {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid var(--border-default);
+    }
+
+    .info-card__row:first-of-type {
+      border-top: none;
+    }
+
+    .info-card__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      min-width: 56px;
+      flex-shrink: 0;
+    }
+
+    .info-card__value {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .info-card__value--pending {
+      color: var(--warning);
+    }
+
+    .info-card__value--masked {
+      letter-spacing: 0.5px;
+    }
+
+    .info-card__status {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Panel Footer (52px)
+       ───────────────────────────────────────────── */
+    .panel-footer {
+      height: 52px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 16px;
+      background: var(--bg-card-footer);
+      border-top: 1px solid var(--border-default);
+    }
+
+    .panel-footer__left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-progress {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-inactive);
+      transition: all 200ms ease;
+    }
+
+    .footer-dot--active {
+      background: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 128, 98, 0.15);
+    }
+
+    .footer-dot--complete {
+      background: var(--success);
+    }
+
+    .btn-fallback {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      min-width: 160px;
+      height: 36px;
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-fallback:hover {
+      background: var(--bg-panel);
+      border-color: var(--border-pressed);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn-fallback:active {
+      background: #F1F5F9;
+    }
+
+    .btn-fallback svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Dimension Annotations
+       ───────────────────────────────────────────── */
+
+    /* 패널 너비 (560px) */
+    .ann-panel-w {
+      position: absolute;
+      z-index: 25;
+      right: 20px;
+      top: calc(50% - 360px - 22px);
+      width: 560px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-w::before,
+    .ann-panel-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-red);
+    }
+
+    .ann-panel-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-red);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 패널 높이 (720px) */
+    .ann-panel-h {
+      position: absolute;
+      z-index: 25;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-panel-h::before,
+    .ann-panel-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: var(--ann-blue);
+    }
+
+    .ann-panel-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ann-blue);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* 우측 여백 (20px) */
+    .ann-margin-r {
+      position: absolute;
+      z-index: 25;
+      right: 0;
+      top: calc(30% - 7px);
+      width: 20px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-margin-r::before,
+    .ann-margin-r::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ann-green);
+    }
+
+    .ann-margin-r__label {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-green);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      white-space: nowrap;
+    }
+
+    /* 헤더 높이 (56px) */
+    .ann-header-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      top: 50%;
+      transform: translateY(calc(-50%));
+      pointer-events: none;
+    }
+
+    .ann-header-h__line {
+      position: absolute;
+      top: -360px;
+      left: 8px;
+      width: 1px;
+      height: 56px;
+      background: var(--ann-orange);
+    }
+
+    .ann-header-h__label {
+      position: absolute;
+      top: -340px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-orange);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 푸터 높이 (52px) */
+    .ann-footer-h {
+      position: absolute;
+      z-index: 25;
+      left: calc(768px - 560px - 20px - 26px);
+      bottom: calc(50% - 360px);
+      pointer-events: none;
+    }
+
+    .ann-footer-h__line {
+      position: absolute;
+      bottom: 0;
+      left: 8px;
+      width: 1px;
+      height: 52px;
+      background: var(--ann-purple);
+    }
+
+    .ann-footer-h__label {
+      position: absolute;
+      bottom: 10px;
+      left: -10px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ann-purple);
+      background: rgba(255,255,255,0.92);
+      border-radius: 3px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      white-space: nowrap;
+      writing-mode: vertical-lr;
+    }
+
+    /* 키오스크 전체 크기 */
+    .ann-kiosk-w {
+      position: absolute;
+      z-index: 25;
+      left: 0;
+      bottom: -22px;
+      width: 768px;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-w::before,
+    .ann-kiosk-w::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-w__label {
+      padding: 1px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      white-space: nowrap;
+    }
+
+    .ann-kiosk-h {
+      position: absolute;
+      z-index: 25;
+      left: -22px;
+      top: 0;
+      height: 1024px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .ann-kiosk-h::before,
+    .ann-kiosk-h::after {
+      content: '';
+      flex: 1;
+      width: 1px;
+      background: #9CA3AF;
+    }
+
+    .ann-kiosk-h__label {
+      padding: 4px 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6B7280;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E5E7EB;
+      writing-mode: vertical-lr;
+      white-space: nowrap;
+    }
+
+    /* ─────────────────────────────────────────────
+       Confirmation Dialog
+       ───────────────────────────────────────────── */
+    .dialog-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay.active {
+      display: flex;
+      animation: dimFadeIn 150ms ease-out;
+    }
+
+    .dialog {
+      width: 360px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      animation: dialogAppear 200ms ease-out;
+    }
+
+    @keyframes dialogAppear {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .dialog__icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #FEF3C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .dialog__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .dialog__actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dialog__btn {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .dialog__btn--secondary {
+      background: #F1F5F9;
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .dialog__btn--secondary:hover {
+      background: #E2E8F0;
+    }
+
+    .dialog__btn--primary {
+      background: var(--primary);
+      border: none;
+      color: #FFFFFF;
+    }
+
+    .dialog__btn--primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* ─────────────────────────────────────────────
+       Toast Notification
+       ───────────────────────────────────────────── */
+    .toast {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #1F2937;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 250ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─────────────────────────────────────────────
+       Accessibility Focus
+       ───────────────────────────────────────────── */
+    *:focus-visible {
+      outline: 3px solid #22D3EE;
+      outline-offset: 2px;
+    }
+
+    /* ─────────────────────────────────────────────
+       Spec Toggle Button
+       ───────────────────────────────────────────── */
+    .spec-toggle-bar {
+      width: 768px;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -8px;
+    }
+
+    .spec-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      height: 32px;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 150ms ease;
+      letter-spacing: 0.2px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .spec-toggle-btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      color: #374151;
+    }
+
+    .spec-toggle-btn:active {
+      background: #E2E8F0;
+    }
+
+    .spec-toggle-btn.active {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      color: #1D4ED8;
+    }
+
+    .spec-toggle-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* Annotation Hidden State */
+    .kiosk-frame .ann-panel-w,
+    .kiosk-frame .ann-panel-h,
+    .kiosk-frame .ann-margin-r,
+    .kiosk-frame .ann-header-h,
+    .kiosk-frame .ann-footer-h,
+    .kiosk-frame .ann-kiosk-w,
+    .kiosk-frame .ann-kiosk-h {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+
+    .specs-visible .ann-panel-w,
+    .specs-visible .ann-panel-h,
+    .specs-visible .ann-margin-r,
+    .specs-visible .ann-header-h,
+    .specs-visible .ann-footer-h,
+    .specs-visible .ann-kiosk-w,
+    .specs-visible .ann-kiosk-h {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spec-legend {
+      width: 768px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 18px;
+      margin-top: -24px;
+      transition: opacity 250ms ease, max-height 300ms ease, padding 300ms ease, margin-top 300ms ease;
+    }
+
+    .spec-legend.visible {
+      opacity: 1;
+      max-height: 200px;
+      padding: 14px 18px;
+      margin-top: 0;
+    }
+
+    .spec-legend__title {
+      width: 100%;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+    }
+
+    .spec-legend__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .spec-legend__color {
+      width: 12px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .spec-legend__text {
+      font-size: 11px;
+      font-weight: 500;
+      color: #6B7280;
+    }
+
+    /* ─────────────────────────────────────────────
+       Demo Controls (키오스크 외부)
+       ───────────────────────────────────────────── */
+    .demo-controls {
+      width: 768px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .demo-controls__title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #9CA3AF;
+      margin-bottom: 12px;
+    }
+
+    .demo-controls__row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .demo-btn {
+      padding: 6px 14px;
+      height: 34px;
+      border: 1px solid #E5E7EB;
+      background: #FFFFFF;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: all 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .demo-btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+    }
+
+    .demo-btn:active {
+      background: #E2E8F0;
+    }
+
+    .demo-btn--primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .demo-btn--primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .demo-btn--warning {
+      background: #FEF3C7;
+      border-color: var(--warning);
+      color: #92400E;
+    }
+
+    .demo-btn--success {
+      background: #DCFCE7;
+      border-color: var(--success);
+      color: #166534;
+    }
+
+    .demo-divider {
+      width: 1px;
+      height: 20px;
+      background: #E5E7EB;
+    }
+
+    .demo-status {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ═══════════════════════════════════════════
+         Screen Info — 키오스크 외부 상단 상시 노출
+         ═══════════════════════════════════════════ -->
+    <div class="screen-info">
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">화면 정보</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면 ID</span>
+          <span class="screen-info__value">SCR-K-006</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">화면명</span>
+          <span class="screen-info__value">정보 수집 화면 (민감 정보 대기)</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">Phase</span>
+          <span class="screen-info__badge screen-info__badge--amber">Phase 3 — 정보 수집 (슬롯 필링)</span>
+        </div>
+      </div>
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">패널 · 아바타</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">패널 모드</span>
+          <span class="screen-info__badge screen-info__badge--blue">표준 560 × 720px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타</span>
+          <span class="screen-info__value">Type B — 축소 상반신 80×96px</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">아바타 상태</span>
+          <span class="screen-info__badge screen-info__badge--amber">AVT-GUIDE (안내)</span>
+        </div>
+      </div>
+      <div class="screen-info__card">
+        <div class="screen-info__card-title">설계 참조</div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">PRD</span>
+          <span class="screen-info__badge screen-info__badge--purple">F-008</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">RSD</span>
+          <span class="screen-info__value">REQ-DOM-002, NFR-SEC-002</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">인터페이스</span>
+          <span class="screen-info__badge screen-info__badge--amber">IF-UI-003</span>
+        </div>
+        <div class="screen-info__row">
+          <span class="screen-info__label">설계서</span>
+          <span class="screen-info__value">SCR-K-006 v1.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Toggle
+         ═══════════════════════════════════════════ -->
+    <div class="spec-toggle-bar">
+      <button class="spec-toggle-btn" id="specToggleBtn" aria-label="규격 표시 토글" aria-pressed="false">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        규격보기
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Kiosk Frame — 768×1024
+         ═══════════════════════════════════════════ -->
+    <div class="kiosk-frame" id="kioskFrame">
+      <div class="host-app">
+
+        <!-- Host App 헤더 -->
+        <div class="host-app__header">
+          <span class="host-app__header-title">세븐일레븐 무인 택배 서비스</span>
+        </div>
+
+        <!-- Host App 콘텐츠 (시뮬레이션) -->
+        <div class="host-app__content">
+          <div class="host-app__content-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+              <path d="M8 6V4.5C8 3.67 8.67 3 9.5 3h5c.83 0 1.5.67 1.5 1.5V6" stroke="#008062" stroke-width="1.2" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="host-app__content-text">
+            Host App 배경 영역<br>
+            <span style="font-size:13px;color:#94A3B8">(기존 C# 키오스크 애플리케이션)</span>
+          </div>
+        </div>
+
+        <!-- Dim Overlay -->
+        <div class="dim-overlay" id="dimOverlay" role="presentation"></div>
+
+        <!-- ═══ Floating Panel 560×720 ═══ -->
+        <div class="floating-panel" id="floatingPanel" role="dialog" aria-label="음성 택배 접수 — 민감 정보 입력 대기">
+
+          <!-- Header 56px -->
+          <div class="panel-header">
+            <span class="panel-header__title">음성 택배 접수</span>
+            <div class="panel-header__actions">
+              <div class="panel-header__icon" aria-label="보안 상태: E2EE 암호화 활성">
+                <svg class="panel-header__security" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="panel-header__connection" aria-label="연결 상태: 연결됨"></div>
+              <button class="panel-header__close" id="btnClose" aria-label="닫기">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="panel-content">
+
+            <!-- Avatar Type B (108px) -->
+            <div class="avatar-area" role="region" aria-label="AI 어시스턴트 안내">
+              <div class="avatar-container">
+                <div class="avatar-placeholder" role="img" aria-label="AI 어시스턴트 아바타, 안내 상태">
+                  <div class="avatar-placeholder__icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="white" opacity="0.2"/>
+                      <path d="M12 4a4 4 0 100 8 4 4 0 000-8zM12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="white"/>
+                    </svg>
+                  </div>
+                  <span class="avatar-placeholder__label">AVT-GUIDE</span>
+                  <!-- 포인팅 화살표 오버레이 -->
+                  <div class="avatar-guide-overlay" aria-hidden="true">📱</div>
+                </div>
+              </div>
+              <div class="avatar-bubble" id="avatarBubble" aria-live="polite">
+                <p class="avatar-bubble__text" id="avatarBubbleText">🔒 보안을 위해 스마트폰에서 직접 입력해주세요.</p>
+                <svg class="avatar-bubble__tts" viewBox="0 0 24 24" fill="none" role="button" aria-label="안내 음성 재생" tabindex="0">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Step Progress Indicator (40px) -->
+            <div class="step-indicator" role="navigation" aria-label="진행 단계">
+              <div class="step-item">
+                <div class="step-dot-wrapper">
+                  <div class="step-dot step-dot--active" id="stepDot1" aria-label="보내는 분, 현재 진행 중"></div>
+                  <span class="step-label step-label--active" id="stepLabel1">보내는 분</span>
+                </div>
+              </div>
+              <div class="step-connector" id="stepConn1"></div>
+              <div class="step-item">
+                <div class="step-dot-wrapper">
+                  <div class="step-dot" id="stepDot2" aria-label="받는 분, 미진행"></div>
+                  <span class="step-label" id="stepLabel2">받는 분</span>
+                </div>
+              </div>
+              <div class="step-connector" id="stepConn2"></div>
+              <div class="step-item">
+                <div class="step-dot-wrapper">
+                  <div class="step-dot" id="stepDot3" aria-label="물품 정보, 미진행"></div>
+                  <span class="step-label" id="stepLabel3">물품 정보</span>
+                </div>
+              </div>
+              <div class="step-connector" id="stepConn3"></div>
+              <div class="step-item">
+                <div class="step-dot-wrapper">
+                  <div class="step-dot" id="stepDot4" aria-label="최종 확인, 미진행"></div>
+                  <span class="step-label" id="stepLabel4">최종 확인</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Guidance Message -->
+            <div class="guidance-message" id="guidanceMessage" role="status" aria-live="polite">
+              <span class="guidance-message__icon" id="guidanceIcon">🔒</span>
+              <span class="guidance-message__text" id="guidanceText">보내는 분 연락처를 스마트폰 키패드로 입력해주세요.</span>
+            </div>
+
+            <!-- Input Progress Area -->
+            <div class="progress-area" id="progressArea" role="region" aria-label="입력 진행률">
+              <div class="progress-status">
+                <span class="progress-status__icon" id="progressIcon">📱</span>
+                <span class="progress-status__text" id="progressText">스마트폰에서 입력 중...</span>
+              </div>
+              <div class="dot-indicator" id="dotIndicator" role="progressbar" aria-label="입력 진행률" aria-valuenow="0" aria-valuemin="0" aria-valuemax="11" aria-live="polite">
+                <div class="dot" data-index="0"></div>
+                <div class="dot" data-index="1"></div>
+                <div class="dot" data-index="2"></div>
+                <div class="dot" data-index="3"></div>
+                <div class="dot" data-index="4"></div>
+                <div class="dot" data-index="5"></div>
+                <div class="dot" data-index="6"></div>
+                <div class="dot" data-index="7"></div>
+                <div class="dot" data-index="8"></div>
+                <div class="dot" data-index="9"></div>
+                <div class="dot" data-index="10"></div>
+              </div>
+              <span class="progress-sub-text" id="progressSubText">(0 / 11자리 입력됨)</span>
+            </div>
+
+            <!-- Information Card -->
+            <div class="info-card" id="infoCard" role="region" aria-label="보내는 분 정보">
+              <div class="info-card__header">
+                <span class="info-card__header-icon">📋</span>
+                <span class="info-card__header-title" id="infoCardTitle">보내는 분 정보</span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">이름</span>
+                <span class="info-card__value" id="infoName">홍길동</span>
+                <span class="info-card__status" id="infoNameStatus">✅</span>
+              </div>
+              <div class="info-card__row">
+                <span class="info-card__label">연락처</span>
+                <span class="info-card__value info-card__value--pending" id="infoPhone">입력 중...</span>
+                <span class="info-card__status" id="infoPhoneStatus">🔒</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer 52px -->
+          <div class="panel-footer">
+            <div class="panel-footer__left">
+              <!-- 이전 버튼 비표시 (민감 정보 입력 중 보안 세션 일관성 유지) -->
+              <div class="footer-progress" role="progressbar" aria-label="전체 진행률, 3/5 단계" aria-valuenow="3" aria-valuemin="1" aria-valuemax="5">
+                <div class="footer-dot footer-dot--complete"></div>
+                <div class="footer-dot footer-dot--complete"></div>
+                <div class="footer-dot footer-dot--active"></div>
+                <div class="footer-dot"></div>
+                <div class="footer-dot"></div>
+              </div>
+            </div>
+            <button class="btn-fallback" id="btnFallback" aria-label="화면으로 입력하기, 기존 터치 UI로 전환">
+              화면으로 입력하기
+              <svg viewBox="0 0 14 14" fill="none">
+                <path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Dimension Annotations ═══ -->
+        <div class="ann-panel-w"><span class="ann-panel-w__label">Panel 560px</span></div>
+        <div class="ann-panel-h"><span class="ann-panel-h__label">720px</span></div>
+        <div class="ann-margin-r"><span class="ann-margin-r__label">20px</span></div>
+        <div class="ann-header-h">
+          <div class="ann-header-h__line"></div>
+          <span class="ann-header-h__label">56px Header</span>
+        </div>
+        <div class="ann-footer-h">
+          <div class="ann-footer-h__line"></div>
+          <span class="ann-footer-h__label">52px Footer</span>
+        </div>
+        <div class="ann-kiosk-w"><span class="ann-kiosk-w__label">Kiosk 768px</span></div>
+        <div class="ann-kiosk-h"><span class="ann-kiosk-h__label">1024px</span></div>
+
+        <!-- Confirmation Dialog -->
+        <div class="dialog-overlay" id="dialogOverlay" role="dialog" aria-modal="true" aria-label="서비스 최소화 확인">
+          <div class="dialog">
+            <div class="dialog__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <h2 class="dialog__title">진행을 중단하시겠어요?</h2>
+            <p class="dialog__desc">민감 정보 입력 중입니다. 최소화하면 현재 입력이 초기화됩니다.</p>
+            <div class="dialog__actions">
+              <button class="dialog__btn dialog__btn--secondary" id="btnMinimize">최소화</button>
+              <button class="dialog__btn dialog__btn--primary" id="btnContinue">계속하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/>
+            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="toastText"></span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Demo Controls — 키오스크 외부 하단
+         ═══════════════════════════════════════════ -->
+    <div class="demo-controls">
+      <div class="demo-controls__title">인터랙션 시뮬레이션 (Demo Controls)</div>
+      <div class="demo-controls__row">
+        <button class="demo-btn demo-btn--primary" id="demoAddDigit">+1 자릿수 입력</button>
+        <button class="demo-btn demo-btn--success" id="demoComplete">입력 완료 (11자리)</button>
+        <button class="demo-btn demo-btn--warning" id="demoValidationError">검증 실패</button>
+        <div class="demo-divider"></div>
+        <button class="demo-btn" id="demoReset">초기화</button>
+        <button class="demo-btn" id="demoRecipient">받는 분 전환</button>
+        <span class="demo-status" id="demoStatusText">대기 중 — sender_phone (0/11)</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         Spec Legend
+         ═══════════════════════════════════════════ -->
+    <div class="spec-legend">
+      <div class="spec-legend__title">규격 범례 (Dimension Legend)</div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#EF4444"></span>
+        <span class="spec-legend__text">패널 너비 (560px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#3B82F6"></span>
+        <span class="spec-legend__text">패널 높이 (720px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#22C55E"></span>
+        <span class="spec-legend__text">우측 여백 (20px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#F59E0B"></span>
+        <span class="spec-legend__text">헤더 (56px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#8B5CF6"></span>
+        <span class="spec-legend__text">푸터 (52px)</span>
+      </div>
+      <div class="spec-legend__item">
+        <span class="spec-legend__color" style="background:#9CA3AF"></span>
+        <span class="spec-legend__text">키오스크 영역 (768×1024px)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════ -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ── DOM References ──
+      var dimOverlay = document.getElementById('dimOverlay');
+      var btnClose = document.getElementById('btnClose');
+      var btnFallback = document.getElementById('btnFallback');
+      var dialogOverlay = document.getElementById('dialogOverlay');
+      var btnMinimize = document.getElementById('btnMinimize');
+      var btnContinue = document.getElementById('btnContinue');
+      var toast = document.getElementById('toast');
+      var toastText = document.getElementById('toastText');
+
+      // Panel content elements
+      var avatarBubble = document.getElementById('avatarBubble');
+      var avatarBubbleText = document.getElementById('avatarBubbleText');
+      var guidanceMessage = document.getElementById('guidanceMessage');
+      var guidanceIcon = document.getElementById('guidanceIcon');
+      var guidanceText = document.getElementById('guidanceText');
+      var progressArea = document.getElementById('progressArea');
+      var progressIcon = document.getElementById('progressIcon');
+      var progressText = document.getElementById('progressText');
+      var dotIndicator = document.getElementById('dotIndicator');
+      var progressSubText = document.getElementById('progressSubText');
+      var infoCardTitle = document.getElementById('infoCardTitle');
+      var infoName = document.getElementById('infoName');
+      var infoNameStatus = document.getElementById('infoNameStatus');
+      var infoPhone = document.getElementById('infoPhone');
+      var infoPhoneStatus = document.getElementById('infoPhoneStatus');
+      var demoStatusText = document.getElementById('demoStatusText');
+
+      // Demo buttons
+      var demoAddDigit = document.getElementById('demoAddDigit');
+      var demoComplete = document.getElementById('demoComplete');
+      var demoValidationError = document.getElementById('demoValidationError');
+      var demoReset = document.getElementById('demoReset');
+      var demoRecipient = document.getElementById('demoRecipient');
+
+      // ── State ──
+      var state = {
+        filledDigits: 0,
+        totalDigits: 11,
+        slotId: 'sender_phone',
+        isComplete: false,
+        isError: false
+      };
+
+      // ── Update UI from state ──
+      function updateDotsUI() {
+        var dots = dotIndicator.querySelectorAll('.dot');
+        for (var i = 0; i < dots.length; i++) {
+          dots[i].className = 'dot';
+          if (state.isComplete) {
+            dots[i].classList.add('dot--complete');
+          } else if (i < state.filledDigits) {
+            dots[i].classList.add('dot--filled');
+          }
+        }
+        dotIndicator.setAttribute('aria-valuenow', state.filledDigits);
+
+        if (state.isComplete) {
+          progressSubText.textContent = '(11 / 11자리 입력 완료)';
+          progressSubText.className = 'progress-sub-text progress-sub-text--complete';
+        } else {
+          progressSubText.textContent = '(' + state.filledDigits + ' / ' + state.totalDigits + '자리 입력됨)';
+          progressSubText.className = 'progress-sub-text';
+        }
+      }
+
+      function updateProgressStatus() {
+        if (state.isComplete) {
+          progressIcon.textContent = '✅';
+          progressText.textContent = '입력 완료';
+          progressText.className = 'progress-status__text progress-status__text--complete';
+          progressArea.classList.add('progress-area--complete');
+        } else {
+          progressIcon.textContent = '📱';
+          progressText.textContent = '스마트폰에서 입력 중...';
+          progressText.className = 'progress-status__text';
+          progressArea.classList.remove('progress-area--complete');
+        }
+      }
+
+      function updateGuidance() {
+        guidanceMessage.className = 'guidance-message';
+        if (state.isError) {
+          guidanceMessage.classList.add('guidance-message--error');
+          guidanceIcon.textContent = '⚠️';
+          guidanceText.textContent = '올바른 형식으로 다시 입력해주세요. (010으로 시작하는 11자리 번호)';
+        } else if (state.isComplete) {
+          guidanceMessage.classList.add('guidance-message--success');
+          guidanceIcon.textContent = '✅';
+          guidanceText.textContent = '연락처가 확인되었습니다.';
+        } else {
+          var label = state.slotId === 'sender_phone' ? '보내는 분' : '받는 분';
+          guidanceIcon.textContent = '🔒';
+          guidanceText.textContent = label + ' 연락처를 스마트폰 키패드로 입력해주세요.';
+        }
+      }
+
+      function updateAvatarBubble() {
+        avatarBubble.classList.add('avatar-bubble--fade');
+        setTimeout(function() { avatarBubble.classList.remove('avatar-bubble--fade'); }, 200);
+
+        if (state.isError) {
+          avatarBubbleText.textContent = '⚠️ 올바른 번호를 입력해주세요.';
+        } else if (state.isComplete) {
+          avatarBubbleText.textContent = '연락처가 확인되었습니다. 다음 정보를 안내해 드리겠습니다.';
+        } else {
+          avatarBubbleText.textContent = '🔒 보안을 위해 스마트폰에서 직접 입력해주세요.';
+        }
+      }
+
+      function updateInfoCard() {
+        if (state.slotId === 'sender_phone') {
+          infoCardTitle.textContent = '보내는 분 정보';
+          infoName.textContent = '홍길동';
+        } else {
+          infoCardTitle.textContent = '받는 분 정보';
+          infoName.textContent = '김철수';
+        }
+
+        if (state.isComplete) {
+          infoPhone.textContent = '010-****-5678';
+          infoPhone.className = 'info-card__value info-card__value--masked';
+          infoPhoneStatus.textContent = '✅';
+        } else {
+          infoPhone.textContent = '입력 중...';
+          infoPhone.className = 'info-card__value info-card__value--pending';
+          infoPhoneStatus.textContent = '🔒';
+        }
+      }
+
+      function updateDemoStatus() {
+        var statusLabel = state.isComplete ? '완료' : (state.isError ? '검증 실패' : '입력 중');
+        demoStatusText.textContent = statusLabel + ' — ' + state.slotId + ' (' + state.filledDigits + '/' + state.totalDigits + ')';
+      }
+
+      function updateAll() {
+        updateDotsUI();
+        updateProgressStatus();
+        updateGuidance();
+        updateAvatarBubble();
+        updateInfoCard();
+        updateDemoStatus();
+      }
+
+      // ── Demo: Add Digit ──
+      demoAddDigit.addEventListener('click', function() {
+        if (state.isComplete) return;
+        state.isError = false;
+        if (state.filledDigits < state.totalDigits) {
+          state.filledDigits++;
+          console.log('[SDK] ProgressUpdate({filled: ' + state.filledDigits + ', total: 11, slotId: "' + state.slotId + '"})');
+        }
+        updateAll();
+      });
+
+      // ── Demo: Complete ──
+      demoComplete.addEventListener('click', function() {
+        state.filledDigits = 11;
+        state.isComplete = true;
+        state.isError = false;
+        console.log('[SDK] InputComplete(slotId: "' + state.slotId + '", valid: true, maskedValue: "010-****-5678")');
+        updateAll();
+        showToast('✅ 검증 성공 → 마스킹 표시: 010-****-5678');
+      });
+
+      // ── Demo: Validation Error ──
+      demoValidationError.addEventListener('click', function() {
+        state.isError = true;
+        state.isComplete = false;
+        state.filledDigits = 0;
+        console.log('[SDK] ValidationFailed(slotId: "' + state.slotId + '", reason: "invalid_format")');
+        updateAll();
+        showToast('⚠️ 검증 실패 → 재입력 요청');
+      });
+
+      // ── Demo: Reset ──
+      demoReset.addEventListener('click', function() {
+        state.filledDigits = 0;
+        state.isComplete = false;
+        state.isError = false;
+        state.slotId = 'sender_phone';
+        // Reset step indicators
+        document.getElementById('stepDot1').className = 'step-dot step-dot--active';
+        document.getElementById('stepLabel1').className = 'step-label step-label--active';
+        document.getElementById('stepDot2').className = 'step-dot';
+        document.getElementById('stepLabel2').className = 'step-label';
+        document.getElementById('stepConn1').className = 'step-connector';
+        updateAll();
+        showToast('초기화 완료 → sender_phone');
+      });
+
+      // ── Demo: Switch to Recipient ──
+      demoRecipient.addEventListener('click', function() {
+        state.filledDigits = 0;
+        state.isComplete = false;
+        state.isError = false;
+        state.slotId = 'recipient_phone';
+        // Update step indicators
+        document.getElementById('stepDot1').className = 'step-dot step-dot--complete';
+        document.getElementById('stepLabel1').className = 'step-label step-label--complete';
+        document.getElementById('stepConn1').className = 'step-connector step-connector--complete';
+        document.getElementById('stepDot2').className = 'step-dot step-dot--active';
+        document.getElementById('stepLabel2').className = 'step-label step-label--active';
+        updateAll();
+        showToast('→ 받는 분 연락처 입력 대기 (recipient_phone)');
+      });
+
+      // ── Close / Dim → Dialog ──
+      btnClose.addEventListener('click', function() { dialogOverlay.classList.add('active'); });
+      dimOverlay.addEventListener('click', function() { dialogOverlay.classList.add('active'); });
+
+      btnMinimize.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+        console.log('[SDK] PanelModeChanged(standard → compact)');
+        showToast('패널 최소화 → SCR-K-001');
+      });
+
+      btnContinue.addEventListener('click', function() {
+        dialogOverlay.classList.remove('active');
+      });
+
+      btnFallback.addEventListener('click', function() {
+        console.log('[SDK] FallbackRequested(source: "SCR-K-006", slotId: "' + state.slotId + '")');
+        showToast('→ SCR-F-001 (폴백 전환 안내) — 부분 입력 데이터 폐기');
+      });
+
+      function showToast(msg) {
+        toastText.textContent = msg;
+        toast.classList.add('active');
+        setTimeout(function() { toast.classList.remove('active'); }, 2800);
+      }
+
+      // Initial render
+      updateAll();
+    })();
+
+    // ── Spec Toggle ──
+    (function() {
+      'use strict';
+      var specToggleBtn = document.getElementById('specToggleBtn');
+      var kioskFrame = document.getElementById('kioskFrame');
+      var specLegend = document.querySelector('.spec-legend');
+
+      specToggleBtn.addEventListener('click', function() {
+        var isActive = specToggleBtn.classList.toggle('active');
+        specToggleBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+        if (isActive) {
+          kioskFrame.classList.add('specs-visible');
+          specLegend.classList.add('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격숨기기';
+        } else {
+          kioskFrame.classList.remove('specs-visible');
+          specLegend.classList.remove('visible');
+          specToggleBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="M2 4h4M14 4h4M2 4v2M18 4v2M2 16h4M14 16h4M2 16v-2M18 16v-2M4 2v4M4 14v4M16 2v4M16 14v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 규격보기';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
